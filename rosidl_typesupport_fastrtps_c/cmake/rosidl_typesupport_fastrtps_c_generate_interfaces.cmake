@@ -166,7 +166,7 @@ if(WIN32)
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL_${PROJECT_NAME}")
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    PRIVATE "NDDS_USER_DLL_EXPORT_${PROJECT_NAME}")
+    PRIVATE "EPROSIMA_USER_DLL_EXPORT_${PROJECT_NAME}")
 endif()
 
 if(NOT WIN32)

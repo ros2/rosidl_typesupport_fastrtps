@@ -181,7 +181,7 @@ if(WIN32)
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}")
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    PRIVATE "EPROSIMA_USER_DLL_EXPORT")
+    PRIVATE "EPROSIMA_USER_DLL_EXPORT_${PROJECT_NAME}")
 endif()
 if(NOT WIN32)
   set(_target_compile_flags "-Wall -Wextra -Wpedantic")
