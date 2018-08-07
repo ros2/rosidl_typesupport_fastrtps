@@ -26,26 +26,6 @@ foreach(_idl_file ${rosidl_generate_interfaces_IDL_FILES})
   endif()
 endforeach()
 
-rosidl_generate_dds_interfaces(
-  ${rosidl_generate_interfaces_TARGET}__dds_fastrtps_idl
-  IDL_FILES ${_ros_idl_files}
-  DEPENDENCY_PACKAGE_NAMES ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES}
-  OUTPUT_SUBFOLDERS "dds_fastrtps"
-)
-
-set(_dds_idl_files "")
-set(_dds_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
-foreach(_idl_file ${rosidl_generate_interfaces_IDL_FILES})
-  get_filename_component(_extension "${_idl_file}" EXT)
-  if(_extension STREQUAL ".msg")
-    get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
-    get_filename_component(_parent_folder "${_parent_folder}" NAME)
-    get_filename_component(_name "${_idl_file}" NAME_WE)
-    list(APPEND _dds_idl_files
-      "${_dds_idl_base_path}/${PROJECT_NAME}/${_parent_folder}/dds_fastrtps/${_name}_.idl")
-  endif()
-endforeach()
-
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp/${PROJECT_NAME}")
 set(_generated_msg_files "")
 set(_generated_srv_files "")
@@ -101,12 +81,6 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   foreach(_idl_file ${${_pkg_name}_INTERFACE_FILES})
   get_filename_component(_extension "${_idl_file}" EXT)
     if(_extension STREQUAL ".msg")
-      get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
-      get_filename_component(_parent_folder "${_parent_folder}" NAME)
-      get_filename_component(_name "${_idl_file}" NAME_WE)
-      set(_abs_idl_file "${${_pkg_name}_DIR}/../${_parent_folder}/dds_fastrtps/${_name}_.idl")
-      normalize_path(_abs_idl_file "${_abs_idl_file}")
-      list(APPEND _dependency_files "${_abs_idl_file}")
       set(_abs_idl_file "${${_pkg_name}_DIR}/../${_idl_file}")
       normalize_path(_abs_idl_file "${_abs_idl_file}")
       list(APPEND _dependencies "${_pkg_name}:${_abs_idl_file}")
@@ -137,7 +111,6 @@ rosidl_write_generator_arguments(
   OUTPUT_DIR "${_output_path}"
   TEMPLATE_DIR "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}"
   TARGET_DEPENDENCIES ${target_dependencies}
-  ADDITIONAL_FILES ${_dds_idl_files}
 )
 
 set(_idl_pp "")
@@ -147,7 +120,7 @@ add_custom_command(
   --generator-arguments-file "${generator_arguments_file}"
   --dds-interface-base-path "${_dds_idl_base_path}"
   --idl-pp "${_idl_pp}"
-  DEPENDS ${target_dependencies} ${_dds_idl_files}
+  DEPENDS ${target_dependencies}
   COMMENT "Generating C++ type support for eProsima Fast-RTPS"
   VERBATIM
 )
@@ -230,10 +203,6 @@ add_dependencies(
 add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
-)
-add_dependencies(
-  ${rosidl_generate_interfaces_TARGET}__dds_fastrtps_idl
-  ${rosidl_generate_interfaces_TARGET}${_target_suffix}
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
