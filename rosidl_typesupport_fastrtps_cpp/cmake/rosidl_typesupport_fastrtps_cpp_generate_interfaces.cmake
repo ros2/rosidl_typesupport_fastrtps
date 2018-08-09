@@ -54,27 +54,6 @@ foreach(_idl_file ${rosidl_generate_interfaces_IDL_FILES})
   endif()
 endforeach()
 
-# If not on Windows, disable some warnings with fastrtps's generated code
-if(NOT WIN32)
-  set(_fastrtps_compile_flags)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(_fastrtps_compile_flags
-      "-Wno-deprecated-register"
-      "-Wno-return-type-c-linkage"
-      "-Wno-unused-parameter"
-    )
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(_fastrtps_compile_flags
-      # no-strict-aliasing necessary only for Release builds
-      "-Wno-strict-aliasing"
-      "-Wno-unused-parameter"
-    )
-  endif()
-  if(NOT _fastrtps_compile_flags STREQUAL "")
-    string(REPLACE ";" " " _fastrtps_compile_flags "${_fastrtps_compile_flags}")
-  endif()
-endif()
-
 set(_dependency_files "")
 set(_dependencies "")
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
@@ -146,10 +125,6 @@ if(rosidl_generate_interfaces_LIBRARY_NAME)
 endif()
 set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PROPERTIES CXX_STANDARD 14)
-if(fastrtps_GLIBCXX_USE_CXX11_ABI_ZERO)
-  target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    PRIVATE fastrtps_GLIBCXX_USE_CXX11_ABI_ZERO)
-endif()
 if(WIN32)
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}")
@@ -161,12 +136,6 @@ if(NOT WIN32)
 else()
   set(_target_compile_flags
     "/W4"
-    "/wd4100"
-    "/wd4127"
-    "/wd4275"
-    "/wd4305"
-    "/wd4458"
-    "/wd4701"
   )
 endif()
 string(REPLACE ";" " " _target_compile_flags "${_target_compile_flags}")
