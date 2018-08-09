@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 
 project(rosidl_typesupport_fastrtps_cpp)
 
-set(FASTRTPS_STATIC_DISABLE $ENV{FASTRTPS_STATIC_DISABLE}
-  CACHE BOOL "If fastrtps Static should be disabled.")
+if(DEFINED ENV{FASTRTPS_STATIC_DISABLE})
+  set(FASTRTPS_STATIC_DISABLE $ENV{FASTRTPS_STATIC_DISABLE}
+    CACHE BOOL "If Connext Static should be disabled.")
+else()
+  set(FASTRTPS_STATIC_DISABLE FALSE
+    CACHE BOOL "If Connext Static should be disabled.")
+endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
