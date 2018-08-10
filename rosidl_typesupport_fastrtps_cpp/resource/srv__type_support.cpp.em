@@ -49,6 +49,19 @@ static rosidl_service_type_support_t handle = {
 
 }  // namespace @(spec.pkg_name)
 
+namespace rosidl_typesupport_fastrtps_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_EXPORT_@(spec.pkg_name)
+const rosidl_service_type_support_t *
+get_service_type_support_handle<@(spec.pkg_name)::srv::@(spec.srv_name)>()
+{
+  return &@(spec.pkg_name)::srv::typesupport_fastrtps_cpp::handle;
+}
+
+}  // namespace rosidl_typesupport_fastrtps_cpp
+
 #ifdef __cplusplus
 extern "C"
 {
