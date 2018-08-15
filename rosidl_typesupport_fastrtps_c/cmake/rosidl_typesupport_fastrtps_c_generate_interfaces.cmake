@@ -52,6 +52,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
     if(_extension STREQUAL ".msg")
       set(_abs_idl_file "${${_pkg_name}_DIR}/../${_idl_file}")
       normalize_path(_abs_idl_file "${_abs_idl_file}")
+      list(APPEND _dependency_files "${_abs_idl_file}")
       list(APPEND _dependencies "${_pkg_name}:${_abs_idl_file}")
     endif()
   endforeach()
@@ -62,6 +63,7 @@ set(target_dependencies
   ${rosidl_typesupport_fastrtps_c_GENERATOR_FILES}
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/msg__type_support_c.cpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/srv__type_support_c.cpp.em"
+  ${rosidl_generate_interfaces_IDL_FILES}
   ${_dependency_files})
 foreach(dep ${target_dependencies})
   if(NOT EXISTS "${dep}")
