@@ -11,7 +11,7 @@
 @#    Parsed specification of the .msg file
 @#  - subfolder (string)
 @#    The subfolder / subnamespace of the message
-@#    Either 'msg' or 'srv'
+@#    Could be either 'msg', 'srv' or 'action'
 @#  - get_header_filename_from_msg_name (function)
 @#######################################################################
 @
