@@ -25,12 +25,21 @@ foreach(_idl_file ${rosidl_generate_interfaces_IDL_FILES})
   get_filename_component(_extension "${_idl_file}" EXT)
   get_filename_component(_msg_name "${_idl_file}" NAME_WE)
   string_camel_case_to_lower_case_underscore("${_msg_name}" _header_name)
-  if(_extension STREQUAL ".msg" OR _extension STREQUAL ".srv")
-    list(APPEND _generated_files "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_fastrtps_c.h")
-    list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_fastrtps_c/${_header_name}__type_support_c.cpp")
+  if(_extension STREQUAL ".msg")
+    set(_allowed_parent_folders "msg" "srv" "action")
+    if(NOT _parent_folder IN_LIST _allowed_parent_folders)
+      message(FATAL_ERROR "Interface file with unknown parent folder: ${_idl_file}")
+    endif()
+  elseif(_extension STREQUAL ".srv")
+    set(_allowed_parent_folders "srv" "action")
+    if(NOT _parent_folder IN_LIST _allowed_parent_folders)
+      message(FATAL_ERROR "Interface file with unknown parent folder: ${_idl_file}")
+    endif()
   else()
     message(FATAL_ERROR "Interface file with unknown extension: ${_idl_file}")
   endif()
+  list(APPEND _generated_files "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_fastrtps_c.h")
+  list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_fastrtps_c/${_header_name}__type_support_c.cpp")
 endforeach()
 
 set(_dependency_files "")
@@ -138,12 +147,15 @@ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   set(_msg_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/msg/dds_fastrtps_c")
   set(_srv_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/srv/dds_fastrtps_c")
+  set(_action_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/action/dds_fastrtps_c")
   normalize_path(_msg_include_dir "${_msg_include_dir}")
   normalize_path(_srv_include_dir "${_srv_include_dir}")
+  normalize_path(_action_include_dir "${_action_include_dir}")
   target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     PUBLIC
     "${_msg_include_dir}"
     "${_srv_include_dir}"
+    "${_action_include_dir}"
   )
   ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     ${_pkg_name})

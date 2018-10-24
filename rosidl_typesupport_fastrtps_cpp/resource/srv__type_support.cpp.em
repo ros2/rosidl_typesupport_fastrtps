@@ -71,7 +71,7 @@ extern "C"
 #endif
 
 const rosidl_service_type_support_t *
-ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(spec.pkg_name), @(spec.srv_name))() {
+ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(spec.pkg_name), @(subfolder), @(spec.srv_name))() {
   return &@(spec.pkg_name)::@(subfolder)::typesupport_fastrtps_cpp::handle;
 }
 
