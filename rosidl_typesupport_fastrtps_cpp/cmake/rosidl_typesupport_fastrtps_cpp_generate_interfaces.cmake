@@ -154,7 +154,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   set(_action_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/action/dds_fastrtps")
   normalize_path(_msg_include_dir "${_msg_include_dir}")
   normalize_path(_srv_include_dir "${_srv_include_dir}")
-  normalize_path(_action_include_dir "${_action_include_dir}")  
+  normalize_path(_action_include_dir "${_action_include_dir}")
   target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     PUBLIC
     "${_msg_include_dir}"
