@@ -32,7 +32,7 @@ def parse_ros_interface_files(pkg_name, ros_interface_files):
             message_specs.append((idl_file, message_spec))
         elif extension == '.srv':
             service_spec = parse_service_file(pkg_name, idl_file)
-            service_specs.append(service_spec)
+            service_specs.append((idl_file, service_spec))
     return (message_specs, service_specs)
 
 
@@ -87,17 +87,18 @@ def generate_cpp(args, message_specs, service_specs, known_msg_types):
                 template_file, data, generated_file,
                 minimum_timestamp=latest_target_timestamp)
 
-    for spec in service_specs:
+    for idl_file, spec in service_specs:
         validate_field_types(spec, known_msg_types)
+        subfolder = os.path.basename(os.path.dirname(idl_file))
         for template_file, generated_filename in mapping_srvs.items():
-            generated_file = os.path.join(args['output_dir'], 'srv')
+            generated_file = os.path.join(args['output_dir'], subfolder)
             if generated_filename.endswith('.cpp'):
                 generated_file = os.path.join(generated_file, 'dds_fastrtps')
             generated_file = os.path.join(
                 generated_file, generated_filename %
                 convert_camel_case_to_lower_case_underscore(spec.srv_name))
 
-            data = {'spec': spec}
+            data = {'spec': spec, 'subfolder': subfolder}
             data.update(functions)
             expand_template(
                 template_file, data, generated_file,
