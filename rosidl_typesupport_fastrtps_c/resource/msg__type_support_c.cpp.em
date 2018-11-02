@@ -63,8 +63,8 @@ for field in spec.fields:
     keys = set([])
     if field.type.is_primitive_type():
         if field.type.is_array:
-            keys.add('rosidl_generator_c/primitives_array.h')
-            keys.add('rosidl_generator_c/primitives_array_functions.h')
+            keys.add('rosidl_generator_c/primitives_sequence.h')
+            keys.add('rosidl_generator_c/primitives_sequence_functions.h')
         if field.type.type == 'string':
             keys.add('rosidl_generator_c/string.h')
             keys.add('rosidl_generator_c/string_functions.h')
