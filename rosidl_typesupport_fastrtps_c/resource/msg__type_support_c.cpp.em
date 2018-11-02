@@ -63,8 +63,8 @@ for field in spec.fields:
     keys = set([])
     if field.type.is_primitive_type():
         if field.type.is_array:
-            keys.add('rosidl_generator_c/primitives_array.h')
-            keys.add('rosidl_generator_c/primitives_array_functions.h')
+            keys.add('rosidl_generator_c/primitives_sequence.h')
+            keys.add('rosidl_generator_c/primitives_sequence_functions.h')
         if field.type.type == 'string':
             keys.add('rosidl_generator_c/string.h')
             keys.add('rosidl_generator_c/string_functions.h')
@@ -238,14 +238,14 @@ static bool __cdr_deserialize(
 @[    else]@
 @{
 if field.type.type == 'string':
-    array_init = 'rosidl_generator_c__String__Array__init'
-    array_fini = 'rosidl_generator_c__String__Array__fini'
+    array_init = 'rosidl_generator_c__String__Sequence__init'
+    array_fini = 'rosidl_generator_c__String__Sequence__fini'
 elif field.type.is_primitive_type():
-    array_init = 'rosidl_generator_c__{field.type.type}__Array__init'.format(**locals())
-    array_fini = 'rosidl_generator_c__{field.type.type}__Array__fini'.format(**locals())
+    array_init = 'rosidl_generator_c__{field.type.type}__Sequence__init'.format(**locals())
+    array_fini = 'rosidl_generator_c__{field.type.type}__Sequence__fini'.format(**locals())
 else:
-    array_init = '{field.type.pkg_name}__msg__{field.type.type}__Array__init'.format(**locals())
-    array_fini = '{field.type.pkg_name}__msg__{field.type.type}__Array__fini'.format(**locals())
+    array_init = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__init'.format(**locals())
+    array_fini = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__fini'.format(**locals())
 }@
     uint32_t cdrSize;
     cdr >> cdrSize;
