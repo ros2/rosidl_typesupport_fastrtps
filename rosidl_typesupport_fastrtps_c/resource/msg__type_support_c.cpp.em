@@ -31,9 +31,21 @@
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support.h"
 
 #include "@(pkg)/msg/rosidl_typesupport_fastrtps_c__visibility_control.h"
-@{header_file_name = get_header_filename_from_msg_name(type)}@
-#include "@(pkg)/@(subfolder)/@(header_file_name)__struct.h"
-#include "@(pkg)/@(subfolder)/@(header_file_name)__functions.h"
+@{
+header_filename = get_header_filename_from_msg_name(type)
+if header_filename.endswith('__request'):
+    header_filename = header_filename[:-9]
+elif header_filename.endswith('__response'):
+    header_filename = header_filename[:-10]
+if header_filename.endswith('__goal'):
+    header_filename = header_filename[:-6]
+elif header_filename.endswith('__result'):
+    header_filename = header_filename[:-8]
+elif header_filename.endswith('__feedback'):
+    header_filename = header_filename[:-10]
+}@
+#include "@(pkg)/@(subfolder)/@(header_filename)__struct.h"
+#include "@(pkg)/@(subfolder)/@(header_filename)__functions.h"
 
 #include "fastcdr/Cdr.h"
 
@@ -241,8 +253,11 @@ if field.type.type == 'string':
     array_init = 'rosidl_generator_c__String__Sequence__init'
     array_fini = 'rosidl_generator_c__String__Sequence__fini'
 elif field.type.is_primitive_type():
-    array_init = 'rosidl_generator_c__{field.type.type}__Sequence__init'.format(**locals())
-    array_fini = 'rosidl_generator_c__{field.type.type}__Sequence__fini'.format(**locals())
+    type_ = field.type.type
+    if type_ == 'char':
+        type_ = 'uint8'
+    array_init = 'rosidl_generator_c__{type_}__Sequence__init'.format(**locals())
+    array_fini = 'rosidl_generator_c__{type_}__Sequence__fini'.format(**locals())
 else:
     array_init = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__init'.format(**locals())
     array_fini = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__fini'.format(**locals())
