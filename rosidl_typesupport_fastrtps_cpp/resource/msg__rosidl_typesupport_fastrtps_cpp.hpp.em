@@ -29,7 +29,20 @@ header_guard_variable = '__'.join([x.upper() for x in header_guard_parts]) + '_'
 
 #include "@(spec.base_type.pkg_name)/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h"
 
-#include "@(spec.base_type.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.base_type.type))__struct.hpp"
+@{
+header_filename = get_header_filename_from_msg_name(spec.base_type.type)
+if header_filename.endswith('__request'):
+    header_filename = header_filename[:-9]
+elif header_filename.endswith('__response'):
+    header_filename = header_filename[:-10]
+if header_filename.endswith('__goal'):
+    header_filename = header_filename[:-6]
+elif header_filename.endswith('__result'):
+    header_filename = header_filename[:-8]
+elif header_filename.endswith('__feedback'):
+    header_filename = header_filename[:-10]
+}@
+#include "@(spec.base_type.pkg_name)/@(subfolder)/@(header_filename)__struct.hpp"
 #ifndef _WIN32
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wunused-parameter"

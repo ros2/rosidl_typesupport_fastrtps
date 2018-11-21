@@ -22,10 +22,7 @@
 #include "rosidl_typesupport_fastrtps_c/identifier.h"
 
 #include "@(spec.pkg_name)/msg/rosidl_typesupport_fastrtps_c__visibility_control.h"
-@{req_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__request')}@
-@{res_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__response')}@
-#include "@(spec.pkg_name)/@(subfolder)/@(req_header_file_name).h"
-#include "@(spec.pkg_name)/@(subfolder)/@(res_header_file_name).h"
+#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name)).h"
 
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Request'))__rosidl_typesupport_fastrtps_c.h"
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Response'))__rosidl_typesupport_fastrtps_c.h"

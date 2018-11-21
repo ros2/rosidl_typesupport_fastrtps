@@ -20,7 +20,16 @@
 #include "rosidl_typesupport_fastrtps_cpp/service_type_support.h"
 #include "rosidl_typesupport_fastrtps_cpp/service_type_support_decl.hpp"
 
-#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name))__struct.hpp"
+@{
+header_filename = get_header_filename_from_msg_name(spec.srv_name)
+if header_filename.endswith('__goal'):
+    header_filename = header_filename[:-6]
+elif header_filename.endswith('__result'):
+    header_filename = header_filename[:-8]
+elif header_filename.endswith('__feedback'):
+    header_filename = header_filename[:-10]
+}@
+#include "@(spec.pkg_name)/@(subfolder)/@(header_filename)__struct.hpp"
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Request'))__rosidl_typesupport_fastrtps_cpp.hpp"
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Response'))__rosidl_typesupport_fastrtps_cpp.hpp"
 
