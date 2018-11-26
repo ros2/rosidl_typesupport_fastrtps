@@ -1,18 +1,6 @@
-// generated from rosidl_typesupport_fastrtps_cpp/resource/msg__type_support.cpp.em
-// generated code does not contain a copyright notice
+@# Included from rosidl_typesupport_fastrtps_cpp/resource/idl__dds_fastrtps__type_support.cpp.em
 
-@#######################################################################
-@# EmPy template for generating <msg>__type_support.cpp files
-@#
-@# Context:
-@#  - spec (rosidl_parser.MessageSpecification)
-@#    Parsed specification of the .msg file
-@#  - subfolder (string)
-@#    The subfolder / subnamespace of the message
-@#    Could be 'msg', 'srv' or 'action'
-@#  - get_header_filename_from_msg_name (function)
-@#######################################################################
-@
+
 #include "@(spec.base_type.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.base_type.type))__rosidl_typesupport_fastrtps_cpp.hpp"
 
 #include <limits>
@@ -29,7 +17,7 @@
 
 // forward declaration of message dependencies and their conversion functions
 @[for field in spec.fields]@
-@[  if not field.type.is_primitive_type()]@
+@[  if isinstance(field, rosidl_parser.NestedType)]@
 namespace @(field.type.pkg_name)
 {
 namespace msg
