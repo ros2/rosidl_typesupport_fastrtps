@@ -48,6 +48,18 @@ for service in content.get_elements_of_type(Service):
 from rosidl_parser.definition import Action
 for action in content.get_elements_of_type(Action):
     TEMPLATE(
+        'msg__type_support.cpp.em',
+        package_name=package_name, interface_path=interface_path, message=action.goal_request,
+        include_directives=include_directives)
+    TEMPLATE(
+        'msg__type_support.cpp.em',
+        package_name=package_name, interface_path=interface_path, message=action.result_response,
+        include_directives=include_directives)
+    TEMPLATE(
+        'msg__type_support.cpp.em',
+        package_name=package_name, interface_path=interface_path, message=action.feedback,
+        include_directives=include_directives)
+    TEMPLATE(
         'srv__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, service=action.goal_service,
         include_directives=include_directives)
@@ -57,6 +69,6 @@ for action in content.get_elements_of_type(Action):
         include_directives=include_directives)
     TEMPLATE(
         'msg__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, message=action.feedback,
+        package_name=package_name, interface_path=interface_path, message=action.feedback_message,
         include_directives=include_directives)
 }@
