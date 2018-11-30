@@ -18,7 +18,7 @@ from rosidl_cmake import generate_files
 def generate_cpp(generator_arguments_file):
     mapping = {
         'idl__rosidl_typesupport_fastrtps_cpp.hpp.em': '%s__rosidl_typesupport_fastrtps_cpp.hpp',
-        'idl__dds_fastrtps__type_support.cpp.em': 'dds_fastrtps/%s__type_support.cpp',
+        'idl__type_support.cpp.em': 'dds_fastrtps/%s__type_support.cpp',
     }
     generate_files(generator_arguments_file, mapping)
     return 0

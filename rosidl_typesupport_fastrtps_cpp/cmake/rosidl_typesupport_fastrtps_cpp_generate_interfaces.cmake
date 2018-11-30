@@ -55,12 +55,12 @@ set(target_dependencies
   "${rosidl_typesupport_fastrtps_cpp_BIN}"
   ${rosidl_typesupport_fastrtps_cpp_GENERATOR_FILES}
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/idl__rosidl_typesupport_fastrtps_cpp.hpp.em"
-  "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/idl__dds_fastrtps__type_support.cpp.em"
+  "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/idl__type_support.cpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/msg__rosidl_typesupport_fastrtps_cpp.hpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/msg__type_support.cpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/srv__rosidl_typesupport_fastrtps_cpp.hpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/srv__type_support.cpp.em"
-  ${rosidl_generate_interfaces_IDL_FILES}
+  # ${rosidl_generate_interfaces_IDL_FILES}
   ${_dependency_files})
 foreach(dep ${target_dependencies})
   if(NOT EXISTS "${dep}")
@@ -142,7 +142,6 @@ target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 )
 
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  "fastcdr"
   "fastrtps"
   "rmw"
   "rosidl_typesupport_fastrtps_cpp"
@@ -167,7 +166,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
     ${_pkg_name})
 endforeach()
 
-# target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} fastrtps fastcdr)
+target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} fastrtps fastcdr)
 
 # Make top level generation target depend on this library
 add_dependencies(
