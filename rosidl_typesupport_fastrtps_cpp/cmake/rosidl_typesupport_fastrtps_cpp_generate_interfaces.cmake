@@ -21,7 +21,7 @@ find_package(FastRTPS REQUIRED MODULE)
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp/${PROJECT_NAME}")
 
 # Create a list of files that will be generated from each IDL file
-set(_generated_sources "")
+set(_generated_files "")
 foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
   # Get second part of tuple which has form "msg/Name.idl" or "srv/Name.idl" or "action/Name.idl"
   string(REGEX REPLACE ":([^:]*)$" "/\\1" _rel_idl_file "${_idl_tuple}")
@@ -30,7 +30,7 @@ foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
   get_filename_component(_idl_name "${_rel_idl_file}" NAME_WE)
   # Turn idl name into file names
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
-  list(APPEND _generated_sources
+  list(APPEND _generated_files
     "${_output_path}/${_parent_folder}/dds_fastrtps/${_header_name}__type_support.cpp"
     "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_fastrtps_cpp.hpp"
   )
@@ -82,7 +82,7 @@ rosidl_write_generator_arguments(
 
 # Add a command that invokes generator at build time
 add_custom_command(
-  OUTPUT ${_generated_sources}
+  OUTPUT ${_generated_files}
   COMMAND ${PYTHON_EXECUTABLE} ${rosidl_typesupport_fastrtps_cpp_BIN}
   --generator-arguments-file "${generator_arguments_file}"
   DEPENDS ${target_dependencies}
@@ -104,7 +104,7 @@ set(_target_suffix "__rosidl_typesupport_fastrtps_cpp")
 
 # Create a library that builds the generated files
 add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix} SHARED
-  ${_generated_sources})
+  ${_generated_files})
 
 # Change output library name if asked to
 if(rosidl_generate_interfaces_LIBRARY_NAME)
