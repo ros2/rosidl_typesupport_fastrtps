@@ -1,5 +1,19 @@
 @# Included from rosidl_typesupport_fastrtps_cpp/resource/idl__rosidl_typesupport_fastrtps_cpp.hpp.em
 @{
+TEMPLATE(
+    'msg__rosidl_typesupport_fastrtps_cpp.hpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.request_message,
+    include_directives=include_directives)
+}@
+
+@{
+TEMPLATE(
+    'msg__rosidl_typesupport_fastrtps_cpp.hpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.response_message,
+    include_directives=include_directives)
+}@
+
+@{
 header_files = [
     'rmw/types.h',
     'rosidl_typesupport_cpp/service_type_support.hpp',
