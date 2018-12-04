@@ -6,8 +6,6 @@ include_parts = [package_name] + list(interface_path.parents[0].parts) + \
     [convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 include_base = '/'.join(include_parts)
 }@
-#include "@(include_base)__struct.hpp"
-
 @{
 TEMPLATE(
     'msg__type_support.cpp.em',
@@ -28,7 +26,6 @@ header_files = [
     'rosidl_typesupport_fastrtps_cpp/identifier.hpp',
     'rosidl_typesupport_fastrtps_cpp/service_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/service_type_support_decl.hpp',
-    include_base + '__struct.hpp',
 ]
 }@
 @[for header_file in header_files]@
