@@ -35,7 +35,20 @@ header_files = [
 # pragma GCC diagnostic pop
 #endif
 
-#include "fastcdr/Cdr.h"
+@{
+header_files = [
+    'fastcdr/Cdr.h',
+]
+}@
+@[for header_file in header_files]@
+@[    if header_file in include_directives]@
+// already included above
+// @
+@[    else]@
+@{include_directives.add(header_file)}@
+@[    end if]@
+#include "@(header_file)"
+@[end for]@
 @[for ns in message.structure.type.namespaces]@
 
 namespace @(ns)
