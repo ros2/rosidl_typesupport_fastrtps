@@ -221,7 +221,8 @@ if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
     ament_uncrustify(
       TESTNAME "uncrustify_rosidl_typesupport_fastrtps_c"
       # the generated code might contain longer lines for templated types
-      MAX_LINE_LENGTH 999
+      # set the value to zero to tell uncrustify to ignore line lengths
+      MAX_LINE_LENGTH 0
       ${_generated_files})
   endif()
 endif()
