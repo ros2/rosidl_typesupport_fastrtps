@@ -4,10 +4,10 @@ project(rosidl_typesupport_fastrtps_c)
 
 if(DEFINED ENV{FASTRTPS_STATIC_DISABLE})
   set(FASTRTPS_STATIC_DISABLE $ENV{FASTRTPS_STATIC_DISABLE}
-    CACHE BOOL "If Connext Static should be disabled.")
+    CACHE BOOL "If fastrtps Static should be disabled.")
 else()
   set(FASTRTPS_STATIC_DISABLE FALSE
-    CACHE BOOL "If Connext Static should be disabled.")
+    CACHE BOOL "If fastrtps Static should be disabled.")
 endif()
 
 # Default to C99
