@@ -148,19 +148,6 @@ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 
 # Depend on dependencies
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
-  # TODO(sloretz) parent_folder/dds_fastrtps in template instead of here
-  # set(_msg_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/msg/dds_fastrtps")
-  # set(_srv_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/srv/dds_fastrtps")
-  # set(_action_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/action/dds_fastrtps")
-  # normalize_path(_msg_include_dir "${_msg_include_dir}")
-  # normalize_path(_srv_include_dir "${_srv_include_dir}")
-  # normalize_path(_action_include_dir "${_action_include_dir}")
-  # target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  #   PUBLIC
-  #   "${_msg_include_dir}"
-  #   "${_srv_include_dir}"
-  #   "${_action_include_dir}"
-  # )
   ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     ${_pkg_name})
 endforeach()
