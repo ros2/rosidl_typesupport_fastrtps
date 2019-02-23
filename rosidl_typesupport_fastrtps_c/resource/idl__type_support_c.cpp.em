@@ -9,7 +9,6 @@
 @#  - package_name (string)
 @#  - interface_path (Path relative to the directory named after the package)
 @#  - content (IdlContent, list of elements, e.g. Messages or Services)
-@#  - type_supports (list of strings, the names of the type support packages)
 @#######################################################################
 @
 @{
