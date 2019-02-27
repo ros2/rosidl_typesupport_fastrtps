@@ -104,7 +104,7 @@ for member in message.structure.members:
 @[    else]@
 @{include_directives.add(header_file)}@
 @[    end if]@
-#include "@(header_file)"  // @(', '.join(includes[header_file]))
+#include "@(header_file)"  // @(', '.join(sorted(includes[header_file])))
 @[end for]@
 
 // forward declare type support functions
