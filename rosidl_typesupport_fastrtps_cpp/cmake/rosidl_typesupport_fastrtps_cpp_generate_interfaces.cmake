@@ -22,12 +22,10 @@ set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp/${
 
 # Create a list of files that will be generated from each IDL file
 set(_generated_files "")
-foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
-  # Get second part of tuple which has form "msg/Name.idl" or "srv/Name.idl" or "action/Name.idl"
-  string(REGEX REPLACE ":([^:]*)$" "/\\1" _rel_idl_file "${_idl_tuple}")
-  get_filename_component(_parent_folder "${_rel_idl_file}" DIRECTORY)
+foreach(_abs_idl_file ${rosidl_generate_interfaces_ABS_IDL_FILES})
+  get_filename_component(_parent_folder "${_abs_idl_file}" DIRECTORY)
   get_filename_component(_parent_folder "${_parent_folder}" NAME)
-  get_filename_component(_idl_name "${_rel_idl_file}" NAME_WE)
+  get_filename_component(_idl_name "${_abs_idl_file}" NAME_WE)
   # Turn idl name into file names
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
   list(APPEND _generated_files
@@ -60,6 +58,7 @@ set(target_dependencies
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/msg__type_support.cpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/srv__rosidl_typesupport_fastrtps_cpp.hpp.em"
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/srv__type_support.cpp.em"
+  ${rosidl_generate_interfaces_ABS_IDL_FILES}
   ${_dependency_files})
 foreach(dep ${target_dependencies})
   if(NOT EXISTS "${dep}")
