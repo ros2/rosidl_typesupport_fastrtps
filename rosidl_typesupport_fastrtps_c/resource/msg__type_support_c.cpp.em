@@ -1,6 +1,9 @@
 @# Included from rosidl_typesupport_fastrtps_c/resource/idl__type_support_c.cpp.em
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
+from rosidl_parser.definition import ACTION_FEEDBACK_SUFFIX
+from rosidl_parser.definition import ACTION_GOAL_SUFFIX
+from rosidl_parser.definition import ACTION_RESULT_SUFFIX
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BaseString
 from rosidl_parser.definition import BasicType
@@ -80,18 +83,15 @@ for member in message.structure.members:
         keys.add('rosidl_generator_c/u16string.h')
         keys.add('rosidl_generator_c/u16string_functions.h')
     elif isinstance(type_, NamespacedType):
-        filename_prefix = convert_camel_case_to_lower_case_underscore(type_.name)
-        if filename_prefix.endswith('__request'):
-            filename_prefix = filename_prefix[:-9]
-        elif filename_prefix.endswith('__response'):
-            filename_prefix = filename_prefix[:-10]
-        if filename_prefix.endswith('__goal'):
-            filename_prefix = filename_prefix[:-6]
-        elif filename_prefix.endswith('__result'):
-            filename_prefix = filename_prefix[:-8]
-        elif filename_prefix.endswith('__feedback'):
-            filename_prefix = filename_prefix[:-10]
-        keys.add('/'.join(type_.namespaces + [filename_prefix]) + '__functions.h')
+        if (
+            type_.name.endswith(ACTION_GOAL_SUFFIX) or
+            type_.name.endswith(ACTION_RESULT_SUFFIX) or
+            type_.name.endswith(ACTION_FEEDBACK_SUFFIX)
+        ):
+            typename = type_.name.rsplit('_', 1)[0]
+        else:
+            typename = type_.name
+        keys.add('/'.join(type_.namespaces + [convert_camel_case_to_lower_case_underscore(typename)]) + '__functions.h')
     for key in keys:
         if key not in includes:
             includes[key] = set([])
