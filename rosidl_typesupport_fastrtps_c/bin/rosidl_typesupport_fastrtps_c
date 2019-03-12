@@ -4,7 +4,6 @@ import argparse
 import os
 import sys
 
-from rosidl_cmake import read_generator_arguments
 from rosidl_parser import UnknownMessageType
 from rosidl_typesupport_fastrtps_c import generate_typesupport_fastrtps_c
 
@@ -28,10 +27,8 @@ def main(argv=sys.argv[1:]):
         help='The location of the file containing the generator arguments')
     args = parser.parse_args(argv)
 
-    generator_args = read_generator_arguments(args.generator_arguments_file)
-
     try:
-        rc = generate_typesupport_fastrtps_c(generator_args)
+        rc = generate_typesupport_fastrtps_c(args.generator_arguments_file)
     except UnknownMessageType as e:
         print(str(e), file=sys.stderr)
         return 1

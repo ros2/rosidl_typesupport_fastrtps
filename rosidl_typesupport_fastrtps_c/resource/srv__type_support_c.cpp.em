@@ -1,56 +1,65 @@
-// generated from rosidl_typesupport_fastrtps_c/resource/srv__type_support_c.cpp.em
-// generated code does not contain a copyright notice
+@# Included from rosidl_typesupport_fastrtps_c/resource/idl__type_support_c.cpp.em
+@{
+TEMPLATE(
+    'msg__type_support_c.cpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.request_message,
+    include_directives=include_directives)
+}@
 
-@#######################################################################
-@# EmPy template for generating <srv>__type_support_c.cpp files
-@#
-@# Context:
-@#  - spec (rosidl_parser.ServiceSpecification)
-@#    Parsed specification of the .srv file
-@#  - subfolder (string)
-@#    The subfolder / subnamespace of the message
-@#    Either 'srv' or 'action'
-@#  - get_header_filename_from_msg_name (function)
-@#######################################################################
-@
-#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name))__rosidl_typesupport_fastrtps_c.h"
+@{
+TEMPLATE(
+    'msg__type_support_c.cpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.response_message,
+    include_directives=include_directives)
+}@
 
-// Provides the definition of the service_type_support_callbacks_t struct.
-#include <rosidl_typesupport_fastrtps_cpp/service_type_support.h>
+@{
+from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 
-#include "rosidl_typesupport_cpp/service_type_support.hpp"
-#include "rosidl_typesupport_fastrtps_c/identifier.h"
+include_parts = [package_name] + list(interface_path.parents[0].parts) + \
+    [convert_camel_case_to_lower_case_underscore(interface_path.stem)]
+include_base = '/'.join(include_parts)
 
-#include "@(spec.pkg_name)/msg/rosidl_typesupport_fastrtps_c__visibility_control.h"
-@{req_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__request')}@
-@{res_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__response')}@
-#include "@(spec.pkg_name)/@(subfolder)/@(req_header_file_name).h"
-#include "@(spec.pkg_name)/@(subfolder)/@(res_header_file_name).h"
-
-#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Request'))__rosidl_typesupport_fastrtps_c.h"
-#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Response'))__rosidl_typesupport_fastrtps_c.h"
+header_files = [
+    # Provides the definition of the service_type_support_callbacks_t struct.
+    'rosidl_typesupport_fastrtps_cpp/service_type_support.h',
+    'rosidl_typesupport_cpp/service_type_support.hpp',
+    'rosidl_typesupport_fastrtps_c/identifier.h',
+    package_name + '/msg/rosidl_typesupport_fastrtps_c__visibility_control.h',
+    include_base + '.h',
+]
+}@
+@[for header_file in header_files]@
+@[    if header_file in include_directives]@
+// already included above
+// @
+@[    else]@
+@{include_directives.add(header_file)}@
+@[    end if]@
+#include "@(header_file)"
+@[end for]@
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-static service_type_support_callbacks_t callbacks = {
-  "@(spec.pkg_name)",
-  "@(spec.srv_name)",
-  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(spec.pkg_name), @(subfolder), @(spec.srv_name)_Request)(),
-  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(spec.pkg_name), @(subfolder), @(spec.srv_name)_Response)(),
+static service_type_support_callbacks_t @(service.structure_type.name)__callbacks = {
+  "@(package_name)",
+  "@(service.structure_type.name)",
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name]))_Request)(),
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name]))_Response)(),
 };
 
-static rosidl_service_type_support_t handle = {
+static rosidl_service_type_support_t @(service.structure_type.name)__handle = {
   rosidl_typesupport_fastrtps_c__identifier,
-  &callbacks,
+  &@(service.structure_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
 const rosidl_service_type_support_t *
-ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(spec.pkg_name), @(subfolder), @(spec.srv_name))() {
-  return &handle;
+ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name])))() {
+  return &@(service.structure_type.name)__handle;
 }
 
 #if defined(__cplusplus)
