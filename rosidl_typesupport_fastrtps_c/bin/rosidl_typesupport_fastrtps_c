@@ -4,7 +4,6 @@ import argparse
 import os
 import sys
 
-from rosidl_parser import UnknownMessageType
 from rosidl_typesupport_fastrtps_c import generate_typesupport_fastrtps_c
 
 
@@ -27,14 +26,7 @@ def main(argv=sys.argv[1:]):
         help='The location of the file containing the generator arguments')
     args = parser.parse_args(argv)
 
-    try:
-        rc = generate_typesupport_fastrtps_c(args.generator_arguments_file)
-    except UnknownMessageType as e:
-        print(str(e), file=sys.stderr)
-        return 1
-    if rc:
-        return rc
-    return 0
+    return generate_typesupport_fastrtps_c(args.generator_arguments_file)
 
 
 if __name__ == '__main__':
