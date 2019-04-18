@@ -49,7 +49,7 @@ header_files = [
 @[    end if]@
 #include "@(header_file)"
 @[end for]@
-@[for ns in message.structure.type.namespaces]@
+@[for ns in message.structure.namespaced_type.namespaces]@
 
 namespace @(ns)
 {
@@ -61,29 +61,29 @@ namespace typesupport_fastrtps_cpp
 bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_serialize(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.type.name])) & ros_message,
+  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
   eprosima::fastcdr::Cdr & cdr);
 
 bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_deserialize(
   eprosima::fastcdr::Cdr & cdr,
-  @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.type.name])) & ros_message);
+  @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message);
 
 size_t
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 get_serialized_size(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.type.name])) & ros_message,
+  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
   size_t current_alignment);
 
 size_t
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
-max_serialized_size_@(message.structure.type.name)(
+max_serialized_size_@(message.structure.namespaced_type.name)(
   bool & full_bounded,
   size_t current_alignment);
 
 }  // namespace typesupport_fastrtps_cpp
-@[  for ns in reversed(message.structure.type.namespaces)]@
+@[  for ns in reversed(message.structure.namespaced_type.namespaces)]@
 
 }  // namespace @(ns)
 @[  end for]@
@@ -95,7 +95,7 @@ extern "C"
 
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 const rosidl_message_type_support_t *
-  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.type.name])))();
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])))();
 
 #ifdef __cplusplus
 }
