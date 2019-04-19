@@ -49,13 +49,13 @@ namespace @(ns)
 namespace typesupport_fastrtps_cpp
 {
 bool cdr_serialize(
-  const @('::'.join(type_.namespaces + [type_.name])) &,
+  const @('::'.join(type_.namespaced_name())) &,
   eprosima::fastcdr::Cdr &);
 bool cdr_deserialize(
   eprosima::fastcdr::Cdr &,
-  @('::'.join(type_.namespaces + [type_.name])) &);
+  @('::'.join(type_.namespaced_name())) &);
 size_t get_serialized_size(
-  const @('::'.join(type_.namespaces + [type_.name])) &,
+  const @('::'.join(type_.namespaced_name())) &,
   size_t current_alignment);
 size_t
 max_serialized_size_@(type_.name)(
