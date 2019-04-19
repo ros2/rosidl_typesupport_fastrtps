@@ -44,22 +44,22 @@ extern "C"
 {
 #endif
 
-static service_type_support_callbacks_t @(service.structure_type.name)__callbacks = {
+static service_type_support_callbacks_t @(service.namespaced_type.name)__callbacks = {
   "@(package_name)",
-  "@(service.structure_type.name)",
-  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name]))_Request)(),
-  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name]))_Response)(),
+  "@(service.namespaced_type.name)",
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name]))_Request)(),
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name]))_Response)(),
 };
 
-static rosidl_service_type_support_t @(service.structure_type.name)__handle = {
+static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
   rosidl_typesupport_fastrtps_c__identifier,
-  &@(service.structure_type.name)__callbacks,
+  &@(service.namespaced_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
 const rosidl_service_type_support_t *
-ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.structure_type.name])))() {
-  return &@(service.structure_type.name)__handle;
+ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name])))() {
+  return &@(service.namespaced_type.name)__handle;
 }
 
 #if defined(__cplusplus)
