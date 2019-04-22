@@ -144,7 +144,7 @@ const rosidl_message_type_support_t *
 
 @# // Make callback functions specific to this message type.
 
-using _@(message.structure.namespaced_type.name)__ros_msg_type = @('__'.join(message.structure.namespaced_type.namespaces + [message.structure.namespaced_type.name]));
+using _@(message.structure.namespaced_type.name)__ros_msg_type = @('__'.join(message.structure.namespaced_type.namespaced_name()));
 
 static bool _@(message.structure.namespaced_type.name)__cdr_serialize(
   const void * untyped_ros_message,
@@ -166,7 +166,7 @@ if isinstance(type_, AbstractNestedType):
 @[  if isinstance(type_, NamespacedType)]@
     const message_type_support_callbacks_t * callbacks =
       static_cast<const message_type_support_callbacks_t *>(
-      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaces + [type_.name]))
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
       )()->data);
 @[  end if]@
 @[  if isinstance(member.type, AbstractNestedType)]@
@@ -256,7 +256,7 @@ if isinstance(type_, AbstractNestedType):
 @[  if isinstance(type_, NamespacedType)]@
     const message_type_support_callbacks_t * callbacks =
       static_cast<const message_type_support_callbacks_t *>(
-      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaces + [type_.name]))
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
       )()->data);
 @[  end if]@
 @[  if isinstance(member.type, AbstractNestedType)]@
@@ -277,8 +277,8 @@ elif isinstance(member.type.value_type, BasicType):
     array_init = 'rosidl_generator_c__{type_}__Sequence__init'.format(**locals())
     array_fini = 'rosidl_generator_c__{type_}__Sequence__fini'.format(**locals())
 else:
-    array_init = '__'.join(type_.namespaces + [type_.name]) + '__Sequence__init'
-    array_fini = '__'.join(type_.namespaces + [type_.name]) + '__Sequence__fini'
+    array_init = '__'.join(type_.namespaced_name()) + '__Sequence__init'
+    array_fini = '__'.join(type_.namespaced_name()) + '__Sequence__fini'
 }@
     uint32_t cdrSize;
     cdr >> cdrSize;
@@ -392,7 +392,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
 @[    else]
     for (size_t index = 0; index < array_size; ++index) {
-      current_alignment += get_serialized_size_@('__'.join(member.type.value_type.namespaces + [member.type.value_type.name]))(
+      current_alignment += get_serialized_size_@('__'.join(member.type.value_type.namespaced_name()))(
         &array_ptr[index], current_alignment);
     }
 @[    end if]@
@@ -409,7 +409,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
 @[    else]
-  current_alignment += get_serialized_size_@('__'.join(member.type.namespaces + [member.type.name]))(
+  current_alignment += get_serialized_size_@('__'.join(member.type.namespaced_name()))(
     &(ros_message->@(member.name)), current_alignment);
 @[    end if]@
 @[  end if]@
@@ -488,7 +488,7 @@ if isinstance(type_, AbstractNestedType):
 @[  else]
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment +=
-        max_serialized_size_@('__'.join(type_.namespaces + [type_.name]))(
+        max_serialized_size_@('__'.join(type_.namespaced_name()))(
         full_bounded, current_alignment);
     }
 @[  end if]@
