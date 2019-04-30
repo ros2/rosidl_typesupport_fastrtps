@@ -24,6 +24,7 @@ header_files = [
     'string',
     # Provides the rosidl_typesupport_fastrtps_c__identifier symbol declaration.
     'rosidl_typesupport_fastrtps_c/identifier.h',
+    'rosidl_typesupport_fastrtps_c/wstring_conversion.hpp',
     # Provides the definition of the message_type_support_callbacks_t struct.
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     package_name + '/msg/rosidl_typesupport_fastrtps_c__visibility_control.h',
@@ -197,6 +198,21 @@ if isinstance(type_, AbstractNestedType):
       }
       cdr << str->data;
     }
+@[    elif isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+    for (size_t i = 0; i < size; ++i) {
+      const rosidl_generator_c__U16String * str = &array_ptr[i];
+      if (str->capacity == 0 || str->capacity <= str->size) {
+        fprintf(stderr, "string capacity not greater than size\n");
+        return false;
+      }
+      if (str->data[str->size] != '\0') {
+        fprintf(stderr, "string not null-terminated\n");
+        return false;
+      }
+      rosidl_typesupport_fastrtps_c::u16string_to_wstring(*str, wstr);
+      cdr << wstr;
+    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.serializeArray(array_ptr, size);
 @[    else]@
@@ -219,6 +235,10 @@ if isinstance(type_, AbstractNestedType):
       return false;
     }
     cdr << str->data;
+@[  elif isinstance(member.type, AbstractWString)]@
+    std::wstring wstr;
+    rosidl_typesupport_fastrtps_c::u16string_to_wstring(ros_message->@(member.name), wstr);
+    cdr << wstr;
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
     cdr << (ros_message->@(member.name) ? true : false);
 @[  elif isinstance(member.type, BasicType)]@
@@ -291,25 +311,31 @@ else:
     }
     auto array_ptr = ros_message->@(member.name).data;
 @[    end if]@
-@[    if isinstance(member.type.value_type, AbstractGenericString)]@
-@{
-string_type = 'std::string' if isinstance(member.type.value_type, AbstractString) else 'std::u16string'
-string_typename = 'rosidl_generator_c__String' if isinstance(member.type.value_type, AbstractString) else 'rosidl_generator_c__U16string'
-}@
+@[    if isinstance(member.type.value_type, AbstractString)]@
     for (size_t i = 0; i < size; ++i) {
-      @(string_type) tmp;
+      std::string tmp;
       cdr >> tmp;
       auto & ros_i = array_ptr[i];
       if (!ros_i.data) {
-        @(string_typename)__init(&ros_i);
+        rosidl_generator_c__String__init(&ros_i);
       }
-      bool succeeded = @(string_typename)__assign(
+      bool succeeded = rosidl_generator_c__String__assign(
         &ros_i,
         tmp.c_str());
       if (!succeeded) {
         fprintf(stderr, "failed to assign string into field '@(member.name)'\n");
         return false;
       }
+    }
+@[    elif isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+    for (size_t i = 0; i < size; ++i) {
+      auto & ros_i = array_ptr[i];
+      if (!ros_i.data) {
+        rosidl_generator_c__U16String__init(&ros_i);
+      }
+      cdr >> wstr;
+      rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_i);
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
@@ -322,23 +348,26 @@ string_typename = 'rosidl_generator_c__String' if isinstance(member.type.value_t
       }
     }
 @[    end if]@
-@[   elif isinstance(member.type, AbstractGenericString)]@
-@{
-string_type = 'std::string' if isinstance(member.type, AbstractString) else 'std::u16string'
-string_typename = 'rosidl_generator_c__String' if isinstance(member.type, AbstractString) else 'rosidl_generator_c__U16string'
-}@
-    @(string_type) tmp;
+@[   elif isinstance(member.type, AbstractString)]@
+    std::string tmp;
     cdr >> tmp;
     if (!ros_message->@(member.name).data) {
-      @(string_typename)__init(&ros_message->@(member.name));
+      rosidl_generator_c__String__init(&ros_message->@(member.name));
     }
-    bool succeeded = @(string_typename)__assign(
+    bool succeeded = rosidl_generator_c__String__assign(
       &ros_message->@(member.name),
       tmp.c_str());
     if (!succeeded) {
       fprintf(stderr, "failed to assign string into field '@(member.name)'\n");
       return false;
     }
+@[   elif isinstance(member.type, AbstractWString)]@
+    if (!ros_message->@(member.name).data) {
+      rosidl_generator_c__U16String__init(&ros_message->@(member.name));
+    }
+    std::wstring wstr;
+    cdr >> wstr;
+    rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_message->@(member.name));
 @[  elif isinstance(member.type, BasicType)]@
     cdr >> ros_message->@(member.name);
 @[  else]@
@@ -379,10 +408,13 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
     current_alignment += padding +
       eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
 @[    end if]@
-@[    if isinstance(member.type.value_type, AbstractString)]@
+@[    if isinstance(member.type.value_type, AbstractGenericString)]@
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment += padding +
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+@[      if isinstance(member.type.value_type, AbstractWString)]@
+        2 *
+@[      end if]@
         array_ptr[index].size + 1;
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
@@ -398,9 +430,12 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
 @[    end if]@
   }
 @[  else]@
-@[    if isinstance(member.type, AbstractString)]@
+@[    if isinstance(member.type, AbstractGenericString)]@
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+@[      if isinstance(member.type, AbstractWString)]@
+    2 *
+@[      end if]@
     ros_message->@(member.name).size + 1;
 @[    elif isinstance(member.type, BasicType)]@
   {
@@ -461,12 +496,15 @@ type_ = member.type
 if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 }@
-@[  if isinstance(type_, AbstractString)]@
+@[  if isinstance(type_, AbstractGenericString)]@
     full_bounded = false;
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment += padding +
 @[    if type_.has_maximum_size()]@
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+@[      if isinstance(type_, AbstractWString)]@
+        2 *
+@[      end if]@
         @(type_.maximum_size) + 1;
 @[    else]@
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) + 1;
