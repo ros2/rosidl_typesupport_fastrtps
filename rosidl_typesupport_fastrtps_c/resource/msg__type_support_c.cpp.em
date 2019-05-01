@@ -206,7 +206,7 @@ if isinstance(type_, AbstractNestedType):
         fprintf(stderr, "string capacity not greater than size\n");
         return false;
       }
-      if (str->data[str->size] != '\0') {
+      if (str->data[str->size] != u'\0') {
         fprintf(stderr, "string not null-terminated\n");
         return false;
       }
