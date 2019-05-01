@@ -184,7 +184,11 @@ cdr_deserialize(
         ros_message.@(member.name)[i]);
 @[        else]@
       cdr >> wstr;
-      rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      if (!succeeded) {
+        fprintf(stderr, "failed to create wstring from u16string\n");
+        return false;
+      }
 @[        end if]@
     }
 @[      end if]@
@@ -206,7 +210,11 @@ cdr_deserialize(
       ros_message.@(member.name)[i] = tmp ? true : false;
 @[        elif isinstance(member.type.value_type, AbstractWString)]@
       cdr >> wstr;
-      rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      if (!succeeded) {
+        fprintf(stderr, "failed to create wstring from u16string\n");
+        return false;
+      }
 @[        elif not isinstance(member.type.value_type, NamespacedType)]@
       cdr >> ros_message.@(member.name)[i];
 @[        else]@
@@ -227,7 +235,11 @@ cdr_deserialize(
   {
     std::wstring wstr;
     cdr >> wstr;
-    rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name));
+    bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name));
+    if (!succeeded) {
+      fprintf(stderr, "failed to create wstring from u16string\n");
+      return false;
+    }
   }
 @[  elif not isinstance(member.type, NamespacedType)]@
   cdr >> ros_message.@(member.name);

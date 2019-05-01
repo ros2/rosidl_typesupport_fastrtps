@@ -25,12 +25,17 @@ void u16string_to_wstring(const std::u16string & u16str, std::wstring & wstr)
   }
 }
 
-void wstring_to_u16string(const std::wstring & wstr, std::u16string & u16str)
+bool wstring_to_u16string(const std::wstring & wstr, std::u16string & u16str)
 {
-  u16str.resize(wstr.size());
+  try {
+    u16str.resize(wstr.size());
+  } catch (...) {
+    return false;
+  }
   for(size_t i = 0; i < wstr.size(); ++i) {
     u16str[i] = static_cast<char16_t>(wstr[i]);
   }
+  return true;
 }
 
 }  // namespace rosidl_typesupport_fastrtps_cpp

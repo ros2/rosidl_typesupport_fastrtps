@@ -28,7 +28,7 @@ void u16string_to_wstring(
   const rosidl_generator_c__U16String & u16str, std::wstring & wstr);
 
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
-void wstring_to_u16string(
+bool wstring_to_u16string(
   const std::wstring & wstr, rosidl_generator_c__U16String & u16str);
 
 }  // namespace rosidl_typesupport_fastrtps_c
