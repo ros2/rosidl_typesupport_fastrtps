@@ -1,8 +1,9 @@
 @# Included from rosidl_typesupport_fastrtps_cpp/resource/idl__type_support.cpp.em
 @{
+from rosidl_parser.definition import AbstractGenericString
 from rosidl_parser.definition import AbstractNestedType
 from rosidl_parser.definition import AbstractSequence
-from rosidl_parser.definition import AbstractString
+from rosidl_parser.definition import AbstractWString
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
@@ -16,6 +17,7 @@ header_files = [
     'rosidl_typesupport_fastrtps_cpp/identifier.hpp',
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp',
+    'rosidl_typesupport_fastrtps_cpp/wstring_conversion.hpp',
     'fastcdr/Cdr.h',
 ]
 }@
@@ -89,17 +91,25 @@ cdr_serialize(
 @[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
-@[      if not isinstance(member.type.value_type, NamespacedType)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
     cdr << ros_message.@(member.name);
 @[      else]@
+@[        if isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+@[        end if]@
     for (size_t i = 0; i < @(member.type.size); i++) {
+@[        if isinstance(member.type.value_type, NamespacedType)]@
       @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::cdr_serialize(
         ros_message.@(member.name)[i],
         cdr);
+@[        else]@
+      rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(ros_message.@(member.name)[i], wstr);
+      cdr << wstr;
+@[        end if]@
     }
 @[      end if]@
 @[    else]@
-@[      if isinstance(member.type, BoundedSequence) or isinstance(member.type.value_type, NamespacedType)]@
+@[      if isinstance(member.type, BoundedSequence) or isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
     size_t size = ros_message.@(member.name).size();
 @[        if isinstance(member.type, BoundedSequence)]@
     if (size > @(member.type.maximum_size)) {
@@ -107,13 +117,19 @@ cdr_serialize(
     }
 @[        end if]@
 @[      end if]@
-@[      if not isinstance(member.type.value_type, NamespacedType) and not isinstance(member.type, BoundedSequence)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString)) and not isinstance(member.type, BoundedSequence)]@
     cdr << ros_message.@(member.name);
 @[      else]@
     cdr << static_cast<uint32_t>(size);
+@[        if isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+@[        end if]@
     for (size_t i = 0; i < size; i++) {
 @[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
       cdr << (ros_message.@(member.name)[i] ? true : false);
+@[        elif isinstance(member.type.value_type, AbstractWString)]@
+      rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(ros_message.@(member.name)[i], wstr);
+      cdr << wstr;
 @[        elif not isinstance(member.type.value_type, NamespacedType)]@
       cdr << ros_message.@(member.name)[i];
 @[        else]@
@@ -127,6 +143,12 @@ cdr_serialize(
   }
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
   cdr << (ros_message.@(member.name) ? true : false);
+@[  elif isinstance(member.type, AbstractWString)]@
+  {
+    std::wstring wstr;
+    rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(ros_message.@(member.name), wstr);
+    cdr << wstr;
+  }
 @[  elif not isinstance(member.type, NamespacedType)]@
   cdr << ros_message.@(member.name);
 @[  else]@
@@ -149,28 +171,50 @@ cdr_deserialize(
 @[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
-@[      if not isinstance(member.type.value_type, NamespacedType)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
     cdr >> ros_message.@(member.name);
 @[      else]@
+@[        if isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+@[        end if]@
     for (size_t i = 0; i < @(member.type.size); i++) {
+@[        if isinstance(member.type.value_type, NamespacedType)]@
       @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::cdr_deserialize(
         cdr,
         ros_message.@(member.name)[i]);
+@[        else]@
+      cdr >> wstr;
+      bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      if (!succeeded) {
+        fprintf(stderr, "failed to create wstring from u16string\n");
+        return false;
+      }
+@[        end if]@
     }
 @[      end if]@
 @[    else]@
-@[      if not isinstance(member.type.value_type, NamespacedType) and not isinstance(member.type, BoundedSequence)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString)) and not isinstance(member.type, BoundedSequence)]@
     cdr >> ros_message.@(member.name);
 @[      else]@
     uint32_t cdrSize;
     cdr >> cdrSize;
     size_t size = static_cast<size_t>(cdrSize);
     ros_message.@(member.name).resize(size);
+@[        if isinstance(member.type.value_type, AbstractWString)]@
+    std::wstring wstr;
+@[        end if]@
     for (size_t i = 0; i < size; i++) {
 @[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
       uint8_t tmp;
       cdr >> tmp;
       ros_message.@(member.name)[i] = tmp ? true : false;
+@[        elif isinstance(member.type.value_type, AbstractWString)]@
+      cdr >> wstr;
+      bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
+      if (!succeeded) {
+        fprintf(stderr, "failed to create wstring from u16string\n");
+        return false;
+      }
 @[        elif not isinstance(member.type.value_type, NamespacedType)]@
       cdr >> ros_message.@(member.name)[i];
 @[        else]@
@@ -186,6 +230,16 @@ cdr_deserialize(
     uint8_t tmp;
     cdr >> tmp;
     ros_message.@(member.name) = tmp ? true : false;
+  }
+@[  elif isinstance(member.type, AbstractWString)]@
+  {
+    std::wstring wstr;
+    cdr >> wstr;
+    bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name));
+    if (!succeeded) {
+      fprintf(stderr, "failed to create wstring from u16string\n");
+      return false;
+    }
   }
 @[  elif not isinstance(member.type, NamespacedType)]@
   cdr >> ros_message.@(member.name);
@@ -226,10 +280,13 @@ get_serialized_size(
     current_alignment += padding +
       eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
 @[    end if]@
-@[    if isinstance(member.type.value_type, AbstractString)]@
+@[    if isinstance(member.type.value_type, AbstractGenericString)]@
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment += padding +
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+@[      if isinstance(member.type.value_type, AbstractWString)]@
+        2 *
+@[      end if]@
         ros_message.@(member.name)[index].size() + 1;
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
@@ -245,9 +302,12 @@ get_serialized_size(
 @[    end if]@
   }
 @[  else]@
-@[    if isinstance(member.type, AbstractString)]@
+@[    if isinstance(member.type, AbstractGenericString)]@
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+@[      if isinstance(member.type, AbstractWString)]@
+    2 *
+@[      end if]@
     ros_message.@(member.name).size() + 1;
 @[    elif isinstance(member.type, BasicType)]@
   {
@@ -303,7 +363,7 @@ type_ = member.type
 if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 }@
-@[  if isinstance(type_, AbstractString)]@
+@[  if isinstance(type_, AbstractGenericString)]@
     full_bounded = false;
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment += padding +
