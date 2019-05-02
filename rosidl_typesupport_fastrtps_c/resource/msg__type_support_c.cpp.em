@@ -342,6 +342,10 @@ else:
         return false;
       }
     }
+@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
+    for (size_t i = 0; i < size; ++i) {
+      cdr << (array_ptr[i] ? true : false);
+    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
 @[    else]@
