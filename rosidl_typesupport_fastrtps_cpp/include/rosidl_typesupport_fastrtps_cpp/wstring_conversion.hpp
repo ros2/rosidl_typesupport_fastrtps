@@ -22,10 +22,10 @@
 namespace rosidl_typesupport_fastrtps_cpp
 {
 
-ROSIDL_TYPESUPPORT_FASTRTPS_CPP_IMPORT
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC
 void u16string_to_wstring(const std::u16string & u16str, std::wstring & wstr);
 
-ROSIDL_TYPESUPPORT_FASTRTPS_CPP_IMPORT
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC
 bool wstring_to_u16string(const std::wstring & wstr, std::u16string & u16str);
 
 }  // namespace rosidl_typesupport_fastrtps_cpp
