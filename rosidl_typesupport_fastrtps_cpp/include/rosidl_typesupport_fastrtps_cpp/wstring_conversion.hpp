@@ -15,9 +15,9 @@
 #ifndef ROSIDL_TYPESUPPORT_FASTRTPS_CPP__WSTRING_CONVERSION_HPP_
 #define ROSIDL_TYPESUPPORT_FASTRTPS_CPP__WSTRING_CONVERSION_HPP_
 
-#include <string>
-
 #include <rosidl_typesupport_fastrtps_cpp/visibility_control.h>
+
+#include <string>
 
 namespace rosidl_typesupport_fastrtps_cpp
 {
