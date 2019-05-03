@@ -213,6 +213,10 @@ if isinstance(type_, AbstractNestedType):
       rosidl_typesupport_fastrtps_c::u16string_to_wstring(*str, wstr);
       cdr << wstr;
     }
+@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
+    for (size_t i = 0; i < size; ++i) {
+      cdr << (array_ptr[i] ? true: false);
+    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.serializeArray(array_ptr, size);
 @[    else]@
@@ -344,7 +348,9 @@ else:
     }
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
     for (size_t i = 0; i < size; ++i) {
-      cdr >> array_ptr[i];
+      uint8_t byte;
+      cdr >> byte ;
+      array_ptr[i] = byte > 0 ? true : false;
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
@@ -382,6 +388,10 @@ else:
       rosidl_generator_c__U16String__fini(&ros_message->@(member.name));
       return false;
     }
+@[ elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
+    uint8_t byte;
+    cdr >> byte ;
+    ros_message->@(member.name) = byte > 0 ? true : false;
 @[  elif isinstance(member.type, BasicType)]@
     cdr >> ros_message->@(member.name);
 @[  else]@
