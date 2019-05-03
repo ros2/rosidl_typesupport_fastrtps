@@ -213,10 +213,6 @@ if isinstance(type_, AbstractNestedType):
       rosidl_typesupport_fastrtps_c::u16string_to_wstring(*str, wstr);
       cdr << wstr;
     }
-@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
-    for (size_t i = 0; i < size; ++i) {
-      cdr << (array_ptr[i] ? true: false);
-    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.serializeArray(array_ptr, size);
 @[    else]@
