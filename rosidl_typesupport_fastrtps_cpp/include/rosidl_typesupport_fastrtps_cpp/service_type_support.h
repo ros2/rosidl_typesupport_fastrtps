@@ -23,7 +23,7 @@
 
 typedef struct service_type_support_callbacks_t
 {
-  const char * package_name_;
+  const char * service_namespace_;
   const char * service_name_;
 
   const rosidl_message_type_support_t * request_members_;
