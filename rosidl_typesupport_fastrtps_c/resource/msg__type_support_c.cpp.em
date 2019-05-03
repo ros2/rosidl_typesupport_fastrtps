@@ -344,9 +344,9 @@ else:
     }
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
     for (size_t i = 0; i < size; ++i) {
-      uint8_t byte;
-      cdr >> byte ;
-      array_ptr[i] = byte > 0 ? true : false;
+      uint8_t tmp;
+      cdr >> tmp;
+      array_ptr[i] = tmp > 0 ? true : false;
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
@@ -385,9 +385,9 @@ else:
       return false;
     }
 @[ elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
-    uint8_t byte;
-    cdr >> byte ;
-    ros_message->@(member.name) = byte > 0 ? true : false;
+    uint8_t tmp;
+    cdr >> tmp;
+    ros_message->@(member.name) = tmp ? true : false;
 @[  elif isinstance(member.type, BasicType)]@
     cdr >> ros_message->@(member.name);
 @[  else]@
