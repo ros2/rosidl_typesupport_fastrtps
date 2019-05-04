@@ -285,9 +285,9 @@ get_serialized_size(
       current_alignment += padding +
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
 @[      if isinstance(member.type.value_type, AbstractWString)]@
-        2 *
+        sizeof(wchar_t) *
 @[      end if]@
-        ros_message.@(member.name)[index].size() + 1;
+        (ros_message.@(member.name)[index].size() + 1);
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     size_t item_size = sizeof(ros_message.@(member.name)[0]);
@@ -306,9 +306,9 @@ get_serialized_size(
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
 @[      if isinstance(member.type, AbstractWString)]@
-    2 *
+    sizeof(wchar_t) *
 @[      end if]@
-    ros_message.@(member.name).size() + 1;
+    (ros_message.@(member.name).size() + 1);
 @[    elif isinstance(member.type, BasicType)]@
   {
     size_t item_size = sizeof(ros_message.@(member.name));
@@ -339,6 +339,7 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
   (void)full_bounded;
 
 @[for member in message.structure.members]@
+
   // Member: @(member.name)
   {
 @[  if isinstance(member.type, AbstractNestedType)]@
@@ -367,12 +368,17 @@ if isinstance(type_, AbstractNestedType):
     full_bounded = false;
     for (size_t index = 0; index < array_size; ++index) {
       current_alignment += padding +
-@[    if type_.has_maximum_size()]@
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-        @(type_.maximum_size) + 1;
-@[    else]@
-        eprosima::fastcdr::Cdr::alignment(current_alignment, padding) + 1;
+@[    if type_.has_maximum_size()]@
+@[      if isinstance(type_, AbstractWString)]@
+        sizeof(wchar_t) *
+@[      end if]@
+        @(type_.maximum_size) +
 @[    end if]@
+@[    if isinstance(type_, AbstractWString)]@
+        sizeof(wchar_t) *
+@[    end if]@
+        1;
     }
 @[  elif isinstance(type_, BasicType)]@
 @[    if type_.typename in ('boolean', 'octet', 'char', 'uint8', 'int8')]@
