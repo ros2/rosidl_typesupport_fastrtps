@@ -413,7 +413,9 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   size_t initial_alignment = current_alignment;
 
   const size_t padding = 4;
+  const size_t wchar_size = 4;
   (void)padding;
+  (void)wchar_size;
 
 @[for member in message.structure.members]@
   // field.name @(member.name)
@@ -433,7 +435,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
       current_alignment += padding +
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
 @[      if isinstance(member.type.value_type, AbstractWString)]@
-        sizeof(wchar_t) *
+        wchar_size *
 @[      end if]@
         (array_ptr[index].size + 1);
     }
@@ -454,7 +456,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
 @[      if isinstance(member.type, AbstractWString)]@
-    sizeof(wchar_t) *
+    wchar_size *
 @[      end if]@
     (ros_message->@(member.name).size + 1);
 @[    elif isinstance(member.type, BasicType)]@
@@ -488,7 +490,9 @@ size_t max_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   size_t initial_alignment = current_alignment;
 
   const size_t padding = 4;
+  const size_t wchar_size = 4;
   (void)padding;
+  (void)wchar_size;
   (void)full_bounded;
 
 @[for member in message.structure.members]@
@@ -523,12 +527,12 @@ if isinstance(type_, AbstractNestedType):
         eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
 @[    if type_.has_maximum_size()]@
 @[      if isinstance(type_, AbstractWString)]@
-        sizeof(wchar_t) *
+        wchar_size *
 @[      end if]@
         @(type_.maximum_size) +
 @[    end if]@
 @[    if isinstance(type_, AbstractWString)]@
-        sizeof(wchar_t) *
+        wchar_size *
 @[    end if]@
         1;
     }
