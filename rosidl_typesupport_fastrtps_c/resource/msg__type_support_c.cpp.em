@@ -572,7 +572,7 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bo
 @# // Collect the callback functions and provide a function to get the type support struct.
 
 static message_type_support_callbacks_t __callbacks_@(message.structure.namespaced_type.name) = {
-  "@(package_name)",
+  "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(message.structure.namespaced_type.name)",
   _@(message.structure.namespaced_type.name)__cdr_serialize,
   _@(message.structure.namespaced_type.name)__cdr_deserialize,

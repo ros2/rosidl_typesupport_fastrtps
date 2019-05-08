@@ -445,7 +445,7 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bo
 }
 
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
-  "@(package_name)",
+  "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(message.structure.namespaced_type.name)",
   _@(message.structure.namespaced_type.name)__cdr_serialize,
   _@(message.structure.namespaced_type.name)__cdr_deserialize,

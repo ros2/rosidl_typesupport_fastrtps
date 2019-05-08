@@ -21,7 +21,7 @@
 
 typedef struct message_type_support_callbacks_t
 {
-  const char * package_name_;
+  const char * message_namespace_;
   const char * message_name_;
 
   // Function for message serialization
