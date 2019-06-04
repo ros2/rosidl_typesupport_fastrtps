@@ -548,6 +548,9 @@ if isinstance(type_, AbstractNestedType):
 @[    elif type_.typename in ('int64', 'uint64', 'double')]@
     current_alignment += array_size * sizeof(uint64_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint64_t));
+@[    elif type_.typename == 'long double']@
+    current_alignment += array_size * sizeof(long double) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(long double));
 @[    end if]@
 @[  else]
     for (size_t index = 0; index < array_size; ++index) {
