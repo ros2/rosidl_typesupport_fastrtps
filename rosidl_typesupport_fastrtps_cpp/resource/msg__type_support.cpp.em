@@ -127,6 +127,8 @@ cdr_serialize(
     for (size_t i = 0; i < size; i++) {
 @[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
       cdr << (ros_message.@(member.name)[i] ? true : false);
+@[        elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
+      cdr << static_cast<wchar_t>(ros_message.@(member.name)[i]);
 @[        elif isinstance(member.type.value_type, AbstractWString)]@
       rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(ros_message.@(member.name)[i], wstr);
       cdr << wstr;
@@ -143,6 +145,8 @@ cdr_serialize(
   }
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
   cdr << (ros_message.@(member.name) ? true : false);
+@[  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
+  cdr << static_cast<wchar_t>(ros_message.@(member.name));
 @[  elif isinstance(member.type, AbstractWString)]@
   {
     std::wstring wstr;
@@ -208,6 +212,10 @@ cdr_deserialize(
       uint8_t tmp;
       cdr >> tmp;
       ros_message.@(member.name)[i] = tmp ? true : false;
+@[        elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
+      wchar_t tmp;
+      cdr >> tmp;
+      ros_message.@(member.name)[i] = static_cast<char16_t>(tmp);
 @[        elif isinstance(member.type.value_type, AbstractWString)]@
       cdr >> wstr;
       bool succeeded = rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstr, ros_message.@(member.name)[i]);
@@ -230,6 +238,12 @@ cdr_deserialize(
     uint8_t tmp;
     cdr >> tmp;
     ros_message.@(member.name) = tmp ? true : false;
+  }
+@[  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
+  {
+    wchar_t tmp;
+    cdr >> tmp;
+    ros_message.@(member.name) = static_cast<char16_t>(tmp);
   }
 @[  elif isinstance(member.type, AbstractWString)]@
   {
@@ -387,7 +401,7 @@ if isinstance(type_, AbstractNestedType):
 @[  elif isinstance(type_, BasicType)]@
 @[    if type_.typename in ('boolean', 'octet', 'char', 'uint8', 'int8')]@
     current_alignment += array_size * sizeof(uint8_t);
-@[    elif type_.typename in ('int16', 'uint16')]@
+@[    elif type_.typename in ('wchar', 'int16', 'uint16')]@
     current_alignment += array_size * sizeof(uint16_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint16_t));
 @[    elif type_.typename in ('int32', 'uint32', 'float')]@

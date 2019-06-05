@@ -213,6 +213,14 @@ if isinstance(type_, AbstractNestedType):
       rosidl_typesupport_fastrtps_c::u16string_to_wstring(*str, wstr);
       cdr << wstr;
     }
+@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
+    for (size_t i = 0; i < size; ++i) {
+      if (!callbacks->cdr_serialize(
+          static_cast<char16_t *>(&array_ptr[i]), cdr))
+      {
+        return false;
+      }
+    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.serializeArray(array_ptr, size);
 @[    else]@
@@ -241,6 +249,8 @@ if isinstance(type_, AbstractNestedType):
     cdr << wstr;
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
     cdr << (ros_message->@(member.name) ? true : false);
+@[  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
+    cdr << static_cast<wchar_t>(ros_message->@(member.name));
 @[  elif isinstance(member.type, BasicType)]@
     cdr << ros_message->@(member.name);
 @[  else]@
@@ -348,6 +358,12 @@ else:
       cdr >> tmp;
       array_ptr[i] = tmp ? true : false;
     }
+@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
+    for (size_t i = 0; i < size; ++i) {
+      wchar_t tmp;
+      cdr >> tmp;
+      array_ptr[i] = static_cast<char16_t>(tmp);
+    }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
 @[    else]@
@@ -388,6 +404,10 @@ else:
     uint8_t tmp;
     cdr >> tmp;
     ros_message->@(member.name) = tmp ? true : false;
+@[ elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
+    wchar_t tmp;
+    cdr >> tmp;
+    ros_message->@(member.name) = static_cast<char16_t>(tmp);
 @[  elif isinstance(member.type, BasicType)]@
     cdr >> ros_message->@(member.name);
 @[  else]@
