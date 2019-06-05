@@ -216,7 +216,7 @@ if isinstance(type_, AbstractNestedType):
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
     for (size_t i = 0; i < size; ++i) {
       if (!callbacks->cdr_serialize(
-          static_cast<char16_t *>(&array_ptr[i]), cdr))
+          static_cast<wchar_t *>(&array_ptr[i]), cdr))
       {
         return false;
       }
