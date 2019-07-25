@@ -131,7 +131,7 @@ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   "fastrtps"
   "rosidl_typesupport_fastrtps_cpp"
   "rosidl_typesupport_fastrtps_c"
-  "${PROJECT_NAME}__rosidl_typesupport_fastrtps_cpp")
+)
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   set(_msg_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/msg/dds_fastrtps_c")
   set(_srv_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/srv/dds_fastrtps_c")
