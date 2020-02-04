@@ -167,7 +167,8 @@ if isinstance(type_, AbstractNestedType):
 @[  if isinstance(type_, NamespacedType)]@
     const message_type_support_callbacks_t * callbacks =
       static_cast<const message_type_support_callbacks_t *>(
-      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+        rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
       )()->data);
 @[  end if]@
 @[  if isinstance(member.type, AbstractNestedType)]@
@@ -286,7 +287,8 @@ if isinstance(type_, AbstractNestedType):
 @[  if isinstance(type_, NamespacedType)]@
     const message_type_support_callbacks_t * callbacks =
       static_cast<const message_type_support_callbacks_t *>(
-      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+        rosidl_typesupport_fastrtps_c, @(', '.join(type_.namespaced_name()))
       )()->data);
 @[  end if]@
 @[  if isinstance(member.type, AbstractNestedType)]@
