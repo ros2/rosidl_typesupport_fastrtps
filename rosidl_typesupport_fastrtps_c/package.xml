@@ -26,6 +26,8 @@
 
   <build_export_depend>rmw</build_export_depend>
 
+  <build_depend>rosidl_runtime_c</build_depend>
+
   <exec_depend>rosidl_parser</exec_depend>
   <exec_depend>rosidl_typesupport_interface</exec_depend>
 
