@@ -149,6 +149,8 @@ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
     ${_pkg_name})
+  target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+    ${${_pkg_name}_LIBRARIES${_target_suffix}})
 endforeach()
 
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} fastrtps fastcdr)
@@ -183,7 +185,8 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
     RUNTIME DESTINATION bin
   )
 
-  ament_export_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix})
+  rosidl_export_typesupport_libraries(${_target_suffix}
+    ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 endif()
 
 if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
