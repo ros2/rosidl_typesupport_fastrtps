@@ -43,7 +43,6 @@ find_package(rosidl_typesupport_fastrtps_cpp REQUIRED)
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
-ament_export_dependencies(rosidl_generator_c)
 ament_export_dependencies(rosidl_typesupport_fastrtps_cpp)
 ament_export_include_directories(include)
 
