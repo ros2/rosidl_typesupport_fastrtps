@@ -101,9 +101,9 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   "fastrtps"
   "rmw"
+  "rosidl_runtime_c"
   "rosidl_typesupport_fastrtps_cpp"
   "rosidl_typesupport_fastrtps_c"
-  "rosidl_generator_c"
   "rosidl_typesupport_interface")
 if(WIN32)
   target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
