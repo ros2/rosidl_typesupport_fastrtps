@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "rosidl_generator_c/u16string.h"
+#include "rosidl_runtime_c/u16string.h"
 #include "rosidl_typesupport_fastrtps_c/visibility_control.h"
 
 namespace rosidl_typesupport_fastrtps_c
@@ -25,11 +25,11 @@ namespace rosidl_typesupport_fastrtps_c
 
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
 void u16string_to_wstring(
-  const rosidl_generator_c__U16String & u16str, std::wstring & wstr);
+  const rosidl_runtime_c__U16String & u16str, std::wstring & wstr);
 
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
 bool wstring_to_u16string(
-  const std::wstring & wstr, rosidl_generator_c__U16String & u16str);
+  const std::wstring & wstr, rosidl_runtime_c__U16String & u16str);
 
 }  // namespace rosidl_typesupport_fastrtps_c
 
