@@ -72,17 +72,17 @@ includes = {}
 for member in message.structure.members:
     keys = set([])
     if isinstance(member.type, AbstractSequence) and isinstance(member.type.value_type, BasicType):
-        keys.add('rosidl_generator_c/primitives_sequence.h')
-        keys.add('rosidl_generator_c/primitives_sequence_functions.h')
+        keys.add('rosidl_runtime_c/primitives_sequence.h')
+        keys.add('rosidl_runtime_c/primitives_sequence_functions.h')
     type_ = member.type
     if isinstance(type_, AbstractNestedType):
         type_ = type_.value_type
     if isinstance(type_, AbstractString):
-        keys.add('rosidl_generator_c/string.h')
-        keys.add('rosidl_generator_c/string_functions.h')
+        keys.add('rosidl_runtime_c/string.h')
+        keys.add('rosidl_runtime_c/string_functions.h')
     elif isinstance(type_, AbstractWString):
-        keys.add('rosidl_generator_c/u16string.h')
-        keys.add('rosidl_generator_c/u16string_functions.h')
+        keys.add('rosidl_runtime_c/u16string.h')
+        keys.add('rosidl_runtime_c/u16string_functions.h')
     elif isinstance(type_, NamespacedType):
         if (
             type_.name.endswith(ACTION_GOAL_SUFFIX) or
@@ -188,7 +188,7 @@ if isinstance(type_, AbstractNestedType):
 @[    end if]@
 @[    if isinstance(member.type.value_type, AbstractString)]@
     for (size_t i = 0; i < size; ++i) {
-      const rosidl_generator_c__String * str = &array_ptr[i];
+      const rosidl_runtime_c__String * str = &array_ptr[i];
       if (str->capacity == 0 || str->capacity <= str->size) {
         fprintf(stderr, "string capacity not greater than size\n");
         return false;
@@ -202,7 +202,7 @@ if isinstance(type_, AbstractNestedType):
 @[    elif isinstance(member.type.value_type, AbstractWString)]@
     std::wstring wstr;
     for (size_t i = 0; i < size; ++i) {
-      const rosidl_generator_c__U16String * str = &array_ptr[i];
+      const rosidl_runtime_c__U16String * str = &array_ptr[i];
       if (str->capacity == 0 || str->capacity <= str->size) {
         fprintf(stderr, "string capacity not greater than size\n");
         return false;
@@ -234,7 +234,7 @@ if isinstance(type_, AbstractNestedType):
     }
 @[    end if]@
 @[  elif isinstance(member.type, AbstractString)]@
-    const rosidl_generator_c__String * str = &ros_message->@(member.name);
+    const rosidl_runtime_c__String * str = &ros_message->@(member.name);
     if (str->capacity == 0 || str->capacity <= str->size) {
       fprintf(stderr, "string capacity not greater than size\n");
       return false;
@@ -298,16 +298,16 @@ if isinstance(type_, AbstractNestedType):
 @[    else]@
 @{
 if isinstance(member.type.value_type, AbstractString):
-    array_init = 'rosidl_generator_c__String__Sequence__init'
-    array_fini = 'rosidl_generator_c__String__Sequence__fini'
+    array_init = 'rosidl_runtime_c__String__Sequence__init'
+    array_fini = 'rosidl_runtime_c__String__Sequence__fini'
 elif isinstance(member.type.value_type, AbstractWString):
-    array_init = 'rosidl_generator_c__U16String__Sequence__init'
-    array_fini = 'rosidl_generator_c__U16String__Sequence__fini'
+    array_init = 'rosidl_runtime_c__U16String__Sequence__init'
+    array_fini = 'rosidl_runtime_c__U16String__Sequence__fini'
 elif isinstance(member.type.value_type, BasicType):
     type_ = member.type.value_type.typename
     type_ = type_.replace(' ', '_')
-    array_init = 'rosidl_generator_c__{type_}__Sequence__init'.format(**locals())
-    array_fini = 'rosidl_generator_c__{type_}__Sequence__fini'.format(**locals())
+    array_init = 'rosidl_runtime_c__{type_}__Sequence__init'.format(**locals())
+    array_fini = 'rosidl_runtime_c__{type_}__Sequence__fini'.format(**locals())
 else:
     array_init = '__'.join(type_.namespaced_name()) + '__Sequence__init'
     array_fini = '__'.join(type_.namespaced_name()) + '__Sequence__fini'
@@ -329,9 +329,9 @@ else:
       cdr >> tmp;
       auto & ros_i = array_ptr[i];
       if (!ros_i.data) {
-        rosidl_generator_c__String__init(&ros_i);
+        rosidl_runtime_c__String__init(&ros_i);
       }
-      bool succeeded = rosidl_generator_c__String__assign(
+      bool succeeded = rosidl_runtime_c__String__assign(
         &ros_i,
         tmp.c_str());
       if (!succeeded) {
@@ -344,13 +344,13 @@ else:
     for (size_t i = 0; i < size; ++i) {
       auto & ros_i = array_ptr[i];
       if (!ros_i.data) {
-        rosidl_generator_c__U16String__init(&ros_i);
+        rosidl_runtime_c__U16String__init(&ros_i);
       }
       cdr >> wstr;
       bool succeeded = rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_i);
       if (!succeeded) {
         fprintf(stderr, "failed to create wstring from u16string\n");
-        rosidl_generator_c__U16String__fini(&ros_i);
+        rosidl_runtime_c__U16String__fini(&ros_i);
         return false;
       }
     }
@@ -381,9 +381,9 @@ else:
     std::string tmp;
     cdr >> tmp;
     if (!ros_message->@(member.name).data) {
-      rosidl_generator_c__String__init(&ros_message->@(member.name));
+      rosidl_runtime_c__String__init(&ros_message->@(member.name));
     }
-    bool succeeded = rosidl_generator_c__String__assign(
+    bool succeeded = rosidl_runtime_c__String__assign(
       &ros_message->@(member.name),
       tmp.c_str());
     if (!succeeded) {
@@ -392,14 +392,14 @@ else:
     }
 @[   elif isinstance(member.type, AbstractWString)]@
     if (!ros_message->@(member.name).data) {
-      rosidl_generator_c__U16String__init(&ros_message->@(member.name));
+      rosidl_runtime_c__U16String__init(&ros_message->@(member.name));
     }
     std::wstring wstr;
     cdr >> wstr;
     bool succeeded = rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_message->@(member.name));
     if (!succeeded) {
       fprintf(stderr, "failed to create wstring from u16string\n");
-      rosidl_generator_c__U16String__fini(&ros_message->@(member.name));
+      rosidl_runtime_c__U16String__fini(&ros_message->@(member.name));
       return false;
     }
 @[ elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@

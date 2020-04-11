@@ -14,12 +14,12 @@
 
 #include <rosidl_typesupport_fastrtps_c/wstring_conversion.hpp>
 
-#include "rosidl_generator_c/u16string_functions.h"
+#include "rosidl_runtime_c/u16string_functions.h"
 
 namespace rosidl_typesupport_fastrtps_c
 {
 
-void u16string_to_wstring(const rosidl_generator_c__U16String & u16str, std::wstring & wstr)
+void u16string_to_wstring(const rosidl_runtime_c__U16String & u16str, std::wstring & wstr)
 {
   wstr.resize(u16str.size);
   for (size_t i = 0; i < u16str.size; ++i) {
@@ -27,9 +27,9 @@ void u16string_to_wstring(const rosidl_generator_c__U16String & u16str, std::wst
   }
 }
 
-bool wstring_to_u16string(const std::wstring & wstr, rosidl_generator_c__U16String & u16str)
+bool wstring_to_u16string(const std::wstring & wstr, rosidl_runtime_c__U16String & u16str)
 {
-  bool succeeded = rosidl_generator_c__U16String__resize(&u16str, wstr.size());
+  bool succeeded = rosidl_runtime_c__U16String__resize(&u16str, wstr.size());
   if (!succeeded) {
     return false;
   }
