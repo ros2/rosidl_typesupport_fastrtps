@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+find_package(ament_cmake_ros REQUIRED)
 find_package(fastrtps_cmake_module QUIET)
 find_package(fastcdr REQUIRED CONFIG)
 find_package(fastrtps REQUIRED CONFIG)
@@ -101,7 +102,7 @@ configure_file(
 set(_target_suffix "__rosidl_typesupport_fastrtps_cpp")
 
 # Create a library that builds the generated files
-add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix} SHARED
+add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${_generated_files})
 
 # Change output library name if asked to
