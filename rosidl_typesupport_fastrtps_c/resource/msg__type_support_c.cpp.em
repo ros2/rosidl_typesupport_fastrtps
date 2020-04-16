@@ -14,8 +14,8 @@ from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
 
-include_parts = [package_name] + list(interface_path.parents[0].parts) + \
-    [convert_camel_case_to_lower_case_underscore(interface_path.stem)]
+include_parts = [package_name] + list(interface_path.parents[0].parts) + [
+    'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 include_base = '/'.join(include_parts)
 
 header_files = [
@@ -92,7 +92,7 @@ for member in message.structure.members:
             typename = type_.name.rsplit('_', 1)[0]
         else:
             typename = type_.name
-        keys.add('/'.join(type_.namespaces + [convert_camel_case_to_lower_case_underscore(typename)]) + '__functions.h')
+        keys.add('/'.join(type_.namespaces + ['detail', convert_camel_case_to_lower_case_underscore(typename)]) + '__functions.h')
     for key in keys:
         if key not in includes:
             includes[key] = set([])
