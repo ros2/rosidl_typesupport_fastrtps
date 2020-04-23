@@ -143,6 +143,7 @@ target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   "fastrtps"
   "rmw"
+  "rosidl_runtime_c"
   "rosidl_typesupport_fastrtps_cpp"
   "rosidl_typesupport_interface")
 
@@ -154,7 +155,9 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
     ${${_pkg_name}_LIBRARIES${_target_suffix}})
 endforeach()
 
-target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} fastrtps fastcdr)
+target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+  ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp
+  fastrtps fastcdr)
 
 # Make top level generation target depend on this library
 add_dependencies(
