@@ -26,7 +26,7 @@ Below are the rationales, notes, and caveats for this claim, organized by each r
 
 ### ABI Stability Within a Released ROS Distribution [1.v]/[1.vi]
 
-`fastrtps_cmake_module` does not contain any c or c++ code, therefore changes will not affect ABI stability.
+`fastrtps_cmake_module` does not contain any C or C++ code, therefore changes will not affect ABI stability.
 
 ## Change Control Process [2]
 
@@ -46,7 +46,7 @@ Following the recommended guidelines for ROS Core packages, all pull requests mu
 
 ### Continuous Integration [2.iv]
 
-All pull request must pass CI on all [tier 1 platforms](https://www.ros.org/reps/rep-2000.html#support-tiers)
+All pull request must pass CI on all [tier 1 platforms](https://www.ros.org/reps/rep-2000.html#support-tiers).
 
 ### Documentation Policy [2.v]
 
