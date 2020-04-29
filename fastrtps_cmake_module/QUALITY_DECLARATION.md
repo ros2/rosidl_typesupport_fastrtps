@@ -70,7 +70,7 @@ There are no source files in this package and therefore linters do not check for
 
 ### Copyright Statements [3.iv]
 
-The copyright holders each provide a statement of copyright in each source code file in `rcpputils`.
+The copyright holders each provide a statement of copyright in each source code file in `fastrtps_cmake_module`.
 
 There is an automated test which runs a linter that ensures each file has at least one copyright statement.
 
@@ -82,7 +82,7 @@ The results of the test can be found [here](https://ci.ros2.org/view/nightly/job
 
 ### Linters and Static Analysis [4.v]
 
-`rmw` uses and passes all the standard linters and static analysis tools for a CMake package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
+`fastrtps_cmake_module` uses and passes all the standard linters and static analysis tools for a CMake package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
 
 Results of linter tests can be found [here](https://ci.ros2.org/view/nightly/job/nightly_linux_release/lastBuild/testReport/fastrtps_cmake_module/).
 
