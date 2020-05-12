@@ -21,12 +21,17 @@
 
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support.h"
 
+/// Encapsulates the callbacks for getting properties of this rosidl type.
 typedef struct service_type_support_callbacks_t
 {
+  /// The C++ namespace of this service.
   const char * service_namespace_;
+  /// The typename of this service.
   const char * service_name_;
 
+  /// Pointer to the request message typesupport members.
   const rosidl_message_type_support_t * request_members_;
+  /// Pointer to the response message typesupport members.
   const rosidl_message_type_support_t * response_members_;
 } service_type_support_callbacks_t;
 
