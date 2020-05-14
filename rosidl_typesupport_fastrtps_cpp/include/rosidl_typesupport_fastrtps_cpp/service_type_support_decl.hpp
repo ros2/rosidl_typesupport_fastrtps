@@ -23,7 +23,11 @@
 namespace rosidl_typesupport_fastrtps_cpp
 {
 
-// This is implemented in the shared library provided by this package.
+/// Get the rosidl service typesupport handler of the type.
+/**
+ * This is implemented in the shared library provided by this package.
+ * \return The rosidl_service_type_support_t of type T.
+ */
 template<typename T>
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC
 const rosidl_service_type_support_t * get_service_type_support_handle();

@@ -22,6 +22,7 @@ extern "C"
 {
 #endif
 
+/// String identifier specific to rosidl_typesupport_fastrtps_c
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
 extern const char * rosidl_typesupport_fastrtps_c__identifier;
 
