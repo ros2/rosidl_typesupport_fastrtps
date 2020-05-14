@@ -31,7 +31,7 @@ typedef struct message_type_support_callbacks_t
   /// The typename of this message.
   const char * message_name_;
 
-  /// Function for message serialization
+  /// Callback function for message serialization
   /**
    * \param[in] untyped_ros_message Type erased pointer to message instance.
    * \param [in,out] Serialized FastCDR data object.
@@ -41,7 +41,7 @@ typedef struct message_type_support_callbacks_t
     const void * untyped_ros_message,
     eprosima::fastcdr::Cdr & cdr);
 
-  /// Function for message deserialization
+  /// Callback function for message deserialization
   /**
    * \param [in] Serialized FastCDR data object.
    * \param[out] untyped_ros_message Type erased pointer to message instance.
@@ -51,14 +51,14 @@ typedef struct message_type_support_callbacks_t
     eprosima::fastcdr::Cdr & cdr,
     void * untyped_ros_message);
 
-  /// Function to get size of data
+  /// Callback function to get size of data
   /**
    * \return The size of the serialized message in bytes.
    */
   uint32_t (* get_serialized_size)(const void *);
 
-  /// Function to determine the maximum size needed for serialization, which is used for type
-  /// support initialization.
+  /// Callback function to determine the maximum size needed for serialization, which is used for
+  /// type support initialization.
   /**
    * \param[out] Whether the maximum serialized size was fully bounded, (i.e. not unbounded strings
    *  or sequences).

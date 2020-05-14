@@ -36,6 +36,7 @@ void u16string_to_wstring(
 /**
  * \param[in] wstr The std::wstring to copy from.
  * \param[in,out] u16str The u16string to copy to.
+ * \return true if resizing u16str and assignment succeeded, otherwise false.
  */
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
 bool wstring_to_u16string(
