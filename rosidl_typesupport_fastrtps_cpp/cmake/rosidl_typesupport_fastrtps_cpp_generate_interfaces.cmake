@@ -30,8 +30,8 @@ foreach(_abs_idl_file ${rosidl_generate_interfaces_ABS_IDL_FILES})
   # Turn idl name into file names
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
   list(APPEND _generated_files
-    "${_output_path}/${_parent_folder}/dds_fastrtps/${_header_name}__type_support.cpp"
-    "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_fastrtps_cpp.hpp"
+    "${_output_path}/${_parent_folder}/detail/dds_fastrtps/${_header_name}__type_support.cpp"
+    "${_output_path}/${_parent_folder}/detail/${_header_name}__rosidl_typesupport_fastrtps_cpp.hpp"
   )
 endforeach()
 

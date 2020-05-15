@@ -26,8 +26,8 @@ foreach(_abs_idl_file ${rosidl_generate_interfaces_ABS_IDL_FILES})
   get_filename_component(_idl_name "${_abs_idl_file}" NAME_WE)
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
   list(APPEND _generated_files
-    "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_fastrtps_c.h"
-    "${_output_path}/${_parent_folder}/${_header_name}__type_support_c.cpp")
+    "${_output_path}/${_parent_folder}/detail/${_header_name}__rosidl_typesupport_fastrtps_c.h"
+    "${_output_path}/${_parent_folder}/detail/${_header_name}__type_support_c.cpp")
 endforeach()
 
 set(_dependency_files "")
