@@ -22,17 +22,36 @@
 using rosidl_typesupport_fastrtps_cpp::u16string_to_wstring;
 using rosidl_typesupport_fastrtps_cpp::wstring_to_u16string;
 
-TEST(test_wstring_conversion, wstring_round_trip)
+TEST(test_wstring_conversion, wstring_to_u16string)
 {
-  std::wstring wstring(L"¡Hola, Mundo!");
-  std::u16string u16string;
+  std::u16string actual;
 
-  // wstr -> u16str
-  EXPECT_TRUE(wstring_to_u16string(wstring, u16string));
-  EXPECT_EQ(wstring.length(), wstring.length());
+  // Default string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(), actual));
+  EXPECT_EQ(std::u16string(), actual);
 
-  // u16str -> wstr
-  std::wstring converted_wstring;
-  u16string_to_wstring(u16string, converted_wstring);
-  EXPECT_EQ(wstring, converted_wstring);
+  // Empty string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(L""), actual));
+  EXPECT_EQ(std::u16string(u""), actual);
+
+  // Non-empty string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(L"¡Hola, Mundo!"), actual));
+  EXPECT_EQ(std::u16string(u"¡Hola, Mundo!"), actual);
+}
+
+TEST(test_wstring_conversion, u16string_to_wstring)
+{
+  std::wstring actual;
+
+  // Default string
+  u16string_to_wstring(std::u16string(), actual);
+  EXPECT_EQ(std::wstring(), actual);
+
+  // Empty string
+  u16string_to_wstring(std::u16string(u""), actual);
+  EXPECT_EQ(std::wstring(L""), actual);
+
+  // Non-empty string
+  u16string_to_wstring(std::u16string(u"¡Hola, Mundo!"), actual);
+  EXPECT_EQ(std::wstring(L"¡Hola, Mundo!"), actual);
 }

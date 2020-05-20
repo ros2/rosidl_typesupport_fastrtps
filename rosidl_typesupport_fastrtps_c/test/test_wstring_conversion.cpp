@@ -23,23 +23,49 @@
 using rosidl_typesupport_fastrtps_c::u16string_to_wstring;
 using rosidl_typesupport_fastrtps_c::wstring_to_u16string;
 
-TEST(test_wstring_conversion, wstring_round_trip)
+TEST(test_wstring_conversion, wstring_to_u16string)
 {
-  std::wstring wstring(L"¡Hola, Mundo!");
-  rosidl_runtime_c__U16String u16string;
-  ASSERT_TRUE(rosidl_runtime_c__U16String__init(&u16string));
-
+  rosidl_runtime_c__U16String actual;
+  ASSERT_TRUE(rosidl_runtime_c__U16String__init(&actual));
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
-    rosidl_runtime_c__U16String__fini(&u16string);
+    rosidl_runtime_c__U16String__fini(&actual);
   });
 
-  // wstr -> u16str
-  EXPECT_TRUE(wstring_to_u16string(wstring, u16string));
-  EXPECT_EQ(wstring.length(), rosidl_runtime_c__U16String__len(u16string.data));
+  // Default string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(), actual));
+  EXPECT_EQ(0, memcmp(u"", actual.data, actual.size));
 
-  // u16str -> wstr
-  std::wstring converted_wstring;
-  u16string_to_wstring(u16string, converted_wstring);
-  EXPECT_EQ(wstring, converted_wstring);
+  // Empty string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(L""), actual));
+  EXPECT_EQ(0, memcmp(u"", actual.data, actual.size));
+
+  // Non-empty string
+  EXPECT_TRUE(wstring_to_u16string(std::wstring(L"¡Hola, Mundo!"), actual));
+  EXPECT_EQ(0, memcmp(u"¡Hola, Mundo!", actual.data, actual.size));
+}
+
+TEST(test_wstring_conversion, u16string_to_wstring)
+{
+  std::wstring actual;
+  rosidl_runtime_c__U16String input;
+  ASSERT_TRUE(rosidl_runtime_c__U16String__init(&input));
+  OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
+  {
+    rosidl_runtime_c__U16String__fini(&input);
+  });
+
+  // Default string
+  u16string_to_wstring(input, actual);
+  EXPECT_EQ(std::wstring(), actual);
+
+  // Empty string
+  ASSERT_TRUE(rosidl_runtime_c__U16String__assign(&input, (const uint16_t *)u""));
+  u16string_to_wstring(input, actual);
+  EXPECT_EQ(std::wstring(L""), actual);
+
+  // Non-empty string
+  ASSERT_TRUE(rosidl_runtime_c__U16String__assign(&input, (const uint16_t *)u"¡Hola, Mundo!"));
+  u16string_to_wstring(input, actual);
+  EXPECT_EQ(std::wstring(L"¡Hola, Mundo!"), actual);
 }
