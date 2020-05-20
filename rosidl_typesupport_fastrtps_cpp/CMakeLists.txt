@@ -60,8 +60,36 @@ ament_export_targets(${PROJECT_NAME})
 ament_index_register_resource("rosidl_typesupport_cpp")
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+  find_package(osrf_testing_tools_cpp REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  get_target_property(memory_tools_ld_preload_env_var
+    osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_VARIABLE)
+  get_target_property(memory_tools_is_available
+    osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_IS_AVAILABLE)
+
+  set(SKIP_MEMORY_TOOLS_TEST "")
+  if(NOT memory_tools_is_available)
+    set(SKIP_MEMORY_TOOLS_TEST "SKIP_TEST")
+  endif()
+
+  ament_add_gtest(test_wstring_conversion test/test_wstring_conversion.cpp)
+  if(TARGET test_wstring_conversion)
+    target_include_directories(test_wstring_conversion PRIVATE
+      ${osrf_testing_tools_cpp_INCLUDE_DIRS})
+    target_link_libraries(test_wstring_conversion
+      ${PROJECT_NAME})
+  endif()
+
+  ament_add_gtest(test_wstring_conversion_mem test/test_wstring_conversion_mem.cpp
+    ENV ${memory_tools_ld_preload_env_var}
+    ${SKIP_MEMORY_TOOLS_TEST})
+  if(TARGET test_wstring_conversion_mem)
+    target_link_libraries(test_wstring_conversion_mem
+      ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
+  endif()
 endif()
 
 ament_package(
