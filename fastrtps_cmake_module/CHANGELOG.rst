@@ -2,6 +2,12 @@
 Changelog for package fastrtps_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add feature documentation (`#41 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/41>`_)
+* Add Quality Declaration and README (`#39 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/39>`_)
+* Contributors: brawner
+
 0.9.0 (2020-04-24)
 ------------------
 

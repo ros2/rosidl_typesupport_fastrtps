@@ -2,6 +2,16 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use modern cmake to fix single typesupport builds (`#40 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/40>`_)
+* Move generated headers to detail subdir (`#40 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/40>`_)
+* Add tests for wstring conversion routines (`#43 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/43>`_)
+* Update public API documentation (`#42 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/42>`_)
+* Add feature documentation (`#41 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/41>`_)
+* Add Quality Declaration and README (`#39 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/39>`_)
+* Contributors: Ivan Santiago Paunovic, Scott K Logan, brawner
+
 0.9.0 (2020-04-24)
 ------------------
 * Export targets in addition to include directories / libraries (`#37 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/37>`_ `#38 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/38>`_)
