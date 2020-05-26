@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert usage of modern cmake. This breaks single typesupport builds again. (`#47 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/47>`_)
+* Contributors: Ivan Santiago Paunovic
+
 1.0.0 (2020-05-22)
 ------------------
 * Use modern cmake to fix single typesupport builds (`#40 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/40>`_)
