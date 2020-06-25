@@ -2,9 +2,9 @@ This document is a declaration of software quality for the `rosidl_typesupport_f
 
 # rosidl_typesupport_fastrtps_c Quality Declaration
 
-The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 4** category.
+The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 3** category.
 
-Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 4 in REP-2004](https://www.ros.org/reps/rep-2004.html).
+Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 3 in REP-2004](https://www.ros.org/reps/rep-2004.html).
 
 ## Version Policy [1]
 
@@ -78,13 +78,15 @@ The license for `rosidl_typesupport_fastrtps_c` is Apache 2.0, and a summary is 
 
 There is an automated test which runs a linter that ensures each file has a license statement.
 
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/copyright).
+
 ### Copyright Statements [3.iv]
 
 The copyright holders each provide a statement of copyright in each source code file in `rosidl_typesupport_fastrtps_c`.
 
 There is an automated test which runs a linter that ensures each file has at least one copyright statement.
 
-Most recent test results can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/copyright).
 
 ## Testing [4]
 
@@ -106,13 +108,14 @@ There are currently no tests for the public API.
 
 ### Linters and Static Analysis [4.v]
 
-`rosidl_typesupport_fastrtps_c` uses and passes all the standard linters and static analysis tools for a C++ package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
+`rosidl_typesupport_fastrtps_c` uses and passes all the standard linters and static analysis tools for a C package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
 
-Results of the linting tests can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_c/).
+Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/).
 
 ## Dependencies [5]
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
+
 `rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies:
 * `fastrtps_cmake_module`
 * `rosidl_runtime_c`
@@ -137,6 +140,8 @@ Currently nightly results can be seen here:
 * [mac_osx_release](https://ci.ros2.org/view/nightly/job/nightly_osx_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
 * [windows_release](https://ci.ros2.org/view/nightly/job/nightly_win_rel/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
 
-## Vulnerability Disclosure Policy [7.i]
+## Security [7]
+
+### Vulnerability Disclosure Policy [7.i]
 
 This package conforms to the Vulnerability Disclosure Policy in [REP-2006](https://www.ros.org/reps/rep-2006.html).
