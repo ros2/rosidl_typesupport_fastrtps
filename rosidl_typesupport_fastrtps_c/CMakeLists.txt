@@ -70,6 +70,10 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
   find_package(osrf_testing_tools_cpp REQUIRED)
+  find_package(rosidl_typesupport_interface REQUIRED)
+  # Give cppcheck hints about macro definitions coming from outside this package
+  get_target_property(
+    ament_cmake_cppcheck_ADDITIONAL_INCLUDE_DIRS rosidl_typesupport_interface::rosidl_typesupport_interface INTERFACE_INCLUDE_DIRECTORIES)
   ament_lint_auto_find_test_dependencies()
 
   get_target_property(memory_tools_ld_preload_env_var
