@@ -116,10 +116,10 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
-`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies:
-* `fastrtps_cmake_module`
-* `rosidl_runtime_c`
-* `rosidl_typesupport_fastrtps_cpp`
+`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above QL 3:
+* `fastrtps_cmake_module`: [QUALITY DECLARATION](../fastrtps_cmake_module/QUALITY_DECLARATION.md)
+* `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/rosidl_runtime_c/QUALITY_DECLARATION.md)
+* `rosidl_typesupport_fastrtps_cpp`: [QUALITY DECLARATION](../rosidl_typesupport_fastrtps_cpp/QUALITY_DECLARATION.md)
 
 It has "buildtool" dependencies, which do not affect the resulting quality of the package, because they do not contribute to the public library API.
 It also has several test dependencies, which do not affect the resulting quality of the package, because they are only used to build and run the test code.
