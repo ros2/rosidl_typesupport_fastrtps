@@ -2,9 +2,9 @@ This document is a declaration of software quality for the `rosidl_typesupport_f
 
 # rosidl_typesupport_fastrtps_c Quality Declaration
 
-The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 4** category.
+The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 3** category.
 
-Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 4 in REP-2004](https://www.ros.org/reps/rep-2004.html).
+Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 3 in REP-2004](https://www.ros.org/reps/rep-2004.html).
 
 ## Version Policy [1]
 
@@ -78,27 +78,48 @@ The license for `rosidl_typesupport_fastrtps_c` is Apache 2.0, and a summary is 
 
 There is an automated test which runs a linter that ensures each file has a license statement.
 
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/copyright).
+
 ### Copyright Statements [3.iv]
 
 The copyright holders each provide a statement of copyright in each source code file in `rosidl_typesupport_fastrtps_c`.
 
 There is an automated test which runs a linter that ensures each file has at least one copyright statement.
 
-Most recent test results can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/copyright).
 
 ## Testing [4]
 
 ### Feature Testing [4.i]
 
-There are currently no public features undergoing tests.
+Each feature in `rosidl_typesupport_fastrtps_c` has corresponding tests which simulate typical usage, and they are located in the [`test`](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/master/rosidl_typesupport_fastrtps_c/test) directory.
+New features are required to have tests before being added.
+
+Currently nightly test results can be seen here:
+
+* [linux-aarch64_release](https://ci.ros2.org/view/nightly/job/nightly_linux-aarch64_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
+* [linux_release](https://ci.ros2.org/view/nightly/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
+* [mac_osx_release](https://ci.ros2.org/view/nightly/job/nightly_osx_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
+* [windows_release](https://ci.ros2.org/view/nightly/job/nightly_win_rel/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
 
 ### Public API Testing [4.ii]
 
-There are currently no tests for the public API.
+Each part of the public API has tests, and new additions or changes to the public API require tests before being added.
+The tests aim to cover both typical usage and corner cases, but are quantified by contributing to code coverage.
 
 ### Coverage [4.iv]
 
-`rosidl_typesupport_fastrtps_c` does not currently track test coverage.
+`rosidl_typesupport_fastrtps_c` follows the recommendations for ROS Core packages in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#code-coverage), and opts to use line coverage instead of branch coverage.
+
+This includes:
+
+- tracking and reporting line coverage statistics
+- achieving and maintaining a reasonable branch line coverage (90-100%)
+- no lines are manually skipped in coverage calculations
+
+Changes are required to make a best effort to keep or increase coverage before being accepted, but decreases are allowed if properly justified and accepted by reviewers.
+
+Current coverage statistics can be viewed [here](https://ci.ros2.org/job/nightly_linux_coverage/lastSuccessfulBuild/cobertura/src_ros2_rosidl_typesupport_fastrtps_rosidl_typesupport_fastrtps_c_src/). A description of how coverage statistics are calculated is summarized in this page ["ROS 2 Onboarding Guide"](https://index.ros.org/doc/ros2/Contributing/ROS-2-On-boarding-Guide/#note-on-coverage-runs).
 
 ### Performance [4.iv]
 
@@ -106,17 +127,18 @@ There are currently no tests for the public API.
 
 ### Linters and Static Analysis [4.v]
 
-`rosidl_typesupport_fastrtps_c` uses and passes all the standard linters and static analysis tools for a C++ package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
+`rosidl_typesupport_fastrtps_c` uses and passes all the standard linters and static analysis tools for a C package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
 
-Results of the linting tests can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_c/).
+Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/).
 
 ## Dependencies [5]
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
-`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies:
-* `fastrtps_cmake_module`
-* `rosidl_runtime_c`
-* `rosidl_typesupport_fastrtps_cpp`
+
+`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above QL 3:
+* `fastrtps_cmake_module`: [QUALITY DECLARATION](../fastrtps_cmake_module/QUALITY_DECLARATION.md)
+* `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
+* `rosidl_typesupport_fastrtps_cpp`: [QUALITY DECLARATION](../rosidl_typesupport_fastrtps_cpp/QUALITY_DECLARATION.md)
 
 It has "buildtool" dependencies, which do not affect the resulting quality of the package, because they do not contribute to the public library API.
 It also has several test dependencies, which do not affect the resulting quality of the package, because they are only used to build and run the test code.
@@ -137,6 +159,8 @@ Currently nightly results can be seen here:
 * [mac_osx_release](https://ci.ros2.org/view/nightly/job/nightly_osx_release/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
 * [windows_release](https://ci.ros2.org/view/nightly/job/nightly_win_rel/lastBuild/testReport/rosidl_typesupport_fastrtps_c/)
 
-## Vulnerability Disclosure Policy [7.i]
+## Security [7]
+
+### Vulnerability Disclosure Policy [7.i]
 
 This package conforms to the Vulnerability Disclosure Policy in [REP-2006](https://www.ros.org/reps/rep-2006.html).

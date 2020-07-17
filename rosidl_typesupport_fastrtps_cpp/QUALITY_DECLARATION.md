@@ -2,9 +2,9 @@ This document is a declaration of software quality for the `rosidl_typesupport_f
 
 # rosidl_typesupport_fastrtps_cpp Quality Declaration
 
-The package `rosidl_typesupport_fastrtps_cpp` claims to be in the **Quality Level 4** category.
+The package `rosidl_typesupport_fastrtps_cpp` claims to be in the **Quality Level 3** category.
 
-Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 4 in REP-2004](https://www.ros.org/reps/rep-2004.html).
+Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 3 in REP-2004](https://www.ros.org/reps/rep-2004.html).
 
 ## Version Policy [1]
 
@@ -40,6 +40,7 @@ All installed headers are in the `include` directory of the package, headers in 
 This package requires that all changes occur through a pull request.
 
 ### Contributor Origin [2.ii]
+
 This package uses DCO as its confirmation of contributor origin policy.
 More information can be found in [CONTRIBUTING](../CONTRIBUTING.md).
 
@@ -77,27 +78,48 @@ The license for `rosidl_typesupport_fastrtps_cpp` is Apache 2.0, and a summary i
 
 There is an automated test which runs a linter that ensures each file has a license statement.
 
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/copyright).
+
 ### Copyright Statements [3.iv]
 
 The copyright holders each provide a statement of copyright in each source code file in `rosidl_typesupport_fastrtps_cpp`.
 
 There is an automated test which runs a linter that ensures each file has at least one copyright statement.
 
-Most recent test results can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
+Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/copyright).
 
 ## Testing [4]
 
 ### Feature Testing [4.i]
 
-There are currently no public features undergoing tests.
+Each feature in `rosidl_typesupport_fastrtps_cpp` has corresponding tests which simulate typical usage, and they are located in the [`test`](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/master/rosidl_typesupport_fastrtps_cpp/test) directory.
+New features are required to have tests before being added.
+
+Currently nightly test results can be seen here:
+
+* [linux-aarch64_release](https://ci.ros2.org/view/nightly/job/nightly_linux-aarch64_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
+* [linux_release](https://ci.ros2.org/view/nightly/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
+* [mac_osx_release](https://ci.ros2.org/view/nightly/job/nightly_osx_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
+* [windows_release](https://ci.ros2.org/view/nightly/job/nightly_win_rel/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
 
 ### Public API Testing [4.ii]
 
-There are currently no tests for the public API.
+Each part of the public API has tests, and new additions or changes to the public API require tests before being added.
+The tests aim to cover both typical usage and corner cases, but are quantified by contributing to code coverage.
 
 ### Coverage [4.iv]
 
-`rosidl_typesupport_fastrtps_cpp` does not currently track test coverage.
+`rosidl_typesupport_fastrtps_cpp` follows the recommendations for ROS Core packages in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#code-coverage), and opts to use line coverage instead of branch coverage.
+
+This includes:
+
+- tracking and reporting line coverage statistics
+- achieving and maintaining a reasonable branch line coverage (90-100%)
+- no lines are manually skipped in coverage calculations
+
+Changes are required to make a best effort to keep or increase coverage before being accepted, but decreases are allowed if properly justified and accepted by reviewers.
+
+Current coverage statistics can be viewed [here](https://ci.ros2.org/job/nightly_linux_coverage/lastSuccessfulBuild/cobertura/src_ros2_rosidl_typesupport_fastrtps_rosidl_typesupport_fastrtps_cpp_src/). A description of how coverage statistics are calculated is summarized in this page ["ROS 2 Onboarding Guide"](https://index.ros.org/doc/ros2/Contributing/ROS-2-On-boarding-Guide/#note-on-coverage-runs).
 
 ### Performance [4.iv]
 
@@ -107,14 +129,14 @@ There are currently no tests for the public API.
 
 `rosidl_typesupport_fastrtps_cpp` uses and passes all the standard linters and static analysis tools for a C++ package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
 
-Results of the linting tests can be found [here](http://build.ros2.org/view/Epr/job/Epr__rosidl_typesupport__ubuntu_bionic_amd64/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/).
+Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly_linux_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/).
 
 ## Dependencies [5]
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
+
 `rosidl_typesupport_fastrtps_cpp` has the following runtime ROS dependencies:
-* `rosidl_parser`
-* `rosidl_typesupport_interface`
+* `rosidl_typesupport_interface`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_typesupport_interface/QUALITY_DECLARATION.md)
 
 It has "buildtool" dependencies, which do not affect the resulting quality of the package, because they do not contribute to the public library API.
 It also has several test dependencies, which do not affect the resulting quality of the package, because they are only used to build and run the test code.
@@ -135,6 +157,8 @@ Currently nightly results can be seen here:
 * [mac_osx_release](https://ci.ros2.org/view/nightly/job/nightly_osx_release/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
 * [windows_release](https://ci.ros2.org/view/nightly/job/nightly_win_rel/lastBuild/testReport/rosidl_typesupport_fastrtps_cpp/)
 
-## Vulnerability Disclosure Policy [7.i]
+## Security [7]
+
+### Vulnerability Disclosure Policy [7.i]
 
 This package conforms to the Vulnerability Disclosure Policy in [REP-2006](https://www.ros.org/reps/rep-2006.html).
