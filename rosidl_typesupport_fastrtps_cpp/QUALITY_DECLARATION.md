@@ -136,7 +136,6 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
 `rosidl_typesupport_fastrtps_cpp` has the following runtime ROS dependencies:
-* `rosidl_parser`: No Quality declaration
 * `rosidl_typesupport_interface`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_typesupport_interface/QUALITY_DECLARATION.md)
 
 It has "buildtool" dependencies, which do not affect the resulting quality of the package, because they do not contribute to the public library API.
