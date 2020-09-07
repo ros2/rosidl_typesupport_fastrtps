@@ -319,7 +319,8 @@ else:
       @(array_fini)(&ros_message->@(member.name));
     }
     if (!@(array_init)(&ros_message->@(member.name), size)) {
-      return "failed to create array for field '@(member.name)'";
+      fprintf(stderr, "failed to create array for field '@(member.name)'");
+      return false;
     }
     auto array_ptr = ros_message->@(member.name).data;
 @[    end if]@
