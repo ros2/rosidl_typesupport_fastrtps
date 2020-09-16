@@ -63,6 +63,13 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
   find_package(osrf_testing_tools_cpp REQUIRED)
+
+  find_package(performance_test_fixture REQUIRED)
+
+  # Give cppcheck hints about macro definitions coming from outside this package
+  get_target_property(ament_cmake_cppcheck_ADDITIONAL_INCLUDE_DIRS
+    performance_test_fixture::performance_test_fixture INTERFACE_INCLUDE_DIRECTORIES)
+
   ament_lint_auto_find_test_dependencies()
 
   get_target_property(memory_tools_ld_preload_env_var
@@ -89,6 +96,12 @@ if(BUILD_TESTING)
   if(TARGET test_wstring_conversion_mem)
     target_link_libraries(test_wstring_conversion_mem
       ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
+  endif()
+
+  add_performance_test(benchmark_string_conversions benchmark/benchmark_string_conversions.cpp)
+  if(TARGET benchmark_string_conversions)
+    target_include_directories(benchmark_string_conversions PUBLIC include)
+    target_link_libraries(benchmark_string_conversions ${PROJECT_NAME})
   endif()
 endif()
 
