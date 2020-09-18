@@ -34,6 +34,8 @@ BENCHMARK_DEFINE_F(PerformanceTest, wstring_to_u16string_complexity)(benchmark::
     return;
   }
 
+  reset_heap_counters();
+
   for (auto _ : st) {
     rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstring, s);
   }
@@ -60,6 +62,8 @@ BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::
 
   // Just do a copy
   rosidl_typesupport_fastrtps_c::wstring_to_u16string(data, s);
+
+  reset_heap_counters();
 
   for (auto _ : st) {
     std::wstring actual;

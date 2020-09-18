@@ -27,6 +27,8 @@ BENCHMARK_DEFINE_F(PerformanceTest, wstring_to_u16string_complexity)(benchmark::
 
   std::u16string u16string;
 
+  reset_heap_counters();
+
   for (auto _ : st) {
     rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstring, u16string);
   }
@@ -42,6 +44,8 @@ BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::
 {
   size_t len = st.range(0);
   std::u16string u16string(len, '*');
+
+  reset_heap_counters();
 
   for (auto _ : st) {
     std::wstring wstring;
