@@ -98,7 +98,7 @@ if(BUILD_TESTING)
       ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
   endif()
 
-  add_performance_test(benchmark_string_conversions benchmark/benchmark_string_conversions.cpp)
+  add_performance_test(benchmark_string_conversions test/benchmark/benchmark_string_conversions.cpp)
   if(TARGET benchmark_string_conversions)
     target_include_directories(benchmark_string_conversions PUBLIC include)
     target_link_libraries(benchmark_string_conversions ${PROJECT_NAME})

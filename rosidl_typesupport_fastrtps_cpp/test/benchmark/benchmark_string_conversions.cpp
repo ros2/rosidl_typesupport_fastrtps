@@ -20,30 +20,27 @@
 
 using performance_test_fixture::PerformanceTest;
 
+namespace
+{
+constexpr const uint64_t kSize = 1024;
+}
+
 BENCHMARK_DEFINE_F(PerformanceTest, wstring_to_u16string_complexity)(benchmark::State & st)
 {
-  size_t len = st.range(0);
-  std::wstring wstring(len, '*');
-
-  std::u16string u16string;
+  std::wstring wstring(kSize, '*');
 
   reset_heap_counters();
 
   for (auto _ : st) {
+    std::u16string u16string;
     rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstring, u16string);
   }
-
-  st.SetComplexityN(len);
 }
-
-BENCHMARK_REGISTER_F(PerformanceTest, wstring_to_u16string_complexity)
-->RangeMultiplier(2)->Range(1 << 3, 1 << 12);
-
+BENCHMARK_REGISTER_F(PerformanceTest, wstring_to_u16string_complexity);
 
 BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::State & st)
 {
-  size_t len = st.range(0);
-  std::u16string u16string(len, '*');
+  std::u16string u16string(kSize, '*');
 
   reset_heap_counters();
 
@@ -51,9 +48,5 @@ BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::
     std::wstring wstring;
     rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(u16string, wstring);
   }
-
-  st.SetComplexityN(len);
 }
-
-BENCHMARK_REGISTER_F(PerformanceTest, u16string_to_wstring_complexity)
-->RangeMultiplier(2)->Range(1 << 3, 1 << 12);
+BENCHMARK_REGISTER_F(PerformanceTest, u16string_to_wstring_complexity);
