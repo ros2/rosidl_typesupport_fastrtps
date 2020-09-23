@@ -25,7 +25,7 @@ namespace
 constexpr const uint64_t kSize = 1024;
 }
 
-BENCHMARK_DEFINE_F(PerformanceTest, wstring_to_u16string_complexity)(benchmark::State & st)
+BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
 {
   std::wstring wstring(kSize, '*');
 
@@ -36,9 +36,8 @@ BENCHMARK_DEFINE_F(PerformanceTest, wstring_to_u16string_complexity)(benchmark::
     rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstring, u16string);
   }
 }
-BENCHMARK_REGISTER_F(PerformanceTest, wstring_to_u16string_complexity);
 
-BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::State & st)
+BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
 {
   std::u16string u16string(kSize, '*');
 
@@ -49,4 +48,3 @@ BENCHMARK_DEFINE_F(PerformanceTest, u16string_to_wstring_complexity)(benchmark::
     rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(u16string, wstring);
   }
 }
-BENCHMARK_REGISTER_F(PerformanceTest, u16string_to_wstring_complexity);
