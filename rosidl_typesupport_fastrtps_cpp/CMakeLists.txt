@@ -70,6 +70,7 @@ if(BUILD_TESTING)
   get_target_property(ament_cmake_cppcheck_ADDITIONAL_INCLUDE_DIRS
     performance_test_fixture::performance_test_fixture INTERFACE_INCLUDE_DIRECTORIES)
 
+  set(ament_cmake_cppcheck_LANGUAGE c++)
   ament_lint_auto_find_test_dependencies()
 
   get_target_property(memory_tools_ld_preload_env_var
