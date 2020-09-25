@@ -101,7 +101,6 @@ if(BUILD_TESTING)
 
   add_performance_test(benchmark_string_conversions test/benchmark/benchmark_string_conversions.cpp)
   if(TARGET benchmark_string_conversions)
-    target_include_directories(benchmark_string_conversions PUBLIC include)
     target_link_libraries(benchmark_string_conversions ${PROJECT_NAME})
   endif()
 endif()
