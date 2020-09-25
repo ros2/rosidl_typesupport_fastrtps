@@ -319,7 +319,8 @@ else:
       @(array_fini)(&ros_message->@(member.name));
     }
     if (!@(array_init)(&ros_message->@(member.name), size)) {
-      return "failed to create array for field '@(member.name)'";
+      fprintf(stderr, "failed to create array for field '@(member.name)'");
+      return false;
     }
     auto array_ptr = ros_message->@(member.name).data;
 @[    end if]@
@@ -423,7 +424,7 @@ else:
 
 @[end for]@
   return true;
-}
+}  // NOLINT(readability/fn_size)
 
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC_@(package_name)
 size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))(
