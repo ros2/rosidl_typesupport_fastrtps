@@ -2,7 +2,7 @@ This document is a declaration of software quality for the `rosidl_typesupport_f
 
 # rosidl_typesupport_fastrtps_c Quality Declaration
 
-The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 3** category.
+The package `rosidl_typesupport_fastrtps_c` claims to be in the **Quality Level 2** category.
 
 Below are the rationales, notes, and caveats for this claim, organized by each requirement listed in the [Package Requirements for Quality Level 3 in REP-2004](https://www.ros.org/reps/rep-2004.html).
 
@@ -135,8 +135,7 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
-`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above QL 3:
-* `fastrtps_cmake_module`: [QUALITY DECLARATION](../fastrtps_cmake_module/QUALITY_DECLARATION.md)
+`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above QL 2:
 * `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
 * `rosidl_typesupport_fastrtps_cpp`: [QUALITY DECLARATION](../rosidl_typesupport_fastrtps_cpp/QUALITY_DECLARATION.md)
 
