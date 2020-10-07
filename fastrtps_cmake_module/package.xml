@@ -4,9 +4,10 @@
   <name>fastrtps_cmake_module</name>
   <version>1.0.1</version>
   <description>Provide CMake module to find eProsima FastRTPS.</description>
-  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
+  <maintainer email="michel@ekumenlabs.com">Michel Hidalgo</maintainer>
   <license>Apache License 2.0</license>
   <author>Ricardo González</author>
+  <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
