@@ -33,20 +33,23 @@
 
 set(FastRTPS_FOUND FALSE)
 
-find_path(FastRTPS_INCLUDE_DIR
-  NAMES fastrtps/)
-
 find_package(fastcdr REQUIRED CONFIG)
 find_package(fastrtps REQUIRED CONFIG)
 
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" fastcdr_MAJOR_MINOR_VERSION "${fastcdr_VERSION}")
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" fastrtps_MAJOR_MINOR_VERSION "${fastrtps_VERSION}")
 
+find_path(FastRTPS_INCLUDE_DIR
+  NAMES fastrtps/
+  HINTS "${fastrtps_DIR}/../../../include")
+
 find_library(FastCDR_LIBRARY_RELEASE
-  NAMES fastcdr-${fastcdr_MAJOR_MINOR_VERSION} fastcdr)
+  NAMES fastcdr-${fastcdr_MAJOR_MINOR_VERSION} fastcdr
+  HINTS "${fastcdr_DIR}/../..")
 
 find_library(FastCDR_LIBRARY_DEBUG
-  NAMES fastcdrd-${fastcdr_MAJOR_MINOR_VERSION})
+  NAMES fastcdrd-${fastcdr_MAJOR_MINOR_VERSION}
+  HINTS "${fastcdr_DIR}/../..")
 
 if(FastCDR_LIBRARY_RELEASE AND FastCDR_LIBRARY_DEBUG)
   set(FastCDR_LIBRARIES
@@ -66,10 +69,12 @@ else()
 endif()
 
 find_library(FastRTPS_LIBRARY_RELEASE
-  NAMES fastrtps-${fastrtps_MAJOR_MINOR_VERSION} fastrtps)
+  NAMES fastrtps-${fastrtps_MAJOR_MINOR_VERSION} fastrtps
+  HINTS "${fastrtps_DIR}/../../../lib")
 
 find_library(FastRTPS_LIBRARY_DEBUG
-  NAMES fastrtpsd-${fastrtps_MAJOR_MINOR_VERSION})
+  NAMES fastrtpsd-${fastrtps_MAJOR_MINOR_VERSION}
+  HINTS "${fastrtps_DIR}/../../../lib")
 
 if(FastRTPS_LIBRARY_RELEASE AND FastRTPS_LIBRARY_DEBUG)
   set(FastRTPS_LIBRARIES
