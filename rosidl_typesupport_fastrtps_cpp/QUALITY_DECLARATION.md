@@ -92,7 +92,7 @@ Most recent test results can be found [here](http://ci.ros2.org/job/nightly_linu
 
 ### Feature Testing [4.i]
 
-Each feature in `rosidl_typesupport_fastrtps_cpp` has corresponding tests which simulate typical usage, and they are located in the [`test`](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/master/rosidl_typesupport_fastrtps_cpp/test) directory.
+Each feature in `rosidl_typesupport_fastrtps_cpp` has corresponding tests which simulate typical usage, and they are located in the [`test`](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/foxy/rosidl_typesupport_fastrtps_cpp/test) directory.
 New features are required to have tests before being added.
 
 Currently nightly test results can be seen here:
@@ -123,7 +123,7 @@ Current coverage statistics can be viewed [here](https://ci.ros2.org/job/nightly
 
 ### Performance [4.iv]
 
-The performance tests of `rosidl_typesupport_fastrtps_cpp` are located in the [test/benchmark directory](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/master/rosidl_typesupport_fastrtps_cpp/test/benchmark). The most recent test results can be found [here](http://build.ros2.org/view/Rci/job/Rci__benchmark_ubuntu_focal_amd64/BenchmarkTable/).
+The performance tests of `rosidl_typesupport_fastrtps_cpp` are located in the [test/benchmark directory](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/foxy/rosidl_typesupport_fastrtps_cpp/test/benchmark). The most recent test results can be found [here](http://build.ros2.org/view/Fci/job/Fci__benchmark_ubuntu_focal_amd64/BenchmarkTable/).
 
 ### Linters and Static Analysis [4.v]
 
@@ -136,7 +136,7 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
 `rosidl_typesupport_fastrtps_cpp` has the following runtime ROS dependencies:
-* `rosidl_typesupport_interface`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_typesupport_interface/QUALITY_DECLARATION.md)
+* `rosidl_typesupport_interface`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/foxy/rosidl_typesupport_interface/QUALITY_DECLARATION.md)
 
 It has "buildtool" dependencies, which do not affect the resulting quality of the package, because they do not contribute to the public library API.
 It also has several test dependencies, which do not affect the resulting quality of the package, because they are only used to build and run the test code.
