@@ -107,7 +107,7 @@ Currently nightly test results can be seen here:
 Each part of the public API has tests, and new additions or changes to the public API require tests before being added.
 The tests aim to cover both typical usage and corner cases, but are quantified by contributing to code coverage.
 
-### Coverage [4.iv]
+### Coverage [4.iii]
 
 `rosidl_typesupport_fastrtps_cpp` follows the recommendations for ROS Core packages in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#code-coverage), and opts to use line coverage instead of branch coverage.
 
