@@ -141,7 +141,7 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
-`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at **Quality Level 1**:
+`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above **Quality Level 2**:
 * `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
 * `rosidl_typesupport_fastrtps_cpp`: [QUALITY DECLARATION](../rosidl_typesupport_fastrtps_cpp/QUALITY_DECLARATION.md)
 
