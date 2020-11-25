@@ -70,7 +70,7 @@ All pull requests must resolve related documentation changes before merging.
 
 ### Public API Documentation [3.ii]
 
-`rosidl_typesupport_fastrtps_c` has documentation of its public API, but it is not yet hosted.
+`rosidl_typesupport_fastrtps_c` has documentation of its public API, and it is publicly [hosted](http://docs.ros2.org/latest/api/rosidl_typesupport_fastrtps_c/index.html).
 
 ### License [3.iii]
 
@@ -123,7 +123,13 @@ Current coverage statistics can be viewed [here](https://ci.ros2.org/job/nightly
 
 ### Performance [4.iv]
 
-The performance tests of `rosidl_typesupport_fastrtps_c` are located in the [test/benchmark directory](https://github.com/ros2/rosidl_typesupport_fastrtps/tree/master/rosidl_typesupport_fastrtps_c/test/benchmark). The most recent test results can be found [here](http://build.ros2.org/view/Rci/job/Rci__benchmark_ubuntu_focal_amd64/BenchmarkTable/).
+`rosidl_typesupport_fastrtps_c` follows the recommendations for performance testing of C code in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#performance), and opts to do performance analysis on each release rather than each change.
+
+Package and system level performance benchmarks that cover features of `rosidl_typesupport_fastrtps_c` can be found at:
+* [Benchmarks](http://build.ros2.org/view/Rci/job/Rci__benchmark_ubuntu_focal_amd64/BenchmarkTable/)
+* [Performance](http://build.ros2.org/view/Rci/job/Rci__nightly-performance_ubuntu_focal_amd64/lastCompletedBuild/)
+
+Changes that introduce regressions in performance must be adequately justified in order to be accepted and merged.
 
 ### Linters and Static Analysis [4.v]
 
@@ -135,7 +141,7 @@ Results of the linting tests can be found [here](https://ci.ros2.org/job/nightly
 
 ### Direct Runtime ROS Dependencies [5.i/5.ii]
 
-`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at or above QL 2:
+`rosidl_typesupport_fastrtps_c` has the following runtime ROS dependencies, which are at **Quality Level 1**:
 * `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
 * `rosidl_typesupport_fastrtps_cpp`: [QUALITY DECLARATION](../rosidl_typesupport_fastrtps_cpp/QUALITY_DECLARATION.md)
 
@@ -144,9 +150,9 @@ It also has several test dependencies, which do not affect the resulting quality
 
 ### Direct Runtime Non-ROS Dependencies [5.iii]
 
-`rosidl_typesupport_fastrtps_cpp` has the following non-ROS dependencies:
-* `fastcdr`
-* `fastrtps`
+`rosidl_typesupport_fastrtps_cpp`  has the following non-ROS dependencies, which are at or above an equivalent of **Quality Level 2**
+* `Fast-CDR`: [QUALITY DECLARATION](https://github.com/eProsima/Fast-CDR/blob/master/QUALITY.md)
+* `Fast-DDS`: [QUALITY DECLARATION](https://github.com/eProsima/Fast-DDS/blob/master/QUALITY.md)
 
 ## Platform Support [6]
 
