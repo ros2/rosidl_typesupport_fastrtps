@@ -2,6 +2,17 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2020-12-09)
+------------------
+* Fix item number in QD (`#59 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/59>`_) (`#61 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/61>`_)
+* Update quality level to 2
+* Update QD links for Foxy
+* Update QD (`#53 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/53>`_)
+* Add benchmark test to rosidl_typesupport_fastrtps_c/cpp (`#52 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/52>`_)
+* Add Security Vulnerability Policy pointing to REP-2006 (`#44 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/44>`_)
+* QD Update Version Stability to stable version (`#46 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/46>`_)
+* Contributors: Alejandro Hernández Cordero, Chris Lalancette, Louise Poubel
+
 1.0.1 (2020-05-26)
 ------------------
 * Revert usage of modern cmake. This breaks single typesupport builds again. (`#47 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/47>`_)
