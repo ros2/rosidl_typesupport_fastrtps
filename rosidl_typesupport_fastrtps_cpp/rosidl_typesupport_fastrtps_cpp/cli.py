@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+import pathlib
 
 from ament_index_python import get_package_share_directory
 
@@ -33,6 +33,8 @@ class GenerateFastRTPSCppTypesupport(GenerateCommandExtension):
         include_paths,
         output_path
     ):
+        generated_files = []
+
         package_share_path = pathlib.Path(
             get_package_share_directory('rosidl_typesupport_fastrtps_cpp'))
         templates_path = package_share_path / 'resource'
