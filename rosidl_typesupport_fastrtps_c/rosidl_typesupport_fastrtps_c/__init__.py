@@ -21,4 +21,4 @@ def generate_typesupport_fastrtps_c(generator_arguments_file):
         'detail/%s__rosidl_typesupport_fastrtps_c.h',
         'idl__type_support_c.cpp.em': 'detail/%s__type_support_c.cpp',
     }
-    generate_files(generator_arguments_file, mapping)
+    return generate_files(generator_arguments_file, mapping)
