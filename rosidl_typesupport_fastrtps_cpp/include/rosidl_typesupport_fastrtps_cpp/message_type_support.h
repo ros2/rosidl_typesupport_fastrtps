@@ -60,11 +60,12 @@ typedef struct message_type_support_callbacks_t
   /// Callback function to determine the maximum size needed for serialization, which is used for
   /// type support initialization.
   /**
-   * \param[out] Whether the maximum serialized size was fully bounded, (i.e. not unbounded strings
-   *  or sequences).
+   * \param[out] full_bounded Whether the maximum serialized size was fully bounded,
+   *  (i.e. not unbounded strings or sequences).
+   * \param[out] is_plain Whether the type is plain (i.e. does not have strings or sequences).
    * \return The maximum serialized size, in bytes.
    */
-  size_t (* max_serialized_size)(bool & full_bounded);
+  size_t (* max_serialized_size)(bool & full_bounded, bool & is_plain);
 } message_type_support_callbacks_t;
 
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_
