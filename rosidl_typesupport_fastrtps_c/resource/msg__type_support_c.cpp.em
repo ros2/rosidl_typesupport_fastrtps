@@ -596,6 +596,11 @@ if isinstance(type_, AbstractNestedType):
 
 static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bool & full_bounded, bool & is_plain)
 {
+  // Start considering the type is plain.
+  // Internal methods will set values to false when necessary.
+  full_bounded = true;
+  is_plain = true;
+
   return max_serialized_size_@('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))(
     full_bounded, is_plain, 0);
 }
