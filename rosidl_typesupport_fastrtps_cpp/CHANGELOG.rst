@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Expose FastRTPS C++ typesupport generation via rosidl generate CLI (`#66 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/66>`_)
+* Contributors: Michel Hidalgo
+
 1.1.0 (2020-12-09)
 ------------------
 * Update QDs with up-to-date content (`#64 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/64>`_)
