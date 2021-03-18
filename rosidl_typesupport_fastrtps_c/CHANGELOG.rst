@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2021-03-18)
+------------------
 * Expose FastRTPS C typesupport generation via rosidl generate CLI (`#65 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/65>`_)
 * Contributors: Michel Hidalgo
 
