@@ -19,6 +19,9 @@
 
 #include <fastcdr/Cdr.h>
 
+/// Feature define to allow API version detection
+#define ROSIDL_TYPESUPPORT_FASTRTPS_HAS_PLAIN_TYPES
+
 /// Encapsulates the callbacks for getting properties of this rosidl type.
 /**
  * These callbacks are implemented in the generated sources.
