@@ -3,12 +3,10 @@
 
 find_package(fastrtps_cmake_module QUIET)
 find_package(fastcdr REQUIRED CONFIG)
-find_package(fastrtps REQUIRED CONFIG)
-find_package(FastRTPS REQUIRED MODULE)
 
-if(NOT FastRTPS_FOUND)
+if(NOT fastcdr_FOUND)
   message(STATUS
-    "Could not find eProsima Fast-RTPS: skipping rosidl_typesupport_fastrtps_c"
+    "Could not find eProsima fastcdr: skipping rosidl_typesupport_fastrtps_c"
   )
 else()
   find_package(ament_cmake_core QUIET REQUIRED)
