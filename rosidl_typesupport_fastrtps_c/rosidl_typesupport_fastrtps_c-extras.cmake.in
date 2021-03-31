@@ -6,7 +6,7 @@ find_package(fastcdr REQUIRED CONFIG)
 
 if(NOT fastcdr_FOUND)
   message(STATUS
-    "Could not find eProsima fastcdr: skipping rosidl_typesupport_fastrtps_c"
+    "Could not find eProsima Fast CDR: skipping rosidl_typesupport_fastrtps_c"
   )
 else()
   find_package(ament_cmake_core QUIET REQUIRED)
