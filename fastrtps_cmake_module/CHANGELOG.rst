@@ -2,8 +2,8 @@
 Changelog for package fastrtps_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.1 (2021-04-06)
+------------------
 * updating quality declaration links (re: `ros2/docs.ros2.org#52 <https://github.com/ros2/docs.ros2.org/issues/52>`_) (`#69 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/69>`_)
 * Contributors: shonigmann
 
