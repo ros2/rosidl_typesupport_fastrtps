@@ -518,8 +518,9 @@ size_t max_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   const size_t wchar_size = 4;
   (void)padding;
   (void)wchar_size;
-  (void)full_bounded;
-  (void)is_plain;
+  
+  full_bounded = true;
+  is_plain = true;
 
 @[for member in message.structure.members]@
   // member: @(member.name)
@@ -583,9 +584,13 @@ if isinstance(type_, AbstractNestedType):
 @[    end if]@
 @[  else]
     for (size_t index = 0; index < array_size; ++index) {
+      bool inner_full_bounded;
+      bool inner_is_plain;
       current_alignment +=
         max_serialized_size_@('__'.join(type_.namespaced_name()))(
-        full_bounded, is_plain, current_alignment);
+        inner_full_bounded, inner_is_plain, current_alignment);
+      full_bounded &= inner_full_bounded;
+      is_plain &= inner_is_plain;
     }
 @[  end if]@
   }
@@ -596,11 +601,6 @@ if isinstance(type_, AbstractNestedType):
 
 static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bool & full_bounded, bool & is_plain)
 {
-  // Start considering the type is plain.
-  // Internal methods will set values to false when necessary.
-  full_bounded = true;
-  is_plain = true;
-
   return max_serialized_size_@('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))(
     full_bounded, is_plain, 0);
 }
