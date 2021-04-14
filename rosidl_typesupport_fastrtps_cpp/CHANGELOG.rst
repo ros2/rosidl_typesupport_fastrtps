@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.3 (2021-04-14)
+------------------
+* Update quality declaration links (re: `ros2/docs.ros2.org#52 <https://github.com/ros2/docs.ros2.org/issues/52>`_) (`#70 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/70>`_)
+* Contributors: Simon Honigmann
+
 1.0.2 (2020-12-09)
 ------------------
 * Fix item number in QD (`#59 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/59>`_) (`#61 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/61>`_)

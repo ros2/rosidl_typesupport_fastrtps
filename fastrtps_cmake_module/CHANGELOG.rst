@@ -2,6 +2,11 @@
 Changelog for package fastrtps_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.3 (2021-04-14)
+------------------
+* Update quality declaration links (re: `ros2/docs.ros2.org#52 <https://github.com/ros2/docs.ros2.org/issues/52>`_) (`#70 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/70>`_)
+* Contributors: Simon Honigmann
+
 1.0.2 (2020-12-09)
 ------------------
 * Use CMake config dirs as hint for header/library search (`#56 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/56>`_) (`#62 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/62>`_)
