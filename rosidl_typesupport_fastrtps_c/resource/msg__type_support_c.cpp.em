@@ -599,10 +599,19 @@ if isinstance(type_, AbstractNestedType):
   return current_alignment - initial_alignment;
 }
 
-static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bool & full_bounded, bool & is_plain)
+static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(char & bounds_info)
 {
-  return max_serialized_size_@('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))(
+  bool full_bounded;
+  bool is_plain;
+  size_t ret_val;
+
+  ret_val = max_serialized_size_@('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))(
     full_bounded, is_plain, 0);
+
+  bounds_info =
+    is_plain ? ROSIDL_TYPESUPPORT_FASTRTPS_PLAIN_TYPE :
+    full_bounded ? ROSIDL_TYPESUPPORT_FASTRTPS_BOUNDED_TYPE : ROSIDL_TYPESUPPORT_FASTRTPS_UNBOUNDED_TYPE;
+  return ret_val;
 }
 
 @

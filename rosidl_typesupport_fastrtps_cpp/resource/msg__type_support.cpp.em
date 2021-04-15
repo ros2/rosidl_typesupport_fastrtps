@@ -467,9 +467,18 @@ static uint32_t _@(message.structure.namespaced_type.name)__get_serialized_size(
   return static_cast<uint32_t>(get_serialized_size(*typed_message, 0));
 }
 
-static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(bool & full_bounded, bool & is_plain)
+static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(char & bounds_info)
 {
-  return max_serialized_size_@(message.structure.namespaced_type.name)(full_bounded, is_plain, 0);
+  bool full_bounded;
+  bool is_plain;
+  size_t ret_val;
+
+  ret_val = max_serialized_size_@(message.structure.namespaced_type.name)(full_bounded, is_plain, 0);
+
+  bounds_info =
+    is_plain ? ROSIDL_TYPESUPPORT_FASTRTPS_PLAIN_TYPE :
+    full_bounded ? ROSIDL_TYPESUPPORT_FASTRTPS_BOUNDED_TYPE : ROSIDL_TYPESUPPORT_FASTRTPS_UNBOUNDED_TYPE;
+  return ret_val;
 }
 
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
