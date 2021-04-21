@@ -518,7 +518,7 @@ size_t max_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   const size_t wchar_size = 4;
   (void)padding;
   (void)wchar_size;
-  
+
   full_bounded = true;
   is_plain = true;
 

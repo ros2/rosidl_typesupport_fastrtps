@@ -356,7 +356,7 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
   const size_t wchar_size = 4;
   (void)padding;
   (void)wchar_size;
-  
+
   full_bounded = true;
   is_plain = true;
 
