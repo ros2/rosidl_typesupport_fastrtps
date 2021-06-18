@@ -100,6 +100,9 @@ if(BUILD_TESTING)
   if(TARGET benchmark_string_conversions)
     target_link_libraries(benchmark_string_conversions ${PROJECT_NAME})
   endif()
+
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_cli_extension test/test_cli_extension.py)
 endif()
 
 ament_package(

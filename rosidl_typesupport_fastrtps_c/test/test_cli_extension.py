@@ -1,4 +1,4 @@
-# Copyright 2014 Open Source Robotics Foundation, Inc.
+# Copyright 2021 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from rosidl_cmake import generate_files
+import pathlib
+
+from rosidl_cli.command.generate.api import generate
+
+TEST_DIR = str(pathlib.Path(__file__).parent)
 
 
-def generate_cpp(generator_arguments_file):
-    mapping = {
-        'idl__rosidl_typesupport_fastrtps_cpp.hpp.em':
-        'detail/%s__rosidl_typesupport_fastrtps_cpp.hpp',
-        'idl__type_support.cpp.em': 'detail/dds_fastrtps/%s__type_support.cpp',
-    }
-    return generate_files(generator_arguments_file, mapping)
+def test_cli_extension_for_smoke(tmp_path):
+    assert len(generate(
+        package_name='rosidl_typesupport_fastrtps_c',
+        interface_files=[TEST_DIR + ':msg/Test.msg'],
+        typesupports=['fastrtps_c'],
+        output_path=tmp_path
+    )) > 0
