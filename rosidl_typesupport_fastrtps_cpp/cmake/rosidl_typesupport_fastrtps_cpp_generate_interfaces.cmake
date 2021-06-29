@@ -134,8 +134,8 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 # Include headers from other generators
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>" 
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
