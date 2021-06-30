@@ -134,8 +134,8 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 # Include headers from other generators
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
@@ -182,12 +182,13 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
 
   install(
     TARGETS ${rosidl_generate_interfaces_TARGET}${_target_suffix}
+    EXPORT ${rosidl_generate_interfaces_TARGET}
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
 
-  rosidl_export_typesupport_libraries(${_target_suffix}
+  rosidl_export_typesupport_targets(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 endif()
 

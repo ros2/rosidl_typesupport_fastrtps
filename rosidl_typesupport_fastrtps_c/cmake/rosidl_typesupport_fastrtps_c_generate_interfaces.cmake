@@ -121,10 +121,8 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PROPERTIES COMPILE_FLAGS "${_target_compile_flags}")
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_c
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_c
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_c>"
+  "$<INSTALL_INTERFACE:include>"
 )
 ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   "fastcdr"
@@ -139,7 +137,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   normalize_path(_srv_include_dir "${_srv_include_dir}")
   normalize_path(_action_include_dir "${_action_include_dir}")
   target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    PUBLIC
+    PRIVATE
     "${_msg_include_dir}"
     "${_srv_include_dir}"
     "${_action_include_dir}"
@@ -151,6 +149,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
 endforeach()
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__rosidl_generator_c
+  ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp
   ${rosidl_generate_interfaces_TARGET}__rosidl_typesupport_fastrtps_cpp)
 
 add_dependencies(
@@ -179,12 +178,13 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
 
   install(
     TARGETS ${rosidl_generate_interfaces_TARGET}${_target_suffix}
+    EXPORT ${rosidl_generate_interfaces_TARGET}
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
 
-  rosidl_export_typesupport_libraries(${_target_suffix}
+  rosidl_export_typesupport_targets(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 endif()
 
