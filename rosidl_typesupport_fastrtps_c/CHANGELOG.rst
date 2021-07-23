@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2021-07-23)
+------------------
 * Bundle and ensure the exportation of rosidl generated targets (`#73 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/73>`_)
 * Fix Fast-RTPS C++ typesupport CLI extension (`#72 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/72>`_)
 * Fastdds type support extensions (`#67 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/67>`_)
