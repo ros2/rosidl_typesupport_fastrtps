@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2021-07-28)
+------------------
 * Export rosidl_typesupport_fastrtps_c* dependencies (`#75 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/75>`_)
 * Contributors: Michel Hidalgo
 
