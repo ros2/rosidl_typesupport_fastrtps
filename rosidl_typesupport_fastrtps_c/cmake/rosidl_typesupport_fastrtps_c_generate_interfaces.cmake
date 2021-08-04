@@ -124,6 +124,11 @@ target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_c>"
   "$<INSTALL_INTERFACE:include>"
 )
+ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+  "fastcdr"
+  "rosidl_typesupport_fastrtps_cpp"
+  "rosidl_typesupport_fastrtps_c"
+)
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
   set(_msg_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/msg/dds_fastrtps_c")
   set(_srv_include_dir "${${_pkg_name}_DIR}/../../../include/${_pkg_name}/srv/dds_fastrtps_c")
@@ -159,13 +164,6 @@ add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
 )
-ament_export_dependencies(
-  "fastcdr"
-  "rmw"
-  "rosidl_runtime_c"
-  "rosidl_typesupport_fastrtps_cpp"
-  "rosidl_typesupport_fastrtps_c"
-  "rosidl_typesupport_interface")
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
   install(

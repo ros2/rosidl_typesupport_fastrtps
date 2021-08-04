@@ -168,12 +168,6 @@ add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
 )
-ament_export_dependencies(
-  "fastcdr"
-  "rmw"
-  "rosidl_runtime_c"
-  "rosidl_typesupport_fastrtps_cpp"
-  "rosidl_typesupport_interface")
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
   install(
