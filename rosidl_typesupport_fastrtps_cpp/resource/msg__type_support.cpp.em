@@ -369,12 +369,11 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
     size_t array_size = @(member.type.size);
 @[    elif isinstance(member.type, BoundedSequence)]@
     size_t array_size = @(member.type.maximum_size);
-    is_plain = false;
 @[    else]@
     size_t array_size = 0;
+    full_bounded = false;
 @[    end if]@
 @[    if isinstance(member.type, AbstractSequence)]@
-    full_bounded = false;
     is_plain = false;
     current_alignment += padding +
       eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
