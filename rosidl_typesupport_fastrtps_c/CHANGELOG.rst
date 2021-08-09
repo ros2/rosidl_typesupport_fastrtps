@@ -2,6 +2,14 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert rosidl targets and dependencies exportation (`#76 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/76>`_)
+  * Revert "Export rosidl_typesupport_fastrtps_c* dependencies (`#75 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/75>`_)"
+  * Revert "Bundle and ensure the exportation of rosidl generated targets (`#73 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/73>`_)"
+* Correctly inform that a BoundedSequence is bounded (`#71 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/71>`_)
+* Contributors: Michel Hidalgo, Miguel Company
+
 2.0.1 (2021-07-28)
 ------------------
 * Export rosidl_typesupport_fastrtps_c* dependencies (`#75 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/75>`_)
