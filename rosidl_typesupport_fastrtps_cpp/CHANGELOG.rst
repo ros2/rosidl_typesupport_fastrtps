@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.4 (2021-08-31)
+------------------
+* Replace connext with fastrtps in comments (`#74 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/74>`_)
+* Contributors: VictorLee
+
 1.0.3 (2021-04-14)
 ------------------
 * Update quality declaration links (re: `ros2/docs.ros2.org#52 <https://github.com/ros2/docs.ros2.org/issues/52>`_) (`#70 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/70>`_)
