@@ -122,7 +122,7 @@ cdr_serialize(
     cdr << ros_message.@(member.name);
 @[      else]@
     cdr << static_cast<uint32_t>(size);
-@[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename not in ('boolean', 'wchar',)]@
+@[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename not in ('boolean', 'wchar')]@
     cdr.serializeArray(&(ros_message.@(member.name)[0]), size);
 @[        else]@
 @[            if isinstance(member.type.value_type, AbstractWString)]@
@@ -209,7 +209,7 @@ cdr_deserialize(
     cdr >> cdrSize;
     size_t size = static_cast<size_t>(cdrSize);
     ros_message.@(member.name).resize(size);
-@[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename not in ('boolean', 'wchar',)]@
+@[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename not in ('boolean', 'wchar')]@
     cdr.deserializeArray(&(ros_message.@(member.name)[0]), size);
 @[        else]@
 @[            if isinstance(member.type.value_type, AbstractWString)]@
