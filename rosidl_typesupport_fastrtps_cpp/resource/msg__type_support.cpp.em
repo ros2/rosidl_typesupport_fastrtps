@@ -123,7 +123,7 @@ cdr_serialize(
 @[      else]@
     cdr << static_cast<uint32_t>(size);
 @[        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename not in ('boolean', 'wchar')]@
-    if (size > 0)  {
+    if (size > 0) {
       cdr.serializeArray(&(ros_message.@(member.name)[0]), size);
     }
 @[        else]@
