@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.3 (2021-11-18)
+------------------
 * Re-introduce improvements to serialization of primitive bounded sequences for C++ type support (`#81 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/81>`_)
 * Revert "Improve serialization of ... (`#79 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/79>`_)" (`#80 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/80>`_)
 * Improve serialization of primitive bounded sequences in C++ type support (`#79 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/79>`_)
