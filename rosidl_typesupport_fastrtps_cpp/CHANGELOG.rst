@@ -2,6 +2,14 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Re-introduce improvements to serialization of primitive bounded sequences for C++ type support (`#81 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/81>`_)
+* Revert "Improve serialization of ... (`#79 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/79>`_)" (`#80 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/80>`_)
+* Improve serialization of primitive bounded sequences in C++ type support (`#79 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/79>`_)
+* Use FindPython3 explicitly instead of PythonInterp implicitly (`#78 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/78>`_)
+* Contributors: Andrea Sorbini, Jorge Perez, Shane Loretz
+
 2.0.2 (2021-08-09)
 ------------------
 * Revert rosidl targets and dependencies exportation (`#76 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/76>`_)

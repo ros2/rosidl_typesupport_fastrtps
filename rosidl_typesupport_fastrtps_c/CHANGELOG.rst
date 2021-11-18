@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use FindPython3 explicitly instead of PythonInterp implicitly (`#78 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/78>`_)
+* Contributors: Shane Loretz
+
 2.0.2 (2021-08-09)
 ------------------
 * Revert rosidl targets and dependencies exportation (`#76 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/76>`_)
