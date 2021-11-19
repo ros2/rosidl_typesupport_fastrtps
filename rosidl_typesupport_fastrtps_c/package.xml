@@ -4,10 +4,14 @@
   <name>rosidl_typesupport_fastrtps_c</name>
   <version>2.0.3</version>
   <description>Generate the C interfaces for eProsima FastRTPS.</description>
-  <maintainer email="michel@ekumenlabs.com">Michel Hidalgo</maintainer>
+
+  <maintainer email="shane@openrobotics.org">Shane Loretz</maintainer>
+
   <license>Apache License 2.0</license>
-  <author>Ricardo González</author>
+
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
+  <author email="michel@ekumenlabs.com">Michel Hidalgo</author>
+  <author>Ricardo González</author>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
   <buildtool_depend>fastrtps_cmake_module</buildtool_depend>
