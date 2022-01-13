@@ -2,6 +2,16 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.4 (2022-01-13)
+------------------
+* Fix include order for cpplint (`#84 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/84>`_)
+  * Fix include order for cpplint
+  Relates to https://github.com/ament/ament_lint/pull/324
+  * Use double-quotes for other includes
+  This is backwards compatible with older versions of cpplint.
+* Update maintainers to Shane Loretz (`#83 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/83>`_)
+* Contributors: Audrow Nash, Jacob Perron
+
 2.0.3 (2021-11-18)
 ------------------
 * Re-introduce improvements to serialization of primitive bounded sequences for C++ type support (`#81 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/81>`_)
