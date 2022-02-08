@@ -42,7 +42,6 @@ ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
 ament_export_dependencies(rosidl_typesupport_fastrtps_cpp)
-ament_export_include_directories(include)
 
 ament_python_install_package(${PROJECT_NAME})
 
@@ -55,11 +54,16 @@ if(WIN32)
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 ament_target_dependencies(${PROJECT_NAME}
   "rosidl_typesupport_fastrtps_cpp"
   "rosidl_runtime_c")
+
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_libraries(${PROJECT_NAME})
+
+# Export modern CMake targets
 ament_export_targets(${PROJECT_NAME})
 
 ament_index_register_resource("rosidl_typesupport_c")
@@ -127,7 +131,7 @@ install(
 
 install(
   DIRECTORY include/
-  DESTINATION include
+  DESTINATION include/${PROJECT_NAME}
 )
 
 install(
