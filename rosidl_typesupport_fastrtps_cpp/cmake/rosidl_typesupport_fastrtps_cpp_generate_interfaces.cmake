@@ -117,59 +117,45 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PROPERTIES CXX_STANDARD 14)
 
 # Set flag for visibility macro
-if(WIN32)
-  target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}")
-endif()
+target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+  PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}")
 
 # Set compiler flags
 if(NOT WIN32)
-  set(_target_compile_flags "-Wall -Wextra -Wpedantic")
+  list(APPEND _target_compile_flags -Wall -Wextra -Wpedantic)
 else()
-  set(_target_compile_flags
-    "/W4"
-  )
+  list(APPEND _target_compile_flags /W4)
 endif()
-string(REPLACE ";" " " _target_compile_flags "${_target_compile_flags}")
-set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  PROPERTIES COMPILE_FLAGS "${_target_compile_flags}")
+target_compile_options(${rosidl_generate_interfaces_TARGET}${_target_suffix} PRIVATE ${_target_compile_flags})
 
-# Include headers from other generators
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
 
-ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  "fastcdr"
-  "rmw"
-  "rosidl_runtime_c"
-  "rosidl_typesupport_fastrtps_cpp"
-  "rosidl_typesupport_interface")
+target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
+  fastcdr
+  rmw::rmw
+  rosidl_runtime_c::rosidl_runtime_c
+  rosidl_runtime_cpp::rosidl_runtime_cpp
+  rosidl_typesupport_interface::rosidl_typesupport_interface
+  rosidl_typesupport_fastrtps_cpp::rosidl_typesupport_fastrtps_cpp)
 
 # Depend on dependencies
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
-  ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    ${_pkg_name})
-  target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    ${${_pkg_name}_LIBRARIES${_target_suffix}})
+  target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
+    ${${_pkg_name}_TARGETS${_target_suffix}})
 endforeach()
 
-target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp
-  fastcdr)
+# Depend on the target created by rosidl_generator_cpp
+target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
+  ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp)
 
 # Make top level generation target depend on this library
 add_dependencies(
   ${rosidl_generate_interfaces_TARGET}
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
-)
-
-# Make this library depend on target created by rosidl_generator_cpp
-add_dependencies(
-  ${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  ${rosidl_generate_interfaces_TARGET}__cpp
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
@@ -179,43 +165,45 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
     PATTERN "*.cpp" EXCLUDE
   )
 
-  if(NOT _generated_files STREQUAL "")
-    ament_export_include_directories(include)
-  endif()
+  # Export old-style CMake variables
+  ament_export_include_directories("include")
+  rosidl_export_typesupport_libraries(${_target_suffix}
+    ${rosidl_generate_interfaces_TARGET}${_target_suffix})
+
+  #Export modern CMake targets
+  ament_export_targets(export_${rosidl_generate_interfaces_TARGET}${_target_suffix})
+  rosidl_export_typesupport_targets(${_target_suffix}
+    ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 
   install(
     TARGETS ${rosidl_generate_interfaces_TARGET}${_target_suffix}
+    EXPORT export_${rosidl_generate_interfaces_TARGET}${_target_suffix}
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
-
-  rosidl_export_typesupport_libraries(${_target_suffix}
-    ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 endif()
 
 if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
-  if(NOT _generated_files STREQUAL "")
-    find_package(ament_cmake_cppcheck REQUIRED)
-    ament_cppcheck(
-      TESTNAME "cppcheck_rosidl_typesupport_fastrtps_cpp"
-      ${_generated_files})
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck(
+    TESTNAME "cppcheck_rosidl_typesupport_fastrtps_cpp"
+    ${_generated_files})
 
-    find_package(ament_cmake_cpplint REQUIRED)
-    get_filename_component(_cpplint_root "${_output_path}" DIRECTORY)
-    ament_cpplint(
-      TESTNAME "cpplint_rosidl_typesupport_fastrtps_cpp"
-      # the generated code might contain longer lines for templated types
-      MAX_LINE_LENGTH 999
-      ROOT "${_cpplint_root}"
-      ${_generated_files})
+  find_package(ament_cmake_cpplint REQUIRED)
+  get_filename_component(_cpplint_root "${_output_path}" DIRECTORY)
+  ament_cpplint(
+    TESTNAME "cpplint_rosidl_typesupport_fastrtps_cpp"
+    # the generated code might contain longer lines for templated types
+    MAX_LINE_LENGTH 999
+    ROOT "${_cpplint_root}"
+    ${_generated_files})
 
-    find_package(ament_cmake_uncrustify REQUIRED)
-    ament_uncrustify(
-      TESTNAME "uncrustify_rosidl_typesupport_fastrtps_cpp"
-      # the generated code might contain longer lines for templated types
-      # set the value to zero to tell uncrustify to ignore line lengths
-      MAX_LINE_LENGTH 0
-      ${_generated_files})
-  endif()
+  find_package(ament_cmake_uncrustify REQUIRED)
+  ament_uncrustify(
+    TESTNAME "uncrustify_rosidl_typesupport_fastrtps_cpp"
+    # the generated code might contain longer lines for templated types
+    # set the value to zero to tell uncrustify to ignore line lengths
+    MAX_LINE_LENGTH 0
+    ${_generated_files})
 endif()

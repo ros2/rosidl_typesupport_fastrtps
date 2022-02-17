@@ -31,10 +31,13 @@ endif()
 
 find_package(ament_cmake_python REQUIRED)
 
+find_package(rmw REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
+find_package(fastcdr REQUIRED)
+
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
-ament_export_dependencies(rosidl_runtime_cpp)
 ament_export_dependencies(rosidl_typesupport_interface)
 
 ament_python_install_package(${PROJECT_NAME})
@@ -49,6 +52,10 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  fastcdr
+  rosidl_runtime_c::rosidl_runtime_c
+  rmw::rmw)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
