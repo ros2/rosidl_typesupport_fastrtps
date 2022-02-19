@@ -12,9 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if(NOT TARGET ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp)
+  message(FATAL_ERROR
+    "The 'rosidl_generator_cpp' extension must be executed before the "
+    "'rosidl_typesupport_fastrtps_cpp' extension.")
+endif()
+
 find_package(ament_cmake_ros REQUIRED)
 find_package(fastrtps_cmake_module QUIET)
 find_package(fastcdr REQUIRED CONFIG)
+find_package(rmw REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
+find_package(rosidl_runtime_cpp REQUIRED)
+find_package(rosidl_typesupport_interface REQUIRED)
 
 
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp/${PROJECT_NAME}")
