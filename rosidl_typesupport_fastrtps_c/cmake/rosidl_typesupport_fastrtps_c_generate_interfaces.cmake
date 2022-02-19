@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if(NOT TARGET ${rosidl_generate_interfaces_TARGET}__rosidl_generator_c)
+  message(FATAL_ERROR
+    "The 'rosidl_generator_c' extension must be executed before the "
+    "'rosidl_typesupport_fastrtps_c' extension.")
+endif()
+
 find_package(ament_cmake_ros REQUIRED)
 find_package(fastrtps_cmake_module QUIET)
 find_package(fastcdr REQUIRED CONFIG)
 find_package(rosidl_typesupport_interface REQUIRED)
 find_package(rosidl_typesupport_fastrtps_cpp REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
 
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_c/${PROJECT_NAME}")
@@ -94,7 +101,6 @@ configure_file(
 
 set(_target_suffix "__rosidl_typesupport_fastrtps_c")
 
-link_directories(${fastcdr_LIBRARY_DIRS})
 add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${_generated_files})
 if(rosidl_generate_interfaces_LIBRARY_NAME)
@@ -122,7 +128,7 @@ else()
 endif()
 target_compile_options(${rosidl_generate_interfaces_TARGET}${_target_suffix} PRIVATE ${_target_compile_flags})
 
-# This generator depends on the output of another rosidl generator
+# This generator depends on the output of rosidl_generator_c
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
   ${rosidl_generate_interfaces_TARGET}__rosidl_generator_c)
 
