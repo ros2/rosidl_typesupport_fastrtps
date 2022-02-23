@@ -141,7 +141,7 @@ target_compile_options(${rosidl_generate_interfaces_TARGET}${_target_suffix} PRI
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
@@ -192,6 +192,14 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
+
+  ament_export_dependencies(fastrtps_cmake_module)
+  ament_export_dependencies(fastcdr)
+  ament_export_dependencies(rmw)
+  ament_export_dependencies(rosidl_runtime_c)
+  ament_export_dependencies(rosidl_runtime_cpp)
+  ament_export_dependencies(rosidl_typesupport_fastrtps_cpp)
+  ament_export_dependencies(rosidl_typesupport_interface)
 endif()
 
 if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
