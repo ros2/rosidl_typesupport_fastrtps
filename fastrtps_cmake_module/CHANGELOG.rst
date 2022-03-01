@@ -2,6 +2,9 @@
 Changelog for package fastrtps_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.4 (2022-01-13)
 ------------------
 * Update maintainers to Shane Loretz (`#83 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/83>`_)

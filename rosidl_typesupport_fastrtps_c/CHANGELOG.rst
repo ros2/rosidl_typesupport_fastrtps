@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Install headers to include/${PROJECT_NAME} (`#86 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/86>`_)
+* Contributors: Shane Loretz
+
 2.0.4 (2022-01-13)
 ------------------
 * Fix include order for cpplint (`#84 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/84>`_)
