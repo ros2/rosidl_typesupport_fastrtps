@@ -180,7 +180,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
   rosidl_export_typesupport_libraries(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 
-  #Export modern CMake targets
+  # Export modern CMake targets
   ament_export_targets(export_${rosidl_generate_interfaces_TARGET}${_target_suffix})
   rosidl_export_typesupport_targets(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
