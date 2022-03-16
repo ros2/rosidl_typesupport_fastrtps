@@ -122,9 +122,9 @@ target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL_${PROJECT_NAME}")
 
 if(NOT WIN32)
-  list(APPEND _target_compile_flags -Wall -Wextra -Wpedantic)
+  set(_target_compile_flags -Wall -Wextra -Wpedantic)
 else()
-  list(APPEND _target_compile_flags /W4)
+  set(_target_compile_flags /W4)
 endif()
 target_compile_options(${rosidl_generate_interfaces_TARGET}${_target_suffix} PRIVATE ${_target_compile_flags})
 
