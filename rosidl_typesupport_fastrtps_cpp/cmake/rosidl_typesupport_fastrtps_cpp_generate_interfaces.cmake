@@ -150,10 +150,8 @@ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 
 # Depend on dependencies
 foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
-  ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    ${_pkg_name})
   target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-    ${${_pkg_name}_LIBRARIES${_target_suffix}})
+    ${_pkg_name}::${_pkg_name}${_target_suffix})
 endforeach()
 
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
@@ -192,6 +190,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
 
   rosidl_export_typesupport_libraries(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
+  ament_export_targets(${rosidl_generate_interfaces_TARGET}${_target_suffix})
 endif()
 
 if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
