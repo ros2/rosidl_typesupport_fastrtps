@@ -122,13 +122,10 @@ if(rosidl_generate_interfaces_LIBRARY_NAME)
     PROPERTIES OUTPUT_NAME "${rosidl_generate_interfaces_LIBRARY_NAME}${_target_suffix}")
 endif()
 
-# set C++ standard
 set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  PROPERTIES CXX_STANDARD 14)
-
-# Set flag for visibility macro
-target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}")
+  PROPERTIES
+    DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}"
+    CXX_STANDARD 14)
 
 # Set compiler flags
 if(NOT WIN32)

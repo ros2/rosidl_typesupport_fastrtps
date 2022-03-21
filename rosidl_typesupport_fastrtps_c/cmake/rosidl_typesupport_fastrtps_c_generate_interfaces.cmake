@@ -108,7 +108,9 @@ if(rosidl_generate_interfaces_LIBRARY_NAME)
     PROPERTIES OUTPUT_NAME "${rosidl_generate_interfaces_LIBRARY_NAME}${_target_suffix}")
 endif()
 set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  PROPERTIES CXX_STANDARD 14)
+  PROPERTIES
+    DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL_${PROJECT_NAME}"
+    CXX_STANDARD 14)
 
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
   fastcdr
@@ -117,9 +119,6 @@ target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBL
   rosidl_typesupport_interface::rosidl_typesupport_interface
   rosidl_typesupport_fastrtps_cpp::rosidl_typesupport_fastrtps_cpp
   rosidl_typesupport_fastrtps_c::rosidl_typesupport_fastrtps_c)
-
-target_compile_definitions(${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL_${PROJECT_NAME}")
 
 if(NOT WIN32)
   set(_target_compile_flags -Wall -Wextra -Wpedantic)
