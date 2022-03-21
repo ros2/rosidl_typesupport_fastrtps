@@ -43,8 +43,8 @@ ament_python_install_package(${PROJECT_NAME})
 add_library(${PROJECT_NAME}
   src/identifier.cpp
   src/wstring_conversion.cpp)
-target_compile_definitions(${PROJECT_NAME}
-  PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL")
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL")
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
