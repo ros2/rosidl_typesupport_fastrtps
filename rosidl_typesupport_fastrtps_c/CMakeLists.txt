@@ -26,8 +26,6 @@ endif()
 
 find_package(ament_cmake_ros REQUIRED)
 
-find_package(fastrtps_cmake_module REQUIRED)
-find_package(fastcdr REQUIRED CONFIG)
 if(FASTRTPS_STATIC_DISABLE)
   ament_package()
   message(STATUS "fastrtps static rmw implementation explicitly disabled - skipping '${PROJECT_NAME}'")
@@ -36,28 +34,22 @@ endif()
 
 find_package(ament_cmake_python REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
-find_package(rosidl_typesupport_fastrtps_cpp REQUIRED)
 
-ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
-ament_export_dependencies(rosidl_typesupport_fastrtps_cpp)
 
 ament_python_install_package(${PROJECT_NAME})
 
 add_library(${PROJECT_NAME}
   src/identifier.cpp
   src/wstring_conversion.cpp)
-if(WIN32)
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL")
-endif()
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_C_BUILDING_DLL")
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-ament_target_dependencies(${PROJECT_NAME}
-  "rosidl_typesupport_fastrtps_cpp"
-  "rosidl_runtime_c")
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  rosidl_runtime_c::rosidl_runtime_c)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")

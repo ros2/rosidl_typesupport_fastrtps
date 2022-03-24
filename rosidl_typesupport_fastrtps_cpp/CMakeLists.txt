@@ -31,24 +31,29 @@ endif()
 
 find_package(ament_cmake_python REQUIRED)
 
+find_package(rmw REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
+
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
-ament_export_dependencies(rosidl_runtime_cpp)
-ament_export_dependencies(rosidl_typesupport_interface)
+ament_export_dependencies(fastrtps_cmake_module)
+ament_export_dependencies(fastcdr)
 
 ament_python_install_package(${PROJECT_NAME})
 
 add_library(${PROJECT_NAME} SHARED
   src/identifier.cpp
   src/wstring_conversion.cpp)
-if(WIN32)
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL")
-endif()
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL")
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  fastcdr
+  rosidl_runtime_c::rosidl_runtime_c
+  rmw::rmw)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
