@@ -138,7 +138,7 @@ target_compile_options(${rosidl_generate_interfaces_TARGET}${_target_suffix} PRI
 target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp>"
-  "$<INSTALL_INTERFACE:include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
 
 target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBLIC
@@ -168,12 +168,12 @@ add_dependencies(
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
   install(
     DIRECTORY "${_output_path}/"
-    DESTINATION "include/${PROJECT_NAME}"
+    DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}"
     PATTERN "*.cpp" EXCLUDE
   )
 
   # Export old-style CMake variables
-  ament_export_include_directories("include")
+  ament_export_include_directories("include/${PROJECT_NAME}")
   rosidl_export_typesupport_libraries(${_target_suffix}
     ${rosidl_generate_interfaces_TARGET}${_target_suffix})
 
