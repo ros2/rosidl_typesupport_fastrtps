@@ -2,6 +2,12 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Install generated headers to include/${PROJECT_NAME} (`#88 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/88>`_)
+* Misc fastrtps typesupport generator cleanup (`#87 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/87>`_)
+* Contributors: Shane Loretz
+
 2.1.0 (2022-03-01)
 ------------------
 * Install headers to include/${PROJECT_NAME} (`#86 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/86>`_)
