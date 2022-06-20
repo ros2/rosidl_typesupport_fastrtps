@@ -7,9 +7,11 @@ from rosidl_parser.definition import AbstractWString
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
+from rosidl_parser.definition import EnumerationType
 from rosidl_parser.definition import NamespacedType
 
 header_files = [
+    'type_traits',
     'limits',
     'stdexcept',
     'string',
@@ -71,7 +73,37 @@ max_serialized_size_@(type_.name)(
 
 @[  end if]@
 @[end for]@
-@
+@[if message.enumerations]@
+// enums (de)serialization overloading
+namespace eprosima
+{
+
+namespace fastcdr
+{
+
+@[for member in message.enumerations]@
+@{
+type_ = member.enumeration_type
+type_ = '::'.join(member.enumeration_type.namespaced_name())
+}@
+Cdr & operator<<(Cdr & cdr, const @(type_) & enum_)
+{
+  return cdr.serialize(static_cast<int>(enum_));
+}
+
+Cdr & operator>>(Cdr & cdr, @(type_) & enum_)
+{
+  typename std::underlying_type<@(type_)>::type tmp;
+  cdr.deserialize(tmp);
+  enum_ = static_cast<@(type_)>(tmp);
+  return cdr;
+}
+@[end for]@
+
+}  // namespace fastcdr
+
+}  // namespace eprosima
+@[end if]@
 @[  for ns in message.structure.namespaced_type.namespaces]@
 
 namespace @(ns)
@@ -92,7 +124,11 @@ cdr_serialize(
 @[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
-@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
+@[      if isinstance(member.type.value_type, EnumerationType)]@
+    for (size_t i = 0; i < @(member.type.size); i++) {
+      cdr << ros_message.@(member.name)[i];
+    }
+@[      elif not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
     cdr << ros_message.@(member.name);
 @[      else]@
 @[        if isinstance(member.type.value_type, AbstractWString)]@
@@ -110,7 +146,7 @@ cdr_serialize(
     }
 @[      end if]@
 @[    else]@
-@[      if isinstance(member.type, BoundedSequence) or isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
+@[      if isinstance(member.type, BoundedSequence) or isinstance(member.type.value_type, (NamespacedType, AbstractWString, EnumerationType))]@
     size_t size = ros_message.@(member.name).size();
 @[        if isinstance(member.type, BoundedSequence)]@
     if (size > @(member.type.maximum_size)) {
@@ -118,7 +154,7 @@ cdr_serialize(
     }
 @[        end if]@
 @[      end if]@
-@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString)) and not isinstance(member.type, BoundedSequence)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString, EnumerationType)) and not isinstance(member.type, BoundedSequence)]@
     cdr << ros_message.@(member.name);
 @[      else]@
     cdr << static_cast<uint32_t>(size);
@@ -182,7 +218,11 @@ cdr_deserialize(
 @[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
-@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
+@[      if isinstance(member.type.value_type, EnumerationType)]@
+    for (size_t i = 0; i < @(member.type.size); i++) {
+      cdr >> ros_message.@(member.name)[i];
+    }
+@[      elif not isinstance(member.type.value_type, (NamespacedType, AbstractWString))]@
     cdr >> ros_message.@(member.name);
 @[      else]@
 @[        if isinstance(member.type.value_type, AbstractWString)]@
@@ -204,7 +244,7 @@ cdr_deserialize(
     }
 @[      end if]@
 @[    else]@
-@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString)) and not isinstance(member.type, BoundedSequence)]@
+@[      if not isinstance(member.type.value_type, (NamespacedType, AbstractWString, EnumerationType)) and not isinstance(member.type, BoundedSequence)]@
     cdr >> ros_message.@(member.name);
 @[      else]@
     uint32_t cdrSize;
@@ -318,7 +358,7 @@ get_serialized_size(
 @[      end if]@
         (ros_message.@(member.name)[index].size() + 1);
     }
-@[    elif isinstance(member.type.value_type, BasicType)]@
+@[    elif isinstance(member.type.value_type, (BasicType, EnumerationType))]@
     size_t item_size = sizeof(ros_message.@(member.name)[0]);
     current_alignment += array_size * item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
@@ -338,7 +378,7 @@ get_serialized_size(
     wchar_size *
 @[      end if]@
     (ros_message.@(member.name).size() + 1);
-@[    elif isinstance(member.type, BasicType)]@
+@[    elif isinstance(member.type, (BasicType, EnumerationType))]@
   {
     size_t item_size = sizeof(ros_message.@(member.name));
     current_alignment += item_size +
@@ -432,6 +472,9 @@ if isinstance(type_, AbstractNestedType):
     current_alignment += array_size * sizeof(long double) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(long double));
 @[    end if]@
+@[  elif isinstance(type_, EnumerationType)]@
+    current_alignment += array_size * sizeof(@('::'.join(type_.namespaced_name()))) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(@('::'.join(type_.namespaced_name()))));
 @[  else]
     for (size_t index = 0; index < array_size; ++index) {
       bool inner_full_bounded;

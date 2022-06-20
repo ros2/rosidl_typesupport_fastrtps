@@ -12,6 +12,7 @@ from rosidl_parser.definition import ACTION_RESULT_SUFFIX
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
+from rosidl_parser.definition import EnumerationType
 from rosidl_parser.definition import NamespacedType
 
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
@@ -143,6 +144,36 @@ ROSIDL_TYPESUPPORT_FASTRTPS_C_IMPORT_@(package_name)
 const rosidl_message_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join(key)))();
 @[end for]@
+@[if message.enumerations]@
+// enums (de)serialization overloading
+namespace eprosima
+{
+
+namespace fastcdr
+{
+
+@[for member in message.enumerations]@
+@{
+type_ = '__'.join(member.enumeration_type.namespaced_name())
+}@
+Cdr & operator<<(Cdr & cdr, const @(type_) & enum_)
+{
+  return cdr.serialize(static_cast<int>(enum_));
+}
+
+Cdr & operator>>(Cdr & cdr, @(type_) & enum_)
+{
+  typename std::underlying_type<@(type_)>::type tmp;
+  cdr.deserialize(tmp);
+  enum_ = static_cast<@(type_)>(tmp);
+  return cdr;
+}
+@[end for]@
+
+}  // namespace fastcdr
+
+}  // namespace eprosima
+@[end if]@
 
 @# // Make callback functions specific to this message type.
 
@@ -225,6 +256,10 @@ if isinstance(type_, AbstractNestedType):
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.serializeArray(array_ptr, size);
+@[    elif isinstance(member.type.value_type, EnumerationType)]@
+    for (size_t i = 0; i < size; ++i) {
+      cdr << array_ptr[i];
+    }
 @[    else]@
     for (size_t i = 0; i < size; ++i) {
       if (!callbacks->cdr_serialize(
@@ -253,7 +288,7 @@ if isinstance(type_, AbstractNestedType):
     cdr << (ros_message->@(member.name) ? true : false);
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
     cdr << static_cast<wchar_t>(ros_message->@(member.name));
-@[  elif isinstance(member.type, BasicType)]@
+@[  elif isinstance(member.type, (BasicType, EnumerationType))]@
     cdr << ros_message->@(member.name);
 @[  else]@
     if (!callbacks->cdr_serialize(
@@ -370,6 +405,10 @@ else:
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     cdr.deserializeArray(array_ptr, size);
+@[    elif isinstance(member.type.value_type, EnumerationType)]@
+    for (size_t i = 0; i < size; ++i) {
+      cdr >> array_ptr[i];
+    }
 @[    else]@
     for (size_t i = 0; i < size; ++i) {
       if (!callbacks->cdr_deserialize(
@@ -412,7 +451,7 @@ else:
     wchar_t tmp;
     cdr >> tmp;
     ros_message->@(member.name) = static_cast<char16_t>(tmp);
-@[  elif isinstance(member.type, BasicType)]@
+@[  elif isinstance(member.type, (BasicType, EnumerationType))]@
     cdr >> ros_message->@(member.name);
 @[  else]@
     if (!callbacks->cdr_deserialize(
@@ -463,7 +502,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
 @[      end if]@
         (array_ptr[index].size + 1);
     }
-@[    elif isinstance(member.type.value_type, BasicType)]@
+@[    elif isinstance(member.type.value_type, (BasicType, EnumerationType))]@
     (void)array_ptr;
     size_t item_size = sizeof(array_ptr[0]);
     current_alignment += array_size * item_size +
@@ -483,7 +522,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
     wchar_size *
 @[      end if]@
     (ros_message->@(member.name).size + 1);
-@[    elif isinstance(member.type, BasicType)]@
+@[    elif isinstance(member.type, (BasicType, EnumerationType))]@
   {
     size_t item_size = sizeof(ros_message->@(member.name));
     current_alignment += item_size +
@@ -581,6 +620,9 @@ if isinstance(type_, AbstractNestedType):
     current_alignment += array_size * sizeof(long double) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(long double));
 @[    end if]@
+@[  elif isinstance(type_, EnumerationType)]
+    current_alignment += array_size * sizeof(@('__'.join(type_.namespaced_name()))) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(@('__'.join(type_.namespaced_name()))));
 @[  else]
     for (size_t index = 0; index < array_size; ++index) {
       bool inner_full_bounded;
