@@ -35,7 +35,6 @@ find_package(rmw REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
 
 ament_export_dependencies(rmw)
-ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_runtime_c)
 ament_export_dependencies(fastrtps_cmake_module)
 ament_export_dependencies(fastcdr)
