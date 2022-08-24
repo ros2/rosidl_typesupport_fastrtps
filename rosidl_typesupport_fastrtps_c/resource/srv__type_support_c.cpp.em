@@ -63,8 +63,8 @@ extern "C"
 void * rosidl_typesupport_fastrtps_c_@('__'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))__service_introspection_message__create (
     const rosidl_service_introspection_info_t * info,
     rcutils_allocator_t * allocator,
-    void * request_message,
-    void * response_message,
+    const void * request_message,
+    const void * response_message,
     bool enable_message_payload)
 {
   auto * event_msg = static_cast<@event_type *>(allocator->zero_allocate(1, sizeof(@event_type), allocator->state));
@@ -135,10 +135,6 @@ bool rosidl_typesupport_fastrtps_c_@('__'.join([package_name, *interface_path.pa
   return true;
 }
 
-
-
-
-
 static service_type_support_callbacks_t @(service.namespaced_type.name)__callbacks = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(service.namespaced_type.name)",
@@ -154,17 +150,6 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
   rosidl_typesupport_fastrtps_c_@('__'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))__service_introspection_message__destroy,
   &_@(service.namespaced_type.name)_Event__type_support
 };
-
-
-
-
-
-
-
-
-
-
-
 
 const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name])))() {
