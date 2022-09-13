@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Replace rosidl_cmake imports with rosidl_pycommon (`#91 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/91>`_)
+* Contributors: Jacob Perron
+
 2.3.0 (2022-05-04)
 ------------------
 
