@@ -3,7 +3,6 @@
 from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 from rosidl_parser.definition import SERVICE_REQUEST_MESSAGE_SUFFIX
 from rosidl_parser.definition import SERVICE_RESPONSE_MESSAGE_SUFFIX
-from rosidl_parser.definition import SERVICE_EVENT_MESSAGE_SUFFIX
 
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
@@ -68,64 +67,12 @@ extern "C"
 {
 #endif
 
-@{
-event_type = '::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]) + SERVICE_EVENT_MESSAGE_SUFFIX
-}@
-void *
-rosidl_@('_'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_introspection_message_create(
-  const rosidl_service_introspection_info_t * info,
-  rcutils_allocator_t * allocator,
-  const void * request_message,
-  const void * response_message,
-  bool enable_message_payload)
-{
-  auto * event_msg = static_cast<@event_type *>(allocator->zero_allocate(1, sizeof(@event_type), allocator->state));
-  if (nullptr == event_msg) {
-    return NULL;
-  }
-  event_msg = new(event_msg) @(event_type)();
-
-  event_msg->info.set__event_type(info->event_type);
-  event_msg->info.set__sequence_number(info->sequence_number);
-  event_msg->info.stamp.set__sec(info->stamp_sec);
-  event_msg->info.stamp.set__nanosec(info->stamp_nanosec);
-
-  std::array<uint8_t, 16> client_id;
-  std::move(std::begin(info->client_id), std::end(info->client_id), client_id.begin());
-  event_msg->info.client_id.set__uuid(client_id);
-
-  if (enable_message_payload) {
-    if (nullptr == request_message) {
-      event_msg->response.push_back(*static_cast<const @('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]) + SERVICE_RESPONSE_MESSAGE_SUFFIX) *>(response_message));
-    } else if (nullptr == response_message) {
-      event_msg->request.push_back(*static_cast<const @('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]) + SERVICE_REQUEST_MESSAGE_SUFFIX) *>(request_message));
-    } else {
-      throw std::invalid_argument("request_message and response_message cannot be both non-null");
-    }
-  }
-
-  return event_msg;
-}
-
-#include <memory>
-
-bool
-rosidl_@('_'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_introspection_message_destroy(
-  void * event_msg,
-  rcutils_allocator_t * allocator)
-{
-  auto * event_msg_ = static_cast<@event_type *>(event_msg);
-  event_msg_->~@(service.namespaced_type.name+SERVICE_EVENT_MESSAGE_SUFFIX)();
-  allocator->deallocate(event_msg, allocator->state);
-  return true;
-}
-
 static const rosidl_service_type_support_t _@(service.namespaced_type.name)__handle{
   rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
   &_@(service.namespaced_type.name)__callbacks,
   get_service_typesupport_handle_function,
-  rosidl_@('_'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_introspection_message_create,
-  rosidl_@('_'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_introspection_message_destroy,
+  &::rosidl_typesupport_cpp::service_create_event_message<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))>,
+  &::rosidl_typesupport_cpp::service_destroy_event_message<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))>,
   ::rosidl_typesupport_fastrtps_cpp::get_message_type_support_handle<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_Event>(),
 };
 
