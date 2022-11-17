@@ -32,6 +32,7 @@ TEMPLATE(
 @{
 header_files = [
     'rmw/error_handling.h',
+    'rosidl_typesupport_cpp/service_type_support.hpp',
     'rosidl_typesupport_fastrtps_cpp/identifier.hpp',
     'rosidl_typesupport_fastrtps_cpp/service_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/service_type_support_decl.hpp',
