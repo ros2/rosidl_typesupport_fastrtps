@@ -64,11 +64,11 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
   get_service_typesupport_handle_function,
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_CREATE_EVENT_MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_c,
-    @(',\n  '.join(service.namespaced_type.namespaced_name()))
+    @(',\n    '.join(service.namespaced_type.namespaced_name()))
   ),
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_DESTROY_EVENT_MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_c,
-    @(',\n  '.join(service.namespaced_type.namespaced_name()))
+    @(',\n    '.join(service.namespaced_type.namespaced_name()))
   ),
   &_@(service.namespaced_type.name)_Event__type_support
 };
