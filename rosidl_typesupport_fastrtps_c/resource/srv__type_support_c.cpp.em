@@ -14,6 +14,13 @@ TEMPLATE(
 }@
 
 @{
+TEMPLATE(
+    'msg__type_support_c.cpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.event_message,
+    include_directives=include_directives)
+}@
+
+@{
 from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 
 include_parts = [package_name] + list(interface_path.parents[0].parts) + \
@@ -55,6 +62,15 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
   rosidl_typesupport_fastrtps_c__identifier,
   &@(service.namespaced_type.name)__callbacks,
   get_service_typesupport_handle_function,
+  ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_CREATE_EVENT_MESSAGE_SYMBOL_NAME(
+    rosidl_typesupport_c,
+    @(',\n    '.join(service.namespaced_type.namespaced_name()))
+  ),
+  ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_DESTROY_EVENT_MESSAGE_SYMBOL_NAME(
+    rosidl_typesupport_c,
+    @(',\n    '.join(service.namespaced_type.namespaced_name()))
+  ),
+  &_@(service.namespaced_type.name)_Event__type_support
 };
 
 const rosidl_service_type_support_t *
