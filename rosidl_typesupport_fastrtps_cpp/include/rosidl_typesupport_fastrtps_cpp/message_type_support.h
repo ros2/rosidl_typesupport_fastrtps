@@ -38,6 +38,8 @@ typedef struct message_type_support_callbacks_t
   /// The typename of this message.
   const char * message_name_;
 
+  const uint8_t * type_hash_;
+
   /// Callback function for message serialization
   /**
    * \param[in] untyped_ros_message Type erased pointer to message instance.
