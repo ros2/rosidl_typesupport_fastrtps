@@ -14,6 +14,8 @@
 
 #include <string>
 
+#include "rcutils/macros.h"
+
 #include "rosidl_runtime_c/string_functions.h"
 #include "rosidl_runtime_c/u16string_functions.h"
 
@@ -41,6 +43,7 @@ BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
   reset_heap_counters();
 
   for (auto _ : st) {
+    RCUTILS_UNUSED(_);
     rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstring, s);
   }
 
@@ -63,6 +66,7 @@ BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
   reset_heap_counters();
 
   for (auto _ : st) {
+    RCUTILS_UNUSED(_);
     std::wstring actual;
     rosidl_typesupport_fastrtps_c::u16string_to_wstring(s, actual);
   }
