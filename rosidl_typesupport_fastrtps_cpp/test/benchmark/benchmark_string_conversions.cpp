@@ -14,6 +14,8 @@
 
 #include <string>
 
+#include "rcutils/macros.h"
+
 #include "rosidl_typesupport_fastrtps_cpp/wstring_conversion.hpp"
 
 #include "performance_test_fixture/performance_test_fixture.hpp"
@@ -32,6 +34,7 @@ BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
   reset_heap_counters();
 
   for (auto _ : st) {
+    RCUTILS_UNUSED(_);
     std::u16string u16string;
     rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstring, u16string);
   }
@@ -44,6 +47,7 @@ BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
   reset_heap_counters();
 
   for (auto _ : st) {
+    RCUTILS_UNUSED(_);
     std::wstring wstring;
     rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(u16string, wstring);
   }

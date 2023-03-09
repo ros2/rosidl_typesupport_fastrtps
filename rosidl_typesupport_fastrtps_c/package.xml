@@ -47,6 +47,7 @@
   <test_depend>ament_lint_common</test_depend>
   <test_depend>osrf_testing_tools_cpp</test_depend>
   <test_depend>performance_test_fixture</test_depend>
+  <test_depend>rcutils</test_depend>
 
   <member_of_group>rosidl_typesupport_c_packages</member_of_group>
 
