@@ -59,6 +59,7 @@ namespace typesupport_fastrtps_cpp
 static service_type_support_callbacks_t _@(service.namespaced_type.name)__callbacks = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(service.namespaced_type.name)",
+  @('::'.join(service.namespaced_type.namespaced_name()))::TYPE_VERSION_HASH,
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts))), @(service.namespaced_type.name + SERVICE_REQUEST_MESSAGE_SUFFIX))(),
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts))), @(service.namespaced_type.name + SERVICE_RESPONSE_MESSAGE_SUFFIX))(),
 };

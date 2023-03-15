@@ -28,7 +28,8 @@ typedef struct service_type_support_callbacks_t
   const char * service_namespace_;
   /// The typename of this service.
   const char * service_name_;
-
+  /// The hash of the description of the type of this service.
+  const rosidl_type_hash_t type_hash_;
   /// Pointer to the request message typesupport members.
   const rosidl_message_type_support_t * request_members_;
   /// Pointer to the response message typesupport members.
