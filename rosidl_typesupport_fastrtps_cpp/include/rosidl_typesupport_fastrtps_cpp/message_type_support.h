@@ -18,7 +18,6 @@
 #include <fastcdr/Cdr.h>
 
 #include "rosidl_runtime_c/message_type_support_struct.h"
-#include "rosidl_runtime_c/type_hash.h"
 
 /// Feature define to allow API version detection
 #define ROSIDL_TYPESUPPORT_FASTRTPS_HAS_PLAIN_TYPES
@@ -38,9 +37,6 @@ typedef struct message_type_support_callbacks_t
 
   /// The typename of this message.
   const char * message_name_;
-
-  /// The hash of the description of the type of this message.
-  const rosidl_type_hash_t type_hash_;
 
   /// Callback function for message serialization
   /**

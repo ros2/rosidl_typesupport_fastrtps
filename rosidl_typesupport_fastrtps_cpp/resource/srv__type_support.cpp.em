@@ -59,7 +59,6 @@ namespace typesupport_fastrtps_cpp
 static service_type_support_callbacks_t _@(service.namespaced_type.name)__callbacks = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(service.namespaced_type.name)",
-  @('::'.join(service.namespaced_type.namespaced_name()))::TYPE_VERSION_HASH,
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts))), @(service.namespaced_type.name + SERVICE_REQUEST_MESSAGE_SUFFIX))(),
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, @(', '.join([package_name] + list(interface_path.parents[0].parts))), @(service.namespaced_type.name + SERVICE_RESPONSE_MESSAGE_SUFFIX))(),
 };
@@ -76,6 +75,7 @@ static const rosidl_service_type_support_t _@(service.namespaced_type.name)__han
   &::rosidl_typesupport_cpp::service_create_event_message<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))>,
   &::rosidl_typesupport_cpp::service_destroy_event_message<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))>,
   ::rosidl_typesupport_fastrtps_cpp::get_message_type_support_handle<@('::'.join([package_name, *interface_path.parents[0].parts, service.namespaced_type.name]))_Event>(),
+  &@('::'.join(service.namespaced_type.namespaced_name()))::TYPE_VERSION_HASH,
 };
 
 #ifdef __cplusplus

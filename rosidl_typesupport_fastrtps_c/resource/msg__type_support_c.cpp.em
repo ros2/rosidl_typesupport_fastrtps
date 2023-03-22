@@ -1,5 +1,6 @@
 @# Included from rosidl_typesupport_fastrtps_c/resource/idl__type_support_c.cpp.em
 @{
+from rosidl_generator_c import idl_structure_type_to_c_typename
 from rosidl_parser.definition import AbstractGenericString
 from rosidl_parser.definition import AbstractNestedType
 from rosidl_parser.definition import AbstractSequence
@@ -629,7 +630,6 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(ch
 static message_type_support_callbacks_t __callbacks_@(message.structure.namespaced_type.name) = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(message.structure.namespaced_type.name)",
-  @('__'.join(message.structure.namespaced_type.namespaced_name()))__TYPE_VERSION_HASH__INIT,
   _@(message.structure.namespaced_type.name)__cdr_serialize,
   _@(message.structure.namespaced_type.name)__cdr_deserialize,
   _@(message.structure.namespaced_type.name)__get_serialized_size,
@@ -640,6 +640,7 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   rosidl_typesupport_fastrtps_c__identifier,
   &__callbacks_@(message.structure.namespaced_type.name),
   get_message_typesupport_handle_function,
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__TYPE_VERSION_HASH,
 };
 
 const rosidl_message_type_support_t *

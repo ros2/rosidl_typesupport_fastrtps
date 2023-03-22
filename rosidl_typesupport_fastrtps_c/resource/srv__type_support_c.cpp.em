@@ -21,6 +21,7 @@ TEMPLATE(
 }@
 
 @{
+from rosidl_generator_c import idl_structure_type_to_c_typename
 from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 
 include_parts = [package_name] + list(interface_path.parents[0].parts) + \
@@ -54,7 +55,6 @@ extern "C"
 static service_type_support_callbacks_t @(service.namespaced_type.name)__callbacks = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(service.namespaced_type.name)",
-  @('__'.join(service.namespaced_type.namespaced_name()))__TYPE_VERSION_HASH__INIT,
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name]))_Request)(),
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, @(', '.join([package_name] + list(interface_path.parents[0].parts) + [service.namespaced_type.name]))_Response)(),
 };
@@ -71,7 +71,8 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
     rosidl_typesupport_c,
     @(',\n    '.join(service.namespaced_type.namespaced_name()))
   ),
-  &_@(service.namespaced_type.name)_Event__type_support
+  &_@(service.namespaced_type.name)_Event__type_support,
+  &@(idl_structure_type_to_c_typename(service.namespaced_type))__TYPE_VERSION_HASH,
 };
 
 const rosidl_service_type_support_t *
