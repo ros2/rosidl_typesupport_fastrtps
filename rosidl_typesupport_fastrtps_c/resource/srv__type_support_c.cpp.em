@@ -69,6 +69,7 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
   get_service_typesupport_handle_function,
   &_@(service.namespaced_type.name)@(SERVICE_REQUEST_MESSAGE_SUFFIX)__type_support,
   &_@(service.namespaced_type.name)@(SERVICE_RESPONSE_MESSAGE_SUFFIX)__type_support,
+  &_@(service.namespaced_type.name)@(SERVICE_EVENT_MESSAGE_SUFFIX)__type_support,
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_CREATE_EVENT_MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_c,
     @(',\n    '.join(service.namespaced_type.namespaced_name()))
@@ -77,7 +78,6 @@ static rosidl_service_type_support_t @(service.namespaced_type.name)__handle = {
     rosidl_typesupport_c,
     @(',\n    '.join(service.namespaced_type.namespaced_name()))
   ),
-  &_@(service.namespaced_type.name)@(SERVICE_EVENT_MESSAGE_SUFFIX)__type_support,
   &@(idl_structure_type_to_c_typename(service.namespaced_type))__@(TYPE_HASH_VAR),
 };
 
