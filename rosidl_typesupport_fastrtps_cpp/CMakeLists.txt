@@ -42,9 +42,11 @@ ament_export_dependencies(fastcdr)
 
 ament_python_install_package(${PROJECT_NAME})
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME}
   src/identifier.cpp
   src/wstring_conversion.cpp)
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL")
 target_include_directories(${PROJECT_NAME} PUBLIC
