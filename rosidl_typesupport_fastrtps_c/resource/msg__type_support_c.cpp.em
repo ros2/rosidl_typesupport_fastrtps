@@ -1,5 +1,7 @@
 @# Included from rosidl_typesupport_fastrtps_c/resource/idl__type_support_c.cpp.em
 @{
+from rosidl_generator_c import idl_structure_type_to_c_typename
+from rosidl_generator_type_description import TYPE_HASH_VAR
 from rosidl_parser.definition import AbstractGenericString
 from rosidl_parser.definition import AbstractNestedType
 from rosidl_parser.definition import AbstractSequence
@@ -8,9 +10,9 @@ from rosidl_parser.definition import AbstractWString
 from rosidl_parser.definition import ACTION_FEEDBACK_SUFFIX
 from rosidl_parser.definition import ACTION_GOAL_SUFFIX
 from rosidl_parser.definition import ACTION_RESULT_SUFFIX
+from rosidl_parser.definition import SERVICE_EVENT_MESSAGE_SUFFIX
 from rosidl_parser.definition import SERVICE_REQUEST_MESSAGE_SUFFIX
 from rosidl_parser.definition import SERVICE_RESPONSE_MESSAGE_SUFFIX
-from rosidl_parser.definition import SERVICE_EVENT_MESSAGE_SUFFIX
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
@@ -629,7 +631,6 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(ch
 static message_type_support_callbacks_t __callbacks_@(message.structure.namespaced_type.name) = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(message.structure.namespaced_type.name)",
-  @('__'.join(message.structure.namespaced_type.namespaced_name()))__TYPE_VERSION_HASH__INIT,
   _@(message.structure.namespaced_type.name)__cdr_serialize,
   _@(message.structure.namespaced_type.name)__cdr_deserialize,
   _@(message.structure.namespaced_type.name)__get_serialized_size,
@@ -640,6 +641,7 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   rosidl_typesupport_fastrtps_c__identifier,
   &__callbacks_@(message.structure.namespaced_type.name),
   get_message_typesupport_handle_function,
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(TYPE_HASH_VAR),
 };
 
 const rosidl_message_type_support_t *
