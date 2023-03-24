@@ -508,6 +508,7 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   &_@(message.structure.namespaced_type.name)__callbacks,
   get_message_typesupport_handle_function,
   &@('::'.join(message.structure.namespaced_type.namespaced_name()))::@(TYPE_HASH_VAR),
+  nullptr, // TODO(ek)
 };
 
 }  // namespace typesupport_fastrtps_cpp

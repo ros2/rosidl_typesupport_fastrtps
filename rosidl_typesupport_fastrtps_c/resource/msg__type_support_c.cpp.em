@@ -642,6 +642,7 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   &__callbacks_@(message.structure.namespaced_type.name),
   get_message_typesupport_handle_function,
   &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(TYPE_HASH_VAR),
+  NULL, // TODO(ek)
 };
 
 const rosidl_message_type_support_t *
