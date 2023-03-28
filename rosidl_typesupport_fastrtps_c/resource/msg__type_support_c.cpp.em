@@ -1,6 +1,7 @@
 @# Included from rosidl_typesupport_fastrtps_c/resource/idl__type_support_c.cpp.em
 @{
 from rosidl_generator_c import idl_structure_type_to_c_typename
+from rosidl_generator_type_description import RAW_SOURCE_VAR
 from rosidl_generator_type_description import TYPE_DESCRIPTION_VAR
 from rosidl_generator_type_description import TYPE_HASH_VAR
 from rosidl_parser.definition import AbstractGenericString
@@ -644,6 +645,7 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   get_message_typesupport_handle_function,
   &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(TYPE_HASH_VAR),
   &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(TYPE_DESCRIPTION_VAR),
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(RAW_SOURCE_VAR),
 };
 
 const rosidl_message_type_support_t *
