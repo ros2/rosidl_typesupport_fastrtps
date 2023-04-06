@@ -1,7 +1,9 @@
 @# Included from rosidl_typesupport_fastrtps_cpp/resource/idl__type_support.cpp.em
 @{
 from rosidl_generator_c import idl_structure_type_to_c_typename
-from rosidl_generator_type_description import TYPE_HASH_VAR
+from rosidl_generator_type_description import GET_DESCRIPTION_FUNC
+from rosidl_generator_type_description import GET_HASH_FUNC
+from rosidl_generator_type_description import GET_SOURCES_FUNC
 from rosidl_parser.definition import AbstractGenericString
 from rosidl_parser.definition import AbstractNestedType
 from rosidl_parser.definition import AbstractSequence
@@ -507,7 +509,9 @@ static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)_
   rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
   &_@(message.structure.namespaced_type.name)__callbacks,
   get_message_typesupport_handle_function,
-  &@('::'.join(message.structure.namespaced_type.namespaced_name()))::@(TYPE_HASH_VAR),
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(GET_HASH_FUNC),
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(GET_DESCRIPTION_FUNC),
+  &@(idl_structure_type_to_c_typename(message.structure.namespaced_type))__@(GET_SOURCES_FUNC),
 };
 
 }  // namespace typesupport_fastrtps_cpp
