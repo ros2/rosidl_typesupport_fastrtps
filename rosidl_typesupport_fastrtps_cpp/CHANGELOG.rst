@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2023-04-12)
+------------------
 * Type Description Nested Support (`#101 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/101>`_)
 * Type hashes on typesupport (rep2011) (`#98 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/98>`_)
 * Depend on ament_cmake_ros to default SHARED to ON (`#99 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/99>`_)
