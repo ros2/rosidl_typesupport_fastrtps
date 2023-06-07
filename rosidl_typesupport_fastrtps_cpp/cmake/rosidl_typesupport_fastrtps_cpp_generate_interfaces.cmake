@@ -129,7 +129,7 @@ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
 
 # Set compiler flags
 if(NOT WIN32)
-  set(_target_compile_flags -Wall -Wextra -Wpedantic)
+  set(_target_compile_flags -Wall -Wextra -Wpedantic -Wredundant-decls)
 else()
   set(_target_compile_flags /W4)
 endif()

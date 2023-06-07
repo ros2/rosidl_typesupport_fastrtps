@@ -10,17 +10,30 @@ include_base = '/'.join(include_parts)
 TEMPLATE(
     'msg__type_support.cpp.em',
     package_name=package_name, interface_path=interface_path, message=service.request_message,
-    include_directives=include_directives)
+    include_directives=include_directives,
+    forward_declared_types=forward_declared_types)
 }@
 
 @{
 TEMPLATE(
     'msg__type_support.cpp.em',
     package_name=package_name, interface_path=interface_path, message=service.response_message,
-    include_directives=include_directives)
+    include_directives=include_directives,
+    forward_declared_types=forward_declared_types)
 }@
 
 @{
+<<<<<<< HEAD
+=======
+TEMPLATE(
+    'msg__type_support.cpp.em',
+    package_name=package_name, interface_path=interface_path, message=service.event_message,
+    include_directives=include_directives,
+    forward_declared_types=forward_declared_types)
+}@
+
+@{
+>>>>>>> 9c09ae8 (Avoid redundant declarations in generated code for services and actions (#102))
 header_files = [
     'rmw/error_handling.h',
     'rosidl_typesupport_fastrtps_cpp/identifier.hpp',

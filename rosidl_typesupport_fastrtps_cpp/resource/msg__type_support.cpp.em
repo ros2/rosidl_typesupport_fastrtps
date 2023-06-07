@@ -44,10 +44,14 @@ if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 }@
 @[  if isinstance(type_, NamespacedType)]@
-@[    for ns in type_.namespaces]@
+@[    if type_.namespaced_name() in forward_declared_types]@
+// functions for @('::'.join(type_.namespaced_name())) already declared above
+@[    else]@
+@{forward_declared_types.add(type_.namespaced_name())}@
+@[      for ns in type_.namespaces]@
 namespace @(ns)
 {
-@[    end for]@
+@[      end for]@
 namespace typesupport_fastrtps_cpp
 {
 bool cdr_serialize(
@@ -65,9 +69,10 @@ max_serialized_size_@(type_.name)(
   bool & is_plain,
   size_t current_alignment);
 }  // namespace typesupport_fastrtps_cpp
-@[    for ns in reversed(type_.namespaces)]@
+@[      for ns in reversed(type_.namespaces)]@
 }  // namespace @(ns)
-@[    end for]@
+@[      end for]@
+@[    end if]@
 
 @[  end if]@
 @[end for]@
@@ -78,6 +83,7 @@ namespace @(ns)
 {
 @[  end for]@
 
+@{forward_declared_types.add(message.structure.namespaced_type.namespaced_name())}@
 namespace typesupport_fastrtps_cpp
 {
 
