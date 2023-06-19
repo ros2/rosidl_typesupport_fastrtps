@@ -47,4 +47,43 @@ inline eprosima::fastcdr::Cdr& operator >> (
 }  // namespace fastcdr
 }  // namespace eprosima
 
+namespace rosidl_typesupport_fastrtps_cpp {
+
+template<typename Allocator>
+inline void get_string_size(
+    const std::basic_string<char, std::char_traits<char>, Allocator>& str,
+    size_t& current_alignment)
+{
+  const size_t padding = 4;
+  current_alignment += padding +
+	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+	  str.size() + 1;
+}
+
+template<typename Allocator>
+inline void get_string_size(
+	const std::basic_string<char16_t, std::char_traits<char16_t>, Allocator>& str,
+    size_t& current_alignment)
+{
+  const size_t padding = 4;
+  const size_t wchar_size = 4;
+
+  current_alignment += padding +
+	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+	  wchar_size * (str.size() + 1);
+}
+
+template<uint32_t Capacity>
+inline void get_string_size(
+    const rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity>& /* str */,
+    size_t& current_alignment)
+{
+  const size_t padding = 4;
+  current_alignment += padding +
+	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+	  Capacity;
+}
+
+}  // namespace rosidl_typesupport_fastrtps_cpp
+
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__SERIALIZATION_HELPERS_HPP_

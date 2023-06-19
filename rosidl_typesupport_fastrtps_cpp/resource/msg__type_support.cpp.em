@@ -299,9 +299,7 @@ get_serialized_size(
   size_t initial_alignment = current_alignment;
 
   const size_t padding = 4;
-  const size_t wchar_size = 4;
   (void)padding;
-  (void)wchar_size;
 
 @[for member in message.structure.members]@
   // Member: @(member.name)
@@ -322,12 +320,8 @@ get_serialized_size(
 @[    end if]@
 @[    if isinstance(member.type.value_type, AbstractGenericString)]@
     for (size_t index = 0; index < array_size; ++index) {
-      current_alignment += padding +
-        eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-@[      if isinstance(member.type.value_type, AbstractWString)]@
-        wchar_size *
-@[      end if]@
-        (ros_message.@(member.name)[index].size() + 1);
+      rosidl_typesupport_fastrtps_cpp::get_string_size(
+        ros_message.@(member.name)[index], current_alignment);
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
     size_t item_size = sizeof(ros_message.@(member.name)[0]);
@@ -343,12 +337,8 @@ get_serialized_size(
   }
 @[  else]@
 @[    if isinstance(member.type, AbstractGenericString)]@
-  current_alignment += padding +
-    eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-@[      if isinstance(member.type, AbstractWString)]@
-    wchar_size *
-@[      end if]@
-    (ros_message.@(member.name).size() + 1);
+  rosidl_typesupport_fastrtps_cpp::get_string_size(
+    ros_message.@(member.name), current_alignment);
 @[    elif isinstance(member.type, BasicType)]@
   {
     size_t item_size = sizeof(ros_message.@(member.name));
