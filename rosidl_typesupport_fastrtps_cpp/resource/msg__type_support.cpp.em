@@ -1,6 +1,7 @@
 @# Included from rosidl_typesupport_fastrtps_cpp/resource/idl__type_support.cpp.em
 @{
 from rosidl_generator_c import idl_structure_type_to_c_typename
+from rosidl_generator_cpp import msg_type_to_cpp
 from rosidl_generator_type_description import GET_DESCRIPTION_FUNC
 from rosidl_generator_type_description import GET_HASH_FUNC
 from rosidl_generator_type_description import GET_SOURCES_FUNC
@@ -366,9 +367,7 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
   size_t initial_alignment = current_alignment;
 
   const size_t padding = 4;
-  const size_t wchar_size = 4;
   (void)padding;
-  (void)wchar_size;
 
   full_bounded = true;
   is_plain = true;
@@ -401,22 +400,11 @@ if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 }@
 @[  if isinstance(type_, AbstractGenericString)]@
-    full_bounded = false;
-    is_plain = false;
-    for (size_t index = 0; index < array_size; ++index) {
-      current_alignment += padding +
-        eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-@[    if type_.has_maximum_size()]@
-@[      if isinstance(type_, AbstractWString)]@
-        wchar_size *
-@[      end if]@
-        @(type_.maximum_size) +
-@[    end if]@
-@[    if isinstance(type_, AbstractWString)]@
-        wchar_size *
-@[    end if]@
-        1;
-    }
+    rosidl_typesupport_fastrtps_cpp::max_string_size_helper<
+      decltype(@('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name] + [member.name])))>
+      ::max_string_size(
+        full_bounded, is_plain, current_alignment, array_size,
+        @(type_.has_maximum_size() ? type_.maximum_size : 0));
 @[  elif isinstance(type_, BasicType)]@
 @[    if type_.typename in ('boolean', 'octet', 'char', 'uint8', 'int8')]@
     current_alignment += array_size * sizeof(uint8_t);

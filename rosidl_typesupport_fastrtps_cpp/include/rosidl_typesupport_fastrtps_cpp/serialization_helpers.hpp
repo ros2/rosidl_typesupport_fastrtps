@@ -27,21 +27,21 @@ namespace fastcdr {
 
 template<uint32_t Capacity>
 inline eprosima::fastcdr::Cdr& operator << (
-	eprosima::fastcdr::Cdr& cdr, const rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity>& str)
+    eprosima::fastcdr::Cdr& cdr, const rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity>& str)
 {
-	cdr << Capacity;
-	cdr.serializeArray(str.c_str(), Capacity);
-	return cdr;
+    cdr << Capacity;
+    cdr.serializeArray(str.c_str(), Capacity);
+    return cdr;
 }
 
 template<uint32_t Capacity>
 inline eprosima::fastcdr::Cdr& operator >> (
-	eprosima::fastcdr::Cdr& cdr, rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity>& str)
+    eprosima::fastcdr::Cdr& cdr, rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity>& str)
 {
-	std::string tmp_str;
-	cdr >> tmp_str;
-	str = tmp_str;
-	return cdr;
+    std::string tmp_str;
+    cdr >> tmp_str;
+    str = tmp_str;
+    return cdr;
 }
 
 }  // namespace fastcdr
@@ -56,21 +56,21 @@ inline void get_string_size(
 {
   const size_t padding = 4;
   current_alignment += padding +
-	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-	  str.size() + 1;
+      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+      str.size() + 1;
 }
 
 template<typename Allocator>
 inline void get_string_size(
-	const std::basic_string<char16_t, std::char_traits<char16_t>, Allocator>& str,
+    const std::basic_string<char16_t, std::char_traits<char16_t>, Allocator>& str,
     size_t& current_alignment)
 {
   const size_t padding = 4;
   const size_t wchar_size = 4;
 
   current_alignment += padding +
-	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-	  wchar_size * (str.size() + 1);
+      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+      wchar_size * (str.size() + 1);
 }
 
 template<uint32_t Capacity>
@@ -80,9 +80,78 @@ inline void get_string_size(
 {
   const size_t padding = 4;
   current_alignment += padding +
-	  eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-	  Capacity;
+      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+      Capacity;
 }
+
+template <typename T>
+struct max_string_size_helper
+{
+};
+
+template <typename Allocator>
+struct max_string_size_helper<std::basic_string<char, std::char_traits<char>, Allocator> >
+{
+    static inline void max_string_size(
+        bool& full_bounded,
+        bool& is_plain,
+        size_t& current_alignment,
+        const size_t array_size,
+        const size_t max_size)
+    {
+        const size_t padding = 4;
+
+        full_bounded = false;
+        is_plain = false;
+        for (size_t index = 0; index < array_size; ++index) {
+            current_alignment += padding +
+                eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+                max_size + 1;
+        }
+    }
+};
+
+template <typename Allocator>
+struct max_string_size_helper<std::basic_string<char16_t, std::char_traits<char16_t>, Allocator> >
+{
+    static inline void max_string_size(
+        bool& full_bounded,
+        bool& is_plain,
+        size_t& current_alignment,
+        const size_t array_size,
+        const size_t max_size)
+    {
+        const size_t padding = 4;
+        const size_t wchar_size = 4;
+
+        full_bounded = false;
+        is_plain = false;
+        for (size_t index = 0; index < array_size; ++index) {
+            current_alignment += padding +
+                eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+                wchar_size * (max_size + 1);
+        }
+    }
+};
+
+template<uint32_t Capacity>
+struct max_string_size_helper<rosidl_runtime_cpp::CDRCompatibleFixedCapacityString<Capacity> >
+{
+    static inline void max_string_size(
+        bool& /*full_bounded*/,
+        bool& /*is_plain*/,
+        size_t& current_alignment,
+        const size_t array_size,
+        const size_t /*max_size*/)
+    {
+        const size_t padding = 4;
+        for (size_t index = 0; index < array_size; ++index) {
+            current_alignment += padding +
+                eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+                Capacity;
+        }
+    }
+};
 
 }  // namespace rosidl_typesupport_fastrtps_cpp
 
