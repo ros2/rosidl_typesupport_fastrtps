@@ -153,6 +153,43 @@ struct max_string_size_helper<rosidl_runtime_cpp::CDRCompatibleFixedCapacityStri
     }
 };
 
+template<typename T, std::size_t N>
+struct max_string_size_helper<std::array<T, N> > : public max_string_size_helper<T>
+{};
+
+template<typename T, typename Allocator>
+struct max_string_size_helper<std::vector<T, Allocator> >
+{
+    static inline void max_string_size(
+        bool& full_bounded,
+        bool& is_plain,
+        size_t& current_alignment,
+        const size_t array_size,
+        const size_t max_size)
+    {
+        full_bounded = false;
+        is_plain = false;
+
+        max_string_size_helper<T>::max_string_size(full_bounded, is_plain, current_alignment, array_size, max_size);
+    }
+};
+
+template<typename T, std::size_t N, typename Allocator>
+struct max_string_size_helper<rosidl_runtime_cpp::BoundedVector<T, N, Allocator> >
+{
+    static inline void max_string_size(
+        bool& full_bounded,
+        bool& is_plain,
+        size_t& current_alignment,
+        const size_t array_size,
+        const size_t max_size)
+    {
+        is_plain = false;
+
+        max_string_size_helper<T>::max_string_size(full_bounded, is_plain, current_alignment, array_size, max_size);
+    }
+};
+
 }  // namespace rosidl_typesupport_fastrtps_cpp
 
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__SERIALIZATION_HELPERS_HPP_
