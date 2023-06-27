@@ -22,6 +22,7 @@ include_base = '/'.join(include_parts)
 
 @{
 include_directives = set()
+forward_declared_types = set()
 
 #######################################################################
 # Handle message
@@ -31,7 +32,8 @@ for message in content.get_elements_of_type(Message):
     TEMPLATE(
         'msg__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, message=message,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
 
 #######################################################################
 # Handle service
@@ -41,7 +43,8 @@ for service in content.get_elements_of_type(Service):
     TEMPLATE(
         'srv__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, service=service,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
 
 #######################################################################
 # Handle action
@@ -51,25 +54,31 @@ for action in content.get_elements_of_type(Action):
     TEMPLATE(
         'msg__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, message=action.goal,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
     TEMPLATE(
         'msg__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, message=action.result,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
     TEMPLATE(
         'msg__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, message=action.feedback,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
     TEMPLATE(
         'srv__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, service=action.send_goal_service,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
     TEMPLATE(
         'srv__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, service=action.get_result_service,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
     TEMPLATE(
         'msg__type_support.cpp.em',
         package_name=package_name, interface_path=interface_path, message=action.feedback_message,
-        include_directives=include_directives)
+        include_directives=include_directives,
+        forward_declared_types=forward_declared_types)
 }@
