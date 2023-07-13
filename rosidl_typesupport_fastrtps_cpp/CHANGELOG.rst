@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2023-07-14)
+------------------
 * Avoid redundant declarations in generated code for services and actions (`#103 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/103>`_)
 * Contributors: Emerson Knapp
 
