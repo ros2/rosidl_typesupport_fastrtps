@@ -2,6 +2,9 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.1 (2023-07-18)
+------------------
+
 2.2.0 (2022-03-30)
 ------------------
 * Install generated headers to include/${PROJECT_NAME} (`#88 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/88>`_)
