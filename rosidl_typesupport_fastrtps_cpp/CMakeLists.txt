@@ -118,10 +118,6 @@ ament_package(
 )
 
 install(
-  PROGRAMS bin/rosidl_typesupport_fastrtps_cpp
-  DESTINATION lib/rosidl_typesupport_fastrtps_cpp
-)
-install(
   DIRECTORY cmake resource
   DESTINATION share/${PROJECT_NAME}
 )
