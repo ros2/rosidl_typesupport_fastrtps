@@ -536,7 +536,13 @@ size_t max_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   full_bounded = true;
   is_plain = true;
 
+@{
+last_member_name_ = None
+}@
 @[for member in message.structure.members]@
+@{
+last_member_name_ = member.name
+}@
   // member: @(member.name)
   {
 @[  if isinstance(member.type, AbstractNestedType)]@
@@ -609,7 +615,23 @@ if isinstance(type_, AbstractNestedType):
   }
 @[end for]@
 
-  return current_alignment - initial_alignment;
+  size_t ret_val = current_alignment - initial_alignment;
+@[if last_member_name_ is not None]@
+  if (is_plain) {
+    // All members are plain, and type is not empty.
+    // We still need to check that the in-memory alignment
+    // is the same as the CDR mandated alignment.
+    using DataType = @('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
+    DataType * data;
+    is_plain =
+      (
+        offsetof(DataType, @(last_member_name_) ) +
+        sizeof(decltype(data->@(last_member_name_) ) )
+      ) == ret_val;
+  }
+
+@[end if]@
+  return ret_val;
 }
 
 static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(char & bounds_info)
