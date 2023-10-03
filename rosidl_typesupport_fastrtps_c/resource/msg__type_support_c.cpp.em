@@ -614,7 +614,7 @@ if isinstance(type_, AbstractNestedType):
       bool inner_full_bounded;
       bool inner_is_plain;
       size_t inner_size;
-      inner_size = 
+      inner_size =
         max_serialized_size_@('__'.join(type_.namespaced_name()))(
         inner_full_bounded, inner_is_plain, current_alignment);
       last_member_size += inner_size;
@@ -633,7 +633,6 @@ if isinstance(type_, AbstractNestedType):
     // We still need to check that the in-memory alignment
     // is the same as the CDR mandated alignment.
     using DataType = @('__'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
-    DataType * data;
     is_plain =
       (
       offsetof(DataType, @(last_member_name_)) +
