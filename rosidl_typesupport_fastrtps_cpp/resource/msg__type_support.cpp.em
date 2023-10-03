@@ -468,12 +468,12 @@ if isinstance(type_, AbstractNestedType):
     // All members are plain, and type is not empty.
     // We still need to check that the in-memory alignment
     // is the same as the CDR mandated alignment.
-    using DataType = @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]) );
+    using DataType = @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
     DataType * data;
     is_plain =
       (
-        offsetof(DataType, @(last_member_name_) ) +
-        sizeof(decltype(data->@(last_member_name_) ) )
+      offsetof(DataType, @(last_member_name_)) +
+      sizeof(decltype(data->@(last_member_name_)))
       ) == ret_val;
   }
 

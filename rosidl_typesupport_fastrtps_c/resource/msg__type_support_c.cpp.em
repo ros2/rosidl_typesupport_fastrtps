@@ -625,8 +625,8 @@ if isinstance(type_, AbstractNestedType):
     DataType * data;
     is_plain =
       (
-        offsetof(DataType, @(last_member_name_) ) +
-        sizeof(decltype(data->@(last_member_name_) ) )
+      offsetof(DataType, @(last_member_name_)) +
+      sizeof(decltype(data->@(last_member_name_)))
       ) == ret_val;
   }
 
