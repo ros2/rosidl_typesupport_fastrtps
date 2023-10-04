@@ -376,13 +376,21 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
 
   const size_t padding = 4;
   const size_t wchar_size = 4;
+  size_t last_member_size = 0;
+  (void)last_member_size;
   (void)padding;
   (void)wchar_size;
 
   full_bounded = true;
   is_plain = true;
 
+@{
+last_member_name_ = None
+}@
 @[for member in message.structure.members]@
+@{
+last_member_name_ = member.name
+}@
 
   // Member: @(member.name)
   {
@@ -428,27 +436,35 @@ if isinstance(type_, AbstractNestedType):
     }
 @[  elif isinstance(type_, BasicType)]@
 @[    if type_.typename in ('boolean', 'octet', 'char', 'uint8', 'int8')]@
+    last_member_size = array_size * sizeof(uint8_t);
     current_alignment += array_size * sizeof(uint8_t);
 @[    elif type_.typename in ('wchar', 'int16', 'uint16')]@
+    last_member_size = array_size * sizeof(uint16_t);
     current_alignment += array_size * sizeof(uint16_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint16_t));
 @[    elif type_.typename in ('int32', 'uint32', 'float')]@
+    last_member_size = array_size * sizeof(uint32_t);
     current_alignment += array_size * sizeof(uint32_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
 @[    elif type_.typename in ('int64', 'uint64', 'double')]@
+    last_member_size = array_size * sizeof(uint64_t);
     current_alignment += array_size * sizeof(uint64_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint64_t));
 @[    elif type_.typename == 'long double']@
+    last_member_size = array_size * sizeof(long double);
     current_alignment += array_size * sizeof(long double) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(long double));
 @[    end if]@
 @[  else]
+    last_member_size = 0;
     for (size_t index = 0; index < array_size; ++index) {
       bool inner_full_bounded;
       bool inner_is_plain;
-      current_alignment +=
+      size_t inner_size =
         @('::'.join(type_.namespaces))::typesupport_fastrtps_cpp::max_serialized_size_@(type_.name)(
         inner_full_bounded, inner_is_plain, current_alignment);
+      last_member_size += inner_size;
+      current_alignment += inner_size;
       full_bounded &= inner_full_bounded;
       is_plain &= inner_is_plain;
     }
@@ -456,7 +472,22 @@ if isinstance(type_, AbstractNestedType):
   }
 @[end for]@
 
-  return current_alignment - initial_alignment;
+  size_t ret_val = current_alignment - initial_alignment;
+@[if last_member_name_ is not None]@
+  if (is_plain) {
+    // All members are plain, and type is not empty.
+    // We still need to check that the in-memory alignment
+    // is the same as the CDR mandated alignment.
+    using DataType = @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
+    is_plain =
+      (
+      offsetof(DataType, @(last_member_name_)) +
+      last_member_size
+      ) == ret_val;
+  }
+
+@[end if]@
+  return ret_val;
 }
 
 static bool _@(message.structure.namespaced_type.name)__cdr_serialize(
