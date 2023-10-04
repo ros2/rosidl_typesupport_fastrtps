@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.0 (2023-10-04)
+------------------
 * Account for alignment on `is_plain` calculations (`#108 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/108>`_)
 * Contributors: Miguel Company
 
