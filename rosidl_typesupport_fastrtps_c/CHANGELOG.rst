@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.2 (2023-11-13)
+------------------
+* Account for alignment on `is_plain` calculations (`#108 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/108>`_) (`#110 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/110>`_)
+* Contributors: mergify[bot]
+
 2.2.1 (2023-07-18)
 ------------------
 
