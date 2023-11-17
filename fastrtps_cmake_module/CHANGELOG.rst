@@ -2,6 +2,9 @@
 Changelog for package fastrtps_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.1 (2023-07-14)
 ------------------
 
