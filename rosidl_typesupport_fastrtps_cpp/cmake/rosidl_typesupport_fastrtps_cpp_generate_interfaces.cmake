@@ -102,7 +102,7 @@ add_custom_command(
 
 # generate header to switch between export and import for a specific package
 set(_visibility_control_file
-"${_output_path}/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h")
+  "${_output_path}/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h")
 string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
 configure_file(
   "${rosidl_typesupport_fastrtps_cpp_TEMPLATE_DIR}/rosidl_typesupport_fastrtps_cpp__visibility_control.h.in"
@@ -125,7 +125,7 @@ endif()
 set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
   PROPERTIES
     DEFINE_SYMBOL "ROSIDL_TYPESUPPORT_FASTRTPS_CPP_BUILDING_DLL_${PROJECT_NAME}"
-    CXX_STANDARD 14)
+    CXX_STANDARD 17)
 
 # Set compiler flags
 if(NOT WIN32)
