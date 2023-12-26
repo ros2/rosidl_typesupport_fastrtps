@@ -1,4 +1,4 @@
-# Copyright 2014 Open Source Robotics Foundation, Inc.
+# Copyright 2023 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
 from rosidl_pycommon import generate_files
 
 
-def generate_cpp(generator_arguments_file):
-    mapping = {
+def get_template_mapping():
+    return {
         'idl__rosidl_typesupport_fastrtps_cpp.hpp.em':
         'detail/%s__rosidl_typesupport_fastrtps_cpp.hpp',
         'idl__type_support.cpp.em': 'detail/dds_fastrtps/%s__type_support.cpp',
     }
+
+
+def generate_cpp(generator_arguments_file):
+    mapping = get_template_mapping()
     return generate_files(generator_arguments_file, mapping)
