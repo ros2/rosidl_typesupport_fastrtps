@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2023-12-26)
+------------------
 * Update to C++17 (`#111 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/111>`_)
 * Contributors: Chris Lalancette
 
