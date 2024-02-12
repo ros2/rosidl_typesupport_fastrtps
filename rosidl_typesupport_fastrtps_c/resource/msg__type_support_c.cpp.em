@@ -237,7 +237,7 @@ if isinstance(type_, AbstractNestedType):
       }
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
-    cdr.serializeArray(array_ptr, size);
+    cdr.serialize_array(array_ptr, size);
 @[    else]@
     for (size_t i = 0; i < size; ++i) {
       if (!callbacks->cdr_serialize(
@@ -379,7 +379,7 @@ else:
       array_ptr[i] = static_cast<char16_t>(tmp);
     }
 @[    elif isinstance(member.type.value_type, BasicType)]@
-    cdr.deserializeArray(array_ptr, size);
+    cdr.deserialize_array(array_ptr, size);
 @[    else]@
     for (size_t i = 0; i < size; ++i) {
       if (!callbacks->cdr_deserialize(
