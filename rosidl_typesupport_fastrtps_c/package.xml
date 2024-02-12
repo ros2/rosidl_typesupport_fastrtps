@@ -30,7 +30,7 @@
   <build_export_depend>rosidl_typesupport_interface</build_export_depend>
 
   <!-- Needed for headers in this package, or the headers it generates, and also needs to be linked in downstream packages -->
-  <depend>fastcdr</depend>
+  <depend version_gte="2">fastcdr</depend>
   <depend>rmw</depend>
   <depend>rosidl_runtime_c</depend>
   <depend>rosidl_typesupport_fastrtps_cpp</depend>
