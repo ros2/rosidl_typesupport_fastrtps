@@ -216,7 +216,6 @@ if isinstance(type_, AbstractNestedType):
       cdr << str->data;
     }
 @[    elif isinstance(member.type.value_type, AbstractWString)]@
-    std::wstring wstr;
     for (size_t i = 0; i < size; ++i) {
       const rosidl_runtime_c__U16String * str = &array_ptr[i];
       if (str->capacity == 0 || str->capacity <= str->size) {
@@ -227,8 +226,7 @@ if isinstance(type_, AbstractNestedType):
         fprintf(stderr, "string not null-terminated\n");
         return false;
       }
-      rosidl_typesupport_fastrtps_c::u16string_to_wstring(*str, wstr);
-      cdr << wstr;
+      rosidl_typesupport_fastrtps_c::cdr_serialize(cdr, *str);
     }
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
     for (size_t i = 0; i < size; ++i) {
@@ -261,9 +259,7 @@ if isinstance(type_, AbstractNestedType):
     }
     cdr << str->data;
 @[  elif isinstance(member.type, AbstractWString)]@
-    std::wstring wstr;
-    rosidl_typesupport_fastrtps_c::u16string_to_wstring(ros_message->@(member.name), wstr);
-    cdr << wstr;
+    rosidl_typesupport_fastrtps_c::cdr_serialize(cdr, ros_message->@(member.name));
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
     cdr << (ros_message->@(member.name) ? true : false);
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
@@ -363,8 +359,7 @@ else:
       if (!ros_i.data) {
         rosidl_runtime_c__U16String__init(&ros_i);
       }
-      cdr >> wstr;
-      bool succeeded = rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_i);
+      bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_i);
       if (!succeeded) {
         fprintf(stderr, "failed to create wstring from u16string\n");
         rosidl_runtime_c__U16String__fini(&ros_i);
@@ -411,9 +406,7 @@ else:
     if (!ros_message->@(member.name).data) {
       rosidl_runtime_c__U16String__init(&ros_message->@(member.name));
     }
-    std::wstring wstr;
-    cdr >> wstr;
-    bool succeeded = rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstr, ros_message->@(member.name));
+    bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_message->@(member.name));
     if (!succeeded) {
       fprintf(stderr, "failed to create wstring from u16string\n");
       rosidl_runtime_c__U16String__fini(&ros_message->@(member.name));
