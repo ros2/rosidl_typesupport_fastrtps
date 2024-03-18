@@ -58,7 +58,7 @@ inline bool cdr_deserialize(
   for (uint32_t i = 0; i < len; ++i) {
     uint32_t c;
     cdr >> c;
-    u16str.data[i] = static_cast<char16_t>(c);
+    u16str.data[i] = static_cast<uint_least16_t>(c);
   }
 
   return true;
