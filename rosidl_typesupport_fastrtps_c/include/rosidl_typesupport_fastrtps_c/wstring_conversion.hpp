@@ -17,6 +17,7 @@
 
 #include <string>
 
+#include "rcutils/macros.h"
 #include "rosidl_runtime_c/u16string.h"
 #include "rosidl_typesupport_fastrtps_c/visibility_control.h"
 
@@ -29,6 +30,7 @@ namespace rosidl_typesupport_fastrtps_c
  * \param[in,out] wstr The std::wstring to copy to.
  */
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
+  RCUTILS_DEPRECATED_WITH_MSG("not used by core packages")
 void u16string_to_wstring(
   const rosidl_runtime_c__U16String & u16str, std::wstring & wstr);
 
@@ -39,6 +41,7 @@ void u16string_to_wstring(
  * \return true if resizing u16str and assignment succeeded, otherwise false.
  */
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC
+  RCUTILS_DEPRECATED_WITH_MSG("not used by core packages")
 bool wstring_to_u16string(
   const std::wstring & wstr, rosidl_runtime_c__U16String & u16str);
 
