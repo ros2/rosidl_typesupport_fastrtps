@@ -40,6 +40,10 @@ inline void cdr_serialize(
   auto len = static_cast<uint32_t>(u16str.size);
   cdr << len;
   for (uint32_t i = 0; i < len; ++i) {
+    // We are serializing a uint32_t for interoperability with other DDS-based implementations.
+    // We might change this to a uint16_t in the future if we don't mind breaking backward
+    // compatibility and we make the change for all the supported DDS implementations at the same
+    // time.
     uint32_t c = static_cast<uint32_t>(u16str.data[i]);
     cdr << c;
   }
@@ -57,6 +61,9 @@ inline bool cdr_deserialize(
   }
 
   for (uint32_t i = 0; i < len; ++i) {
+    // We are serializing a uint32_t for interoperability with other DDS-based implementations.
+    // If we change this to a uint16_t in the future, we could remove the check below, since all
+    // serialized values would fit in the destination type.
     uint32_t c;
     cdr >> c;
     if (c > std::numeric_limits<uint_least16_t>::max()) {
