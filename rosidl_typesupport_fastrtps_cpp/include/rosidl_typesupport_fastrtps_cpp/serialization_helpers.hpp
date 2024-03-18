@@ -18,6 +18,7 @@
 #include <rosidl_typesupport_fastrtps_cpp/visibility_control.h>
 
 #include <fastcdr/Cdr.h>
+#include <fastcdr/exceptions/BadParamException.h>
 
 #include <limits>
 #include <stdexcept>
@@ -55,6 +56,9 @@ inline bool cdr_deserialize(
   for (uint32_t i = 0; i < len; ++i) {
     uint32_t c;
     cdr >> c;
+    if (c > std::numeric_limits<std::u16string::value_type>::max()) {
+      throw eprosima::fastcdr::exception::BadParamException("Character value exceeds maximum value");
+    }
     u16str[i] = static_cast<std::u16string::value_type>(c);
   }
 

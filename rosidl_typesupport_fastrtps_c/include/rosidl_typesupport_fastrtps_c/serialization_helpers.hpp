@@ -20,6 +20,7 @@
 #include <string>
 
 #include "fastcdr/Cdr.h"
+#include "fastcdr/exceptions/BadParamException.h"
 
 #include "rosidl_runtime_c/u16string.h"
 #include "rosidl_runtime_c/u16string_functions.h"
@@ -58,6 +59,9 @@ inline bool cdr_deserialize(
   for (uint32_t i = 0; i < len; ++i) {
     uint32_t c;
     cdr >> c;
+    if (c > std::numeric_limits<uint_least16_t>::max()) {
+      throw eprosima::fastcdr::exception::BadParamException("Character value exceeds maximum value");
+    }
     u16str.data[i] = static_cast<uint_least16_t>(c);
   }
 
