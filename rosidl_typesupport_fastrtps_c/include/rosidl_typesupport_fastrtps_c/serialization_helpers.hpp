@@ -15,6 +15,8 @@
 #ifndef ROSIDL_TYPESUPPORT_FASTRTPS_C__SERIALIZATION_HELPERS_HPP_
 #define ROSIDL_TYPESUPPORT_FASTRTPS_C__SERIALIZATION_HELPERS_HPP_
 
+#include <limits>
+#include <stdexcept>
 #include <string>
 
 #include "fastcdr/Cdr.h"
@@ -31,6 +33,9 @@ inline void cdr_serialize(
   eprosima::fastcdr::Cdr & cdr,
   const rosidl_runtime_c__U16String & u16str)
 {
+  if (u16str.size > std::numeric_limits<uint32_t>::max()) {
+    throw std::overflow_error("String length exceeds does not fit in CDR serialization format");
+  }
   auto len = static_cast<uint32_t>(u16str.size);
   cdr << len;
   for (uint32_t i = 0; i < len; ++i) {
