@@ -16,43 +16,42 @@
 
 #include "gtest/gtest.h"
 
+#include "fastcdr/Cdr.h"
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
 
-#include "rosidl_typesupport_fastrtps_cpp/wstring_conversion.hpp"
+#include "rosidl_typesupport_fastrtps_cpp/serialization_helpers.hpp"
 
-using rosidl_typesupport_fastrtps_cpp::u16string_to_wstring;
-using rosidl_typesupport_fastrtps_cpp::wstring_to_u16string;
+using rosidl_typesupport_fastrtps_cpp::cdr_serialize;
+using rosidl_typesupport_fastrtps_cpp::cdr_deserialize;
 
-TEST(test_wstring_conversion, wstring_to_u16string)
+void test_ser_des(const std::u16string & input)
 {
-  std::u16string actual;
+  namespace fastcdr = eprosima::fastcdr;
+  char raw_buffer[1024];
 
-  // Default string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(), actual));
-  EXPECT_EQ(std::u16string(), actual);
+  {
+    fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
 
-  // Empty string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(L""), actual));
-  EXPECT_EQ(std::u16string(u""), actual);
+    cdr_serialize(serializer, input);
+  }
 
-  // Non-empty string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(L"¡Hola, Mundo!"), actual));
-  EXPECT_EQ(std::u16string(u"¡Hola, Mundo!"), actual);
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+
+  std::u16string output;
+  ASSERT_TRUE(cdr_deserialize(deserializer, output));
+  EXPECT_EQ(input, output);
 }
 
-TEST(test_wstring_conversion, u16string_to_wstring)
+TEST(test_wstring_conversion, serialize_deserialize)
 {
-  std::wstring actual;
-
   // Default string
-  u16string_to_wstring(std::u16string(), actual);
-  EXPECT_EQ(std::wstring(), actual);
+  test_ser_des(std::u16string());
 
   // Empty string
-  u16string_to_wstring(std::u16string(u""), actual);
-  EXPECT_EQ(std::wstring(L""), actual);
+  test_ser_des(std::u16string(u""));
 
   // Non-empty string
-  u16string_to_wstring(std::u16string(u"¡Hola, Mundo!"), actual);
-  EXPECT_EQ(std::wstring(L"¡Hola, Mundo!"), actual);
+  test_ser_des(std::u16string(u"¡Hola, Mundo!"));
 }
