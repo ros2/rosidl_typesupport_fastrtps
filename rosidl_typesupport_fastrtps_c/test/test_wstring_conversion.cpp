@@ -16,37 +16,43 @@
 
 #include "gtest/gtest.h"
 
+#include "fastcdr/Cdr.h"
 #include "rosidl_runtime_c/u16string_functions.h"
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
 
-#include "rosidl_typesupport_fastrtps_c/wstring_conversion.hpp"
+#include "rosidl_typesupport_fastrtps_c/serialization_helpers.hpp"
 
-using rosidl_typesupport_fastrtps_c::u16string_to_wstring;
-using rosidl_typesupport_fastrtps_c::wstring_to_u16string;
+using rosidl_typesupport_fastrtps_c::cdr_serialize;
+using rosidl_typesupport_fastrtps_c::cdr_deserialize;
 
-TEST(test_wstring_conversion, wstring_to_u16string)
+void test_ser_des(const rosidl_runtime_c__U16String & input)
 {
-  rosidl_runtime_c__U16String actual;
-  ASSERT_TRUE(rosidl_runtime_c__U16String__init(&actual));
+  namespace fastcdr = eprosima::fastcdr;
+  char raw_buffer[1024];
+
+  {
+    fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+
+    cdr_serialize(serializer, input);
+  }
+
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+
+  rosidl_runtime_c__U16String output;
+  ASSERT_TRUE(rosidl_runtime_c__U16String__init(&output));
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
-    rosidl_runtime_c__U16String__fini(&actual);
+    rosidl_runtime_c__U16String__fini(&output);
   });
 
-  // Default string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(), actual));
-  EXPECT_EQ(0, memcmp(u"", actual.data, actual.size));
-
-  // Empty string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(L""), actual));
-  EXPECT_EQ(0, memcmp(u"", actual.data, actual.size));
-
-  // Non-empty string
-  EXPECT_TRUE(wstring_to_u16string(std::wstring(L"¡Hola, Mundo!"), actual));
-  EXPECT_EQ(0, memcmp(u"¡Hola, Mundo!", actual.data, actual.size));
+  ASSERT_TRUE(cdr_deserialize(deserializer, output));
+  EXPECT_EQ(input.size, output.size);
+  EXPECT_EQ(0, memcmp(input.data, output.data, input.size));
 }
 
-TEST(test_wstring_conversion, u16string_to_wstring)
+TEST(test_wstring_conversion, serialize_deserialize)
 {
   std::wstring actual;
   rosidl_runtime_c__U16String input;
@@ -57,16 +63,13 @@ TEST(test_wstring_conversion, u16string_to_wstring)
   });
 
   // Default string
-  u16string_to_wstring(input, actual);
-  EXPECT_EQ(std::wstring(), actual);
+  test_ser_des(input);
 
   // Empty string
   ASSERT_TRUE(rosidl_runtime_c__U16String__assign(&input, (const uint16_t *)u""));
-  u16string_to_wstring(input, actual);
-  EXPECT_EQ(std::wstring(L""), actual);
+  test_ser_des(input);
 
   // Non-empty string
   ASSERT_TRUE(rosidl_runtime_c__U16String__assign(&input, (const uint16_t *)u"¡Hola, Mundo!"));
-  u16string_to_wstring(input, actual);
-  EXPECT_EQ(std::wstring(L"¡Hola, Mundo!"), actual);
+  test_ser_des(input);
 }

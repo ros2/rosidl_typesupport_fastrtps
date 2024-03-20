@@ -16,16 +16,19 @@
 
 #include "gtest/gtest.h"
 
+#include "fastcdr/Cdr.h"
 #include "rosidl_runtime_c/u16string_functions.h"
 #include "osrf_testing_tools_cpp/memory_tools/memory_tools.hpp"
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
 
-#include "rosidl_typesupport_fastrtps_c/wstring_conversion.hpp"
+#include "rosidl_typesupport_fastrtps_c/serialization_helpers.hpp"
 
-using rosidl_typesupport_fastrtps_c::wstring_to_u16string;
+using rosidl_typesupport_fastrtps_c::cdr_deserialize;
 
 TEST(test_wstring_conversion, u16string_resize_failure)
 {
+  namespace fastcdr = eprosima::fastcdr;
+
   osrf_testing_tools_cpp::memory_tools::initialize();
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
@@ -33,6 +36,13 @@ TEST(test_wstring_conversion, u16string_resize_failure)
   });
 
   std::wstring wstring(L"¡Hola, Mundo!");
+  char raw_buffer[1024];
+  {
+    fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+    fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+    cdr << wstring;
+  }
+
   rosidl_runtime_c__U16String u16string;
   ASSERT_TRUE(rosidl_runtime_c__U16String__init(&u16string));
 
@@ -50,8 +60,10 @@ TEST(test_wstring_conversion, u16string_resize_failure)
   osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(on_unexpected_operation);
   osrf_testing_tools_cpp::memory_tools::enable_monitoring();
 
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
   EXPECT_NO_MEMORY_OPERATIONS(
   {
-    EXPECT_FALSE(wstring_to_u16string(wstring, u16string));
+    EXPECT_FALSE(cdr_deserialize(cdr, u16string));
   });
 }

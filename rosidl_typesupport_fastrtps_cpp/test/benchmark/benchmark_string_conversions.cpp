@@ -14,9 +14,10 @@
 
 #include <string>
 
+#include "fastcdr/Cdr.h"
 #include "rcutils/macros.h"
 
-#include "rosidl_typesupport_fastrtps_cpp/wstring_conversion.hpp"
+#include "rosidl_typesupport_fastrtps_cpp/serialization_helpers.hpp"
 
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
@@ -29,26 +30,38 @@ constexpr const uint64_t kSize = 1024;
 
 BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
 {
+  namespace fastcdr = eprosima::fastcdr;
+
   std::wstring wstring(kSize, '*');
+  char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  cdr << wstring;
 
   reset_heap_counters();
 
   for (auto _ : st) {
     RCUTILS_UNUSED(_);
     std::u16string u16string;
-    rosidl_typesupport_fastrtps_cpp::wstring_to_u16string(wstring, u16string);
+    cdr.reset();
+    rosidl_typesupport_fastrtps_cpp::cdr_deserialize(cdr, u16string);
   }
 }
 
 BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
 {
+  namespace fastcdr = eprosima::fastcdr;
+
   std::u16string u16string(kSize, '*');
+  char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
 
   reset_heap_counters();
 
   for (auto _ : st) {
     RCUTILS_UNUSED(_);
-    std::wstring wstring;
-    rosidl_typesupport_fastrtps_cpp::u16string_to_wstring(u16string, wstring);
+    cdr.reset();
+    rosidl_typesupport_fastrtps_cpp::cdr_serialize(cdr, u16string);
   }
 }
