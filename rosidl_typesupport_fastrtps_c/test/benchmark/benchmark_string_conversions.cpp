@@ -14,12 +14,13 @@
 
 #include <string>
 
+#include "fastcdr/Cdr.h"
 #include "rcutils/macros.h"
 
 #include "rosidl_runtime_c/string_functions.h"
 #include "rosidl_runtime_c/u16string_functions.h"
 
-#include "rosidl_typesupport_fastrtps_c/wstring_conversion.hpp"
+#include "rosidl_typesupport_fastrtps_c/serialization_helpers.hpp"
 
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
@@ -32,7 +33,13 @@ constexpr const uint64_t kSize = 1024;
 
 BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
 {
+  namespace fastcdr = eprosima::fastcdr;
+
   std::wstring wstring(kSize, '*');
+  char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  cdr << wstring;
 
   rosidl_runtime_c__U16String s;
   if (!rosidl_runtime_c__U16String__init(&s)) {
@@ -44,7 +51,8 @@ BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
 
   for (auto _ : st) {
     RCUTILS_UNUSED(_);
-    rosidl_typesupport_fastrtps_c::wstring_to_u16string(wstring, s);
+    cdr.reset();
+    rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, s);
   }
 
   rosidl_runtime_c__U16String__fini(&s);
@@ -52,7 +60,13 @@ BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
 
 BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
 {
+  namespace fastcdr = eprosima::fastcdr;
+
   std::wstring data(kSize, '*');
+  char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
+  fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  cdr << data;
 
   rosidl_runtime_c__U16String s;
   if (!rosidl_runtime_c__U16String__init(&s)) {
@@ -61,14 +75,15 @@ BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
   }
 
   // Just do a copy
-  rosidl_typesupport_fastrtps_c::wstring_to_u16string(data, s);
+  cdr.reset();
+  rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, s);
 
   reset_heap_counters();
 
   for (auto _ : st) {
     RCUTILS_UNUSED(_);
-    std::wstring actual;
-    rosidl_typesupport_fastrtps_c::u16string_to_wstring(s, actual);
+    cdr.reset();
+    rosidl_typesupport_fastrtps_c::cdr_serialize(cdr, s);
   }
 
   rosidl_runtime_c__U16String__fini(&s);
