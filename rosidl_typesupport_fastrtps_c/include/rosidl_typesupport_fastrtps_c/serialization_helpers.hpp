@@ -67,7 +67,8 @@ inline bool cdr_deserialize(
     uint32_t c;
     cdr >> c;
     if (c > std::numeric_limits<uint_least16_t>::max()) {
-      throw eprosima::fastcdr::exception::BadParamException("Character value exceeds maximum value");
+      throw eprosima::fastcdr::exception::BadParamException(
+              "Character value exceeds maximum value");
     }
     u16str.data[i] = static_cast<uint_least16_t>(c);
   }
