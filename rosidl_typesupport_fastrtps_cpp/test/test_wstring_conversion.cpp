@@ -31,13 +31,15 @@ void test_ser_des(const std::u16string & input)
 
   {
     fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+    serializer.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
     cdr_serialize(serializer, input);
   }
 
   fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+  deserializer.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
   std::u16string output;
   ASSERT_TRUE(cdr_deserialize(deserializer, output));

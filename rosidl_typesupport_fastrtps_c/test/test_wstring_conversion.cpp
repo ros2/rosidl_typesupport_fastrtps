@@ -32,13 +32,15 @@ void test_ser_des(const rosidl_runtime_c__U16String & input)
 
   {
     fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+    fastcdr::Cdr serializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+    serializer.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
     cdr_serialize(serializer, input);
   }
 
   fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  fastcdr::Cdr deserializer(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+  deserializer.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
   rosidl_runtime_c__U16String output;
   ASSERT_TRUE(rosidl_runtime_c__U16String__init(&output));
