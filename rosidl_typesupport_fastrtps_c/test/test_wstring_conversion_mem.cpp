@@ -39,7 +39,8 @@ TEST(test_wstring_conversion, u16string_resize_failure)
   char raw_buffer[1024];
   {
     fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-    fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+    fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+    cdr.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
     cdr << wstring;
   }
 
@@ -61,7 +62,8 @@ TEST(test_wstring_conversion, u16string_resize_failure)
   osrf_testing_tools_cpp::memory_tools::enable_monitoring();
 
   fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+  cdr.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
   EXPECT_NO_MEMORY_OPERATIONS(
   {
     EXPECT_FALSE(cdr_deserialize(cdr, u16string));

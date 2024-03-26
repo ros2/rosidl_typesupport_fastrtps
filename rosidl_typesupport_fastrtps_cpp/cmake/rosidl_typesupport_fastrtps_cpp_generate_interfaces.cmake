@@ -20,7 +20,7 @@ endif()
 
 find_package(ament_cmake_ros REQUIRED)
 find_package(fastrtps_cmake_module QUIET)
-find_package(fastcdr REQUIRED CONFIG)
+find_package(fastcdr 2 REQUIRED CONFIG)
 find_package(rmw REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)

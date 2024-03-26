@@ -38,7 +38,8 @@ BENCHMARK_F(PerformanceTest, wstring_to_u16string)(benchmark::State & st)
   std::wstring wstring(kSize, '*');
   char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
   fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+  cdr.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
   cdr << wstring;
 
   rosidl_runtime_c__U16String s;
@@ -65,7 +66,8 @@ BENCHMARK_F(PerformanceTest, u16string_to_wstring)(benchmark::State & st)
   std::wstring data(kSize, '*');
   char raw_buffer[kSize * 4 + 4];  // 4 bytes per character + 4 bytes for the length
   fastcdr::FastBuffer buffer(raw_buffer, sizeof(raw_buffer));
-  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::Cdr::DDS_CDR);
+  fastcdr::Cdr cdr(buffer, fastcdr::Cdr::DEFAULT_ENDIAN, fastcdr::CdrVersion::XCDRv1);
+  cdr.set_encoding_flag(fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
   cdr << data;
 
   rosidl_runtime_c__U16String s;
