@@ -83,6 +83,25 @@ max_serialized_size_@(message.structure.namespaced_type.name)(
   bool & is_plain,
   size_t current_alignment);
 
+bool
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
+cdr_serialize_key(
+  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  eprosima::fastcdr::Cdr &);
+
+size_t
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
+get_serialized_size_key(
+  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  size_t current_alignment);
+
+size_t
+ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
+max_serialized_size_key_@(message.structure.namespaced_type.name)(
+  bool & full_bounded,
+  bool & is_plain,
+  size_t current_alignment);
+
 }  // namespace typesupport_fastrtps_cpp
 @[  for ns in reversed(message.structure.namespaced_type.namespaces)]@
 
