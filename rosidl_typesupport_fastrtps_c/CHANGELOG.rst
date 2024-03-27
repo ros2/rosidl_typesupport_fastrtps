@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.0 (2024-03-27)
+------------------
 * Support Fast CDR v2 (`#114 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/114>`_)
 * Improve wide string (de)serialization (`#113 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/113>`_)
 * Set hints to find the python version we actually want. (`#112 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/112>`_)
