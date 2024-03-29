@@ -49,7 +49,7 @@ typedef struct message_type_support_key_callbacks_t
   /// Callback function for key serialization
   /**
    * \param[in] untyped_ros_message Type erased pointer to message instance.
-   * \param [in,out] Serialized FastCDR data object.
+   * \param [in,out] Fast CDR serializer.
    * \return true if serialization succeeded, false otherwise.
    */
   bool (* cdr_serialize_key)(
