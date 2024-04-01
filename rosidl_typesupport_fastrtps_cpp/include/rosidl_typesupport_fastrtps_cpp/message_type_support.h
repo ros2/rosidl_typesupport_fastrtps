@@ -55,7 +55,6 @@ typedef struct message_type_support_key_callbacks_t
   bool (* cdr_serialize_key)(
     const void * untyped_ros_message,
     eprosima::fastcdr::Cdr & cdr);
-
 } message_type_support_key_callbacks_t;
 
 /// Encapsulates the callbacks for getting properties of this rosidl type.
@@ -112,7 +111,6 @@ typedef struct message_type_support_callbacks_t
   /// Pointer to the message_type_support_key_callbacks_t.
   /// Nullptr if the type is not keyed.
   message_type_support_key_callbacks_t * key_callbacks;
-
 } message_type_support_callbacks_t;
 
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_
