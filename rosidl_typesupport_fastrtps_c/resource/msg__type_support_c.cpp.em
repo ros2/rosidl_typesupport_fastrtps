@@ -256,8 +256,8 @@ def generate_member_for_cdr_serialize(member, suffix):
       strlist.append('  for (size_t i = 0; i < size; ++i) {')
       strlist.append('    const rosidl_runtime_c__U16String * str = &array_ptr[i];')
       strlist.append('    if (str->capacity == 0 || str->capacity <= str->size) {')
-      strlist.append('       fprintf(stderr, \"string capacity not greater than size\\n\");')
-      strlist.append('       return false;')
+      strlist.append('      fprintf(stderr, \"string capacity not greater than size\\n\");')
+      strlist.append('      return false;')
       strlist.append('    }')
       strlist.append('    if (str->data[str->size] != \'\\0\') {')
       strlist.append('      fprintf(stderr, \"string not null-terminated\\n\");')
@@ -268,14 +268,14 @@ def generate_member_for_cdr_serialize(member, suffix):
     elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar':
       strlist.append('  for (size_t i = 0; i < size; ++i) {')
       strlist.append('    cdr_serialize%s_%s(' % (suffix, ('__'.join(member.type.value_type.namespaced_name()))))
-      strlist.append('        static_cast<wchar_t *>(&array_ptr[i]), cdr);')
+      strlist.append('      static_cast<wchar_t *>(&array_ptr[i]), cdr);')
       strlist.append('  }')
     elif isinstance(member.type.value_type, BasicType):
       strlist.append('  cdr.serialize_array(array_ptr, size);')
     else :
       strlist.append('  for (size_t i = 0; i < size; ++i) {')
       strlist.append('    cdr_serialize%s_%s(' % (suffix, ('__'.join(member.type.value_type.namespaced_name()))))
-      strlist.append('        &array_ptr[i], cdr);')
+      strlist.append('      &array_ptr[i], cdr);')
       strlist.append('  }')
   elif isinstance(member.type, AbstractString):
     strlist.append('  const rosidl_runtime_c__String * str = &ros_message->%s;' % (member.name))
@@ -297,8 +297,8 @@ def generate_member_for_cdr_serialize(member, suffix):
   elif isinstance(member.type, BasicType):
     strlist.append('  cdr << ros_message->%s;' % (member.name))
   else:
-    strlist.append('    cdr_serialize%s_%s(' % (suffix, ('__'.join(member.type.namespaced_name()))))
-    strlist.append('      &ros_message->%s, cdr);' % (member.name))
+    strlist.append('  cdr_serialize%s_%s(' % (suffix, ('__'.join(member.type.namespaced_name()))))
+    strlist.append('    &ros_message->%s, cdr);' % (member.name))
   strlist.append('}')
 
   return strlist
@@ -488,7 +488,7 @@ def generate_member_for_get_serialized_size(member, suffix):
     if isinstance(member.type.value_type, AbstractGenericString):
       strlist.append('  for (size_t index = 0; index < array_size; ++index) {')
       strlist.append('    current_alignment += padding +')
-      strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) + ')
+      strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +')
       if isinstance(member.type.value_type, AbstractWString):
         strlist.append('      wchar_size *')
       strlist.append('      (array_ptr[index].size + 1);')
@@ -518,7 +518,7 @@ def generate_member_for_get_serialized_size(member, suffix):
       strlist.append('    eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);')
       strlist.append('}')
     else:
-      strlist.append('    current_alignment += get_serialized_size%s_%s(' % (suffix, ('__'.join(member.type.namespaced_name()))))
+      strlist.append('current_alignment += get_serialized_size%s_%s(' % (suffix, ('__'.join(member.type.namespaced_name()))))
       strlist.append('  &(ros_message->%s), current_alignment);' % (member.name))
   return strlist
 }@
@@ -538,7 +538,7 @@ size_t get_serialized_size_@('__'.join([package_name] + list(interface_path.pare
   (void)wchar_size;
 
 @[for member in message.structure.members]@
-  @[  for line in generate_member_for_get_serialized_size(member, '')]@
+@[  for line in generate_member_for_get_serialized_size(member, '')]@
   @(line)
 @[  end for]@
 
@@ -592,11 +592,11 @@ def generate_member_for_max_serialized_size(member, suffix):
     strlist.append('  is_plain = false;')
     strlist.append('  for (size_t index = 0; index < array_size; ++index) {')
     strlist.append('    current_alignment += padding +')
-    strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) + ')
+    strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +')
     if type_.has_maximum_size():
       if isinstance(type_, AbstractWString):
         strlist.append('      wchar_size *')
-      strlist.append('    %d +' % (type_.maximum_size))
+      strlist.append('      %d +' % (type_.maximum_size))
     if isinstance(type_, AbstractWString):
       strlist.append('      wchar_size *')
     strlist.append('      1;')
@@ -823,7 +823,6 @@ static message_type_support_key_callbacks_t __key_callbacks_@(message.structure.
   _@(message.structure.namespaced_type.name)__cdr_serialize_key
 };
 @[  end if]@
-
 @
 @# // Collect the callback functions and provide a function to get the type support struct.
 

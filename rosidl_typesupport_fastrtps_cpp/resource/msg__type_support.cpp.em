@@ -166,14 +166,14 @@ def generate_member_for_cdr_serialize(member, suffix):
             strlist.append('      ros_message.%s[i],' % (member.name))
             strlist.append('      cdr);')
           strlist.append('  }')
-    strlist.append('  }')
+    strlist.append('}')
   elif isinstance(member.type, BasicType) and member.type.typename == 'boolean':
-    strlist.append('  cdr << (ros_message.%s ? true : false);' % (member.name))
+    strlist.append('cdr << (ros_message.%s ? true : false);' % (member.name))
   elif isinstance(member.type, BasicType) and member.type.typename == 'wchar':
-    strlist.append('  cdr << static_cast<wchar_t>(ros_message.%s);' % (member.name))
+    strlist.append('cdr << static_cast<wchar_t>(ros_message.%s);' % (member.name))
   elif isinstance(member.type, AbstractWString):
     strlist.append('{')
-    strlist.append('    rosidl_typesupport_fastrtps_cpp::cdr_serialize(cdr, ros_message.%s);' % (member.name))
+    strlist.append('  rosidl_typesupport_fastrtps_cpp::cdr_serialize(cdr, ros_message.%s);' % (member.name))
     strlist.append('}')
   elif not isinstance(member.type, NamespacedType):
     strlist.append('cdr << ros_message.%s;' % (member.name))
@@ -191,7 +191,7 @@ cdr_serialize(
   eprosima::fastcdr::Cdr & cdr)
 {
 @[for member in message.structure.members]@
-  @[  for line in generate_member_for_cdr_serialize(member, '')]@
+@[  for line in generate_member_for_cdr_serialize(member, '')]@
   @(line)
 @[  end for]@
 
@@ -436,11 +436,11 @@ def generate_member_for_max_serialized_size(member, suffix):
     strlist.append('  is_plain = false;')
     strlist.append('  for (size_t index = 0; index < array_size; ++index) {')
     strlist.append('    current_alignment += padding +')
-    strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) + ')
+    strlist.append('      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +')
     if type_.has_maximum_size():
       if isinstance(type_, AbstractWString):
         strlist.append('      wchar_size *')
-      strlist.append('    %d +' % (type_.maximum_size))
+      strlist.append('      %d +' % (type_.maximum_size))
     if isinstance(type_, AbstractWString):
       strlist.append('      wchar_size *')
     strlist.append('      1;')
