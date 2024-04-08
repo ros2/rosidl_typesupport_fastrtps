@@ -28,6 +28,7 @@ include_base = '/'.join(include_parts)
 
 header_files = [
     'cassert',
+    'cstddef',
     'limits',
     'string',
     # Provides the rosidl_typesupport_fastrtps_c__identifier symbol declaration.

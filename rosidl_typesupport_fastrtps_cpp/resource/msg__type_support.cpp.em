@@ -14,6 +14,7 @@ from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
 
 header_files = [
+    'cstddef',
     'limits',
     'stdexcept',
     'string',

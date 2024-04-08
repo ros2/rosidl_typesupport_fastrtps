@@ -13,6 +13,7 @@ header_files = [
     include_base + '__struct.hpp',
 ]
 }@
+#include <cstddef>
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above

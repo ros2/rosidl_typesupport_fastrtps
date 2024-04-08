@@ -15,6 +15,8 @@
 #ifndef ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_
 #define ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_
 
+#include <cstddef>
+
 #include <fastcdr/Cdr.h>
 
 #include "rosidl_runtime_c/message_type_support_struct.h"
@@ -49,7 +51,7 @@ typedef struct message_type_support_key_callbacks_t
   /// Callback function for key serialization
   /**
    * \param[in] untyped_ros_message Type erased pointer to message instance.
-   * \param [in,out] Fast CDR serializer.
+   * \param [in,out] cdr Fast CDR serializer.
    * \return true if serialization succeeded, false otherwise.
    */
   bool (* cdr_serialize_key)(
