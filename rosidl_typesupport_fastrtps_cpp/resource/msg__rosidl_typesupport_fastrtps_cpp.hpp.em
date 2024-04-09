@@ -7,13 +7,13 @@ include_parts = [package_name] + list(interface_path.parents[0].parts) + [
 include_base = '/'.join(include_parts)
 
 header_files = [
+    'cstddef',
     'rosidl_runtime_c/message_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
     package_name + '/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h',
     include_base + '__struct.hpp',
 ]
 }@
-#include <cstddef>
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -21,7 +21,11 @@ header_files = [
 @[    else]@
 @{include_directives.add(header_file)}@
 @[    end if]@
+@[    if '/' not in header_file]@
+#include <@(header_file)>
+@[    else]@
 #include "@(header_file)"
+@[    end if]@
 @[end for]@
 
 #ifndef _WIN32
