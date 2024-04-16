@@ -2,6 +2,12 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.0 (2024-04-16)
+------------------
+* Adding interfaces to support `@key` annotation (`#116 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/116>`_)
+  Co-authored-by: Mario Dominguez <mariodominguez@eprosima.com>
+* Contributors: Miguel Company
+
 3.5.0 (2024-03-27)
 ------------------
 * Support Fast CDR v2 (`#114 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/114>`_)

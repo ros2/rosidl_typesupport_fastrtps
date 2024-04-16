@@ -2,6 +2,14 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.0 (2024-04-16)
+------------------
+* Fix how header template works to prevent double-inclusion (`#117 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/117>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Adding interfaces to support `@key` annotation (`#116 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/116>`_)
+  Co-authored-by: Mario Dominguez <mariodominguez@eprosima.com>
+* Contributors: Michael Carroll, Miguel Company
+
 3.5.0 (2024-03-27)
 ------------------
 * Support Fast CDR v2 (`#114 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/114>`_)
