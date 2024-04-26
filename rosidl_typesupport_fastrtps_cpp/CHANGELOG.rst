@@ -2,6 +2,9 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.0 (2024-04-16)
 ------------------
 * Fix how header template works to prevent double-inclusion (`#117 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/117>`_)
