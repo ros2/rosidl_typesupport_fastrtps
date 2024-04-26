@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rosidl_typesupport_fastrtps_c</name>
-  <version>3.6.0</version>
+  <version>3.7.0</version>
   <description>Generate the C interfaces for eProsima FastRTPS.</description>
 
   <maintainer email="sloretz@openrobotics.org">Shane Loretz</maintainer>
