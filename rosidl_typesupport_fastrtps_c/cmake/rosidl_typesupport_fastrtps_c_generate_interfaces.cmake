@@ -136,7 +136,7 @@ target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix} PUBL
   rosidl_typesupport_fastrtps_cpp::rosidl_typesupport_fastrtps_cpp
   rosidl_typesupport_fastrtps_c::rosidl_typesupport_fastrtps_c)
 
-if(NOT WIN32)
+if(NOT MSVC AND NOT MSVC_IDE)
   set(_target_compile_flags -Wall -Wextra -Wpedantic)
 else()
   set(_target_compile_flags /W4)
