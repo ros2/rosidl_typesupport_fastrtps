@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove deprecated functions benchmark tests (`#122 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/122>`_)
+* Contributors: Miguel Company
+
 3.7.0 (2024-04-26)
 ------------------
 
