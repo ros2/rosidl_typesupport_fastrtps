@@ -101,11 +101,6 @@ if(BUILD_TESTING)
       ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
   endif()
 
-  add_performance_test(benchmark_string_conversions test/benchmark/benchmark_string_conversions.cpp)
-  if(TARGET benchmark_string_conversions)
-    target_link_libraries(benchmark_string_conversions ${PROJECT_NAME})
-  endif()
-
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(test_cli_extension test/test_cli_extension.py)
 endif()
