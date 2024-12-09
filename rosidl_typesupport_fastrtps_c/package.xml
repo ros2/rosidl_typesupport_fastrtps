@@ -19,7 +19,6 @@
 
   <!-- Used in the projectConfig.cmake or generator extension and only needed by CMake -->
   <buildtool_export_depend>ament_cmake_ros</buildtool_export_depend>
-  <buildtool_export_depend>fastrtps_cmake_module</buildtool_export_depend>
   <buildtool_export_depend>python3</buildtool_export_depend>
 
   <!-- Generator depends on output of this other generator -->
