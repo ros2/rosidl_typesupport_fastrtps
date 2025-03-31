@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.0 (2025-03-31)
+------------------
 * Switch to ament_cmake_ros_core package (`#127 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/127>`_)
 * Remove dependency on fastrtps_cmake_module (`#120 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/120>`_)
 * Remove CODEOWNERS and mirror-rolling-to-master workflow (`#124 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/124>`_)
