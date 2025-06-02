@@ -306,7 +306,7 @@ cdr_deserialize(
 
 @[end for]@
   return true;
-}
+}  // NOLINT(readability/fn_size)
 
 @{
 
