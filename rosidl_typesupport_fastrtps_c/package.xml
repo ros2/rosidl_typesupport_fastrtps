@@ -36,8 +36,8 @@
   <depend>rosidl_typesupport_fastrtps_cpp</depend>
 
   <!-- Needed for the python library it installs, which is also used to generate interfaces -->
-  <depend>ament_index_python</depend>
-  <depend>rosidl_cli</depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>rosidl_cli</exec_depend>
   <exec_depend>rosidl_pycommon</exec_depend>
 
   <!-- Needed for tests in this package -->
