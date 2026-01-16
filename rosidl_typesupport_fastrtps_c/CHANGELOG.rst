@@ -2,6 +2,16 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.9.3 (2025-11-21)
+------------------
+* Switch ament_index_python and rosidl_cli to exec_depend. (`#137 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/137>`_)
+* Contributors: Chris Lalancette
+
+3.9.2 (2025-10-01)
+------------------
+* Removed deprecated code (`#135 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/135>`_)
+* Contributors: Alejandro Hernández Cordero
+
 3.9.1 (2025-07-29)
 ------------------
 * fix cmake deprecation (`#134 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/134>`_)

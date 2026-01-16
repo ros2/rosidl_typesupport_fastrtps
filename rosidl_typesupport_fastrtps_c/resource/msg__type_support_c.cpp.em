@@ -34,7 +34,6 @@ header_files = [
     # Provides the rosidl_typesupport_fastrtps_c__identifier symbol declaration.
     'rosidl_typesupport_fastrtps_c/identifier.h',
     'rosidl_typesupport_fastrtps_c/serialization_helpers.hpp',
-    'rosidl_typesupport_fastrtps_c/wstring_conversion.hpp',
     # Provides the definition of the message_type_support_callbacks_t struct.
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     package_name + '/msg/rosidl_typesupport_fastrtps_c__visibility_control.h',
