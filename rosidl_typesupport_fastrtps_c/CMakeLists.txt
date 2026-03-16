@@ -89,6 +89,12 @@ if(BUILD_TESTING)
   ament_add_pytest_test(test_cli_extension test/test_cli_extension.py)
 endif()
 
+if(BUILD_SHARED_LIBS)
+  set(${PROJECT_NAME}_LIBRARY_TYPE "SHARED")
+else()
+  set(${PROJECT_NAME}_LIBRARY_TYPE "STATIC")
+endif()
+
 ament_package(
   CONFIG_EXTRAS "rosidl_typesupport_fastrtps_c-extras.cmake.in"
 )
