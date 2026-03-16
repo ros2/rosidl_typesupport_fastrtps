@@ -16,9 +16,12 @@
 #define ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_
 
 #include <cstddef>
+#include <string>
+#include <vector>
 
 #include "fastcdr/Cdr.h"
 
+#include "rmw/topic_endpoint_info.h"
 #include "rosidl_runtime_c/message_type_support_struct.h"
 
 /// Feature define to allow API version detection
@@ -113,6 +116,36 @@ typedef struct message_type_support_callbacks_t
   /// Pointer to the message_type_support_key_callbacks_t.
   /// Nullptr if the type is not keyed.
   message_type_support_key_callbacks_t * key_callbacks;
+
+  /// Flag indicating if the message type contains Buffer<T> fields.
+  /// Set at code generation time.
+  bool has_buffer_fields;
+
+  /// Callback function for endpoint-aware message serialization
+  /// Only called if has_buffer_fields is true.
+  /**
+   * \param[in] untyped_ros_message Type erased pointer to message instance.
+   * \param [in,out] cdr Fast CDR serializer.
+   * \param [in] endpoint_info Endpoint info for the remote peer.
+   * \return true if serialization succeeded, false otherwise.
+   */
+  bool (* cdr_serialize_with_endpoint)(
+    const void * untyped_ros_message,
+    eprosima::fastcdr::Cdr & cdr,
+    const rmw_topic_endpoint_info_t & endpoint_info);
+
+  /// Callback function for endpoint-aware message deserialization
+  /// Only called if has_buffer_fields is true.
+  /**
+   * \param [in] cdr Serialized FastCDR data object.
+   * \param[out] untyped_ros_message Type erased pointer to message instance.
+   * \param [in] endpoint_info Endpoint info for the remote peer.
+   * \return true if deserialization succeeded, false otherwise.
+   */
+  bool (* cdr_deserialize_with_endpoint)(
+    eprosima::fastcdr::Cdr & cdr,
+    void * untyped_ros_message,
+    const rmw_topic_endpoint_info_t & endpoint_info);
 } message_type_support_callbacks_t;
 
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_

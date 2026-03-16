@@ -19,7 +19,16 @@ from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
+from rosidl_parser.definition import UnboundedSequence
 from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
+
+# Detect if message has Buffer fields (only uint8[] UnboundedSequence becomes Buffer<T>)
+has_buffer_fields = False
+for member in message.structure.members:
+    if isinstance(member.type, UnboundedSequence):
+        if isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8':
+            has_buffer_fields = True
+            break
 
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
@@ -41,6 +50,8 @@ header_files = [
     include_base + '__functions.h',
     'fastcdr/Cdr.h',
 ]
+if has_buffer_fields:
+    header_files.append('rosidl_typesupport_fastrtps_cpp/buffer_serialization.hpp')
 }@
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
@@ -55,6 +66,7 @@ header_files = [
 #include "@(header_file)"
 @[    end if]@
 @[end for]@
+@# Buffer-backed uint8[] fields use the is_rosidl_buffer flag on the sequence struct.
 
 #ifndef _WIN32
 # pragma GCC diagnostic push
@@ -218,6 +230,7 @@ def generate_member_for_cdr_serialize(member, suffix):
   from rosidl_parser.definition import BasicType
   from rosidl_parser.definition import BoundedSequence
   from rosidl_parser.definition import NamespacedType
+  from rosidl_parser.definition import UnboundedSequence
   strlist = []
   strlist.append('// Field name: %s' % (member.name))
   strlist.append('{')
@@ -226,7 +239,30 @@ def generate_member_for_cdr_serialize(member, suffix):
   if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 
-  if isinstance(member.type, AbstractNestedType):
+  if (
+    suffix == '' and
+    isinstance(member.type, UnboundedSequence) and
+    isinstance(member.type.value_type, BasicType) and
+    member.type.value_type.typename == 'uint8'
+  ):
+    strlist.append('  // Regular path CPU fallback for rosidl_buffer-backed uint8[]')
+    strlist.append('  if (ros_message->%s.is_rosidl_buffer) {' % (member.name))
+    strlist.append(
+      '    auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(ros_message->%s.data);' %
+      (member.name))
+    strlist.append('    if (buffer == nullptr) {')
+    strlist.append('      fprintf(stderr, "null rosidl_buffer pointer for field \'%s\'\\n");' % (member.name))
+    strlist.append('      return false;')
+    strlist.append('    }')
+    strlist.append('    const std::vector<uint8_t> vec = buffer->to_vector();')
+    strlist.append('    cdr << vec;')
+    strlist.append('  } else {')
+    strlist.append('    size_t size = ros_message->%s.size;' % (member.name))
+    strlist.append('    auto array_ptr = ros_message->%s.data;' % (member.name))
+    strlist.append('    cdr << static_cast<uint32_t>(size);')
+    strlist.append('    cdr.serialize_array(array_ptr, size);')
+    strlist.append('  }')
+  elif isinstance(member.type, AbstractNestedType):
     if isinstance(member.type, Array):
       strlist.append('  size_t size = %d;' % (member.type.size))
       strlist.append('  auto array_ptr = ros_message->%s;' % (member.name))
@@ -302,6 +338,188 @@ def generate_member_for_cdr_serialize(member, suffix):
   strlist.append('}')
 
   return strlist
+
+
+# Generates deserialization code for a single member as a list of strings.
+# Used by both the regular and _with_endpoint deserializers.
+def generate_member_for_cdr_deserialize(member):
+  from rosidl_parser.definition import AbstractGenericString
+  from rosidl_parser.definition import AbstractNestedType
+  from rosidl_parser.definition import AbstractSequence
+  from rosidl_parser.definition import AbstractString
+  from rosidl_parser.definition import AbstractWString
+  from rosidl_parser.definition import Array
+  from rosidl_parser.definition import BasicType
+  from rosidl_parser.definition import BoundedSequence
+  from rosidl_parser.definition import NamespacedType
+  from rosidl_parser.definition import UnboundedSequence
+  strlist = []
+  strlist.append('// Field name: %s' % (member.name))
+  strlist.append('{')
+
+  type_ = member.type
+  if isinstance(type_, AbstractNestedType):
+    type_ = type_.value_type
+
+  if (
+    isinstance(member.type, UnboundedSequence) and
+    isinstance(member.type.value_type, BasicType) and
+    member.type.value_type.typename == 'uint8'
+  ):
+    strlist.append('  // Regular path CPU fallback for rosidl_buffer-backed uint8[]')
+    strlist.append('  if (ros_message->%s.is_rosidl_buffer) {' % member.name)
+    strlist.append(
+      '    auto * old_buffer = reinterpret_cast<rosidl::Buffer<uint8_t> *>(ros_message->%s.data);' %
+      member.name)
+    strlist.append('    delete old_buffer;')
+    strlist.append('    ros_message->%s.data = nullptr;' % member.name)
+    strlist.append('    ros_message->%s.size = 0;' % member.name)
+    strlist.append('    ros_message->%s.capacity = 0;' % member.name)
+    strlist.append('    ros_message->%s.is_rosidl_buffer = false;' % member.name)
+    strlist.append('  }')
+    strlist.append('  std::vector<uint8_t> vec;')
+    strlist.append('  cdr >> vec;')
+    strlist.append('  size_t size = vec.size();')
+    strlist.append('  if (ros_message->%s.data) {' % member.name)
+    strlist.append('    rosidl_runtime_c__uint8__Sequence__fini(&ros_message->%s);' % member.name)
+    strlist.append('  }')
+    strlist.append('  if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->%s, size)) {' % member.name)
+    strlist.append('    fprintf(stderr, "failed to create array for field \'%s\'");' % member.name)
+    strlist.append('    return false;')
+    strlist.append('  }')
+    strlist.append('  auto array_ptr = ros_message->%s.data;' % member.name)
+    strlist.append('  for (size_t i = 0; i < size; ++i) {')
+    strlist.append('    array_ptr[i] = vec[i];')
+    strlist.append('  }')
+    strlist.append('  ros_message->%s.is_rosidl_buffer = false;' % member.name)
+  elif isinstance(member.type, AbstractNestedType):
+    if isinstance(member.type, Array):
+      strlist.append('  size_t size = %d;' % (member.type.size))
+      strlist.append('  auto array_ptr = ros_message->%s;' % (member.name))
+    else:
+      # Compute init/fini function names
+      if isinstance(member.type.value_type, AbstractString):
+        array_init = 'rosidl_runtime_c__String__Sequence__init'
+        array_fini = 'rosidl_runtime_c__String__Sequence__fini'
+      elif isinstance(member.type.value_type, AbstractWString):
+        array_init = 'rosidl_runtime_c__U16String__Sequence__init'
+        array_fini = 'rosidl_runtime_c__U16String__Sequence__fini'
+      elif isinstance(member.type.value_type, BasicType):
+        bt = member.type.value_type.typename.replace(' ', '_')
+        array_init = 'rosidl_runtime_c__%s__Sequence__init' % bt
+        array_fini = 'rosidl_runtime_c__%s__Sequence__fini' % bt
+      else:
+        array_init = '__'.join(type_.namespaced_name()) + '__Sequence__init'
+        array_fini = '__'.join(type_.namespaced_name()) + '__Sequence__fini'
+      strlist.append('  uint32_t cdrSize;')
+      strlist.append('  cdr >> cdrSize;')
+      strlist.append('  size_t size = static_cast<size_t>(cdrSize);')
+      strlist.append('')
+      strlist.append('  // Check there are at least \'size\' remaining bytes in the CDR stream before resizing')
+      strlist.append('  auto old_state = cdr.get_state();')
+      strlist.append('  bool correct_size = cdr.jump(size);')
+      strlist.append('  cdr.set_state(old_state);')
+      strlist.append('  if (!correct_size) {')
+      strlist.append('    fprintf(stderr, "sequence size exceeds remaining buffer\\n");')
+      strlist.append('    return false;')
+      strlist.append('  }')
+      strlist.append('')
+      strlist.append('  if (ros_message->%s.data) {' % member.name)
+      strlist.append('    %s(&ros_message->%s);' % (array_fini, member.name))
+      strlist.append('  }')
+      strlist.append('  if (!%s(&ros_message->%s, size)) {' % (array_init, member.name))
+      strlist.append('    fprintf(stderr, "failed to create array for field \'%s\'");' % member.name)
+      strlist.append('    return false;')
+      strlist.append('  }')
+      strlist.append('  auto array_ptr = ros_message->%s.data;' % member.name)
+
+    # Element deserialization
+    if isinstance(member.type.value_type, AbstractString):
+      strlist.append('  for (size_t i = 0; i < size; ++i) {')
+      strlist.append('    std::string tmp;')
+      strlist.append('    cdr >> tmp;')
+      strlist.append('    auto & ros_i = array_ptr[i];')
+      strlist.append('    if (!ros_i.data) {')
+      strlist.append('      rosidl_runtime_c__String__init(&ros_i);')
+      strlist.append('    }')
+      strlist.append('    bool succeeded = rosidl_runtime_c__String__assign(&ros_i, tmp.c_str());')
+      strlist.append('    if (!succeeded) {')
+      strlist.append('      fprintf(stderr, "failed to assign string into field \'%s\'\\n");' % member.name)
+      strlist.append('      return false;')
+      strlist.append('    }')
+      strlist.append('  }')
+    elif isinstance(member.type.value_type, AbstractWString):
+      strlist.append('  std::wstring wstr;')
+      strlist.append('  for (size_t i = 0; i < size; ++i) {')
+      strlist.append('    auto & ros_i = array_ptr[i];')
+      strlist.append('    if (!ros_i.data) {')
+      strlist.append('      rosidl_runtime_c__U16String__init(&ros_i);')
+      strlist.append('    }')
+      strlist.append('    bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_i);')
+      strlist.append('    if (!succeeded) {')
+      strlist.append('      fprintf(stderr, "failed to create wstring from u16string\\n");')
+      strlist.append('      rosidl_runtime_c__U16String__fini(&ros_i);')
+      strlist.append('      return false;')
+      strlist.append('    }')
+      strlist.append('  }')
+    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean':
+      strlist.append('  for (size_t i = 0; i < size; ++i) {')
+      strlist.append('    uint8_t tmp;')
+      strlist.append('    cdr >> tmp;')
+      strlist.append('    array_ptr[i] = tmp ? true : false;')
+      strlist.append('  }')
+    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar':
+      strlist.append('  for (size_t i = 0; i < size; ++i) {')
+      strlist.append('    wchar_t tmp;')
+      strlist.append('    cdr >> tmp;')
+      strlist.append('    array_ptr[i] = static_cast<char16_t>(tmp);')
+      strlist.append('  }')
+    elif isinstance(member.type.value_type, BasicType):
+      strlist.append('  cdr.deserialize_array(array_ptr, size);')
+    else:
+      strlist.append('  for (size_t i = 0; i < size; ++i) {')
+      strlist.append('    cdr_deserialize_%s(cdr, &array_ptr[i]);' % '__'.join(member.type.value_type.namespaced_name()))
+      strlist.append('  }')
+
+  elif isinstance(member.type, AbstractString):
+    strlist.append('  std::string tmp;')
+    strlist.append('  cdr >> tmp;')
+    strlist.append('  if (!ros_message->%s.data) {' % member.name)
+    strlist.append('    rosidl_runtime_c__String__init(&ros_message->%s);' % member.name)
+    strlist.append('  }')
+    strlist.append('  bool succeeded = rosidl_runtime_c__String__assign(')
+    strlist.append('    &ros_message->%s,' % member.name)
+    strlist.append('    tmp.c_str());')
+    strlist.append('  if (!succeeded) {')
+    strlist.append('    fprintf(stderr, "failed to assign string into field \'%s\'\\n");' % member.name)
+    strlist.append('    return false;')
+    strlist.append('  }')
+  elif isinstance(member.type, AbstractWString):
+    strlist.append('  if (!ros_message->%s.data) {' % member.name)
+    strlist.append('    rosidl_runtime_c__U16String__init(&ros_message->%s);' % member.name)
+    strlist.append('  }')
+    strlist.append('  bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_message->%s);' % member.name)
+    strlist.append('  if (!succeeded) {')
+    strlist.append('    fprintf(stderr, "failed to create wstring from u16string\\n");')
+    strlist.append('    rosidl_runtime_c__U16String__fini(&ros_message->%s);' % member.name)
+    strlist.append('    return false;')
+    strlist.append('  }')
+  elif isinstance(member.type, BasicType) and member.type.typename == 'boolean':
+    strlist.append('  uint8_t tmp;')
+    strlist.append('  cdr >> tmp;')
+    strlist.append('  ros_message->%s = tmp ? true : false;' % member.name)
+  elif isinstance(member.type, BasicType) and member.type.typename == 'wchar':
+    strlist.append('  wchar_t tmp;')
+    strlist.append('  cdr >> tmp;')
+    strlist.append('  ros_message->%s = static_cast<char16_t>(tmp);' % member.name)
+  elif isinstance(member.type, BasicType):
+    strlist.append('  cdr >> ros_message->%s;' % member.name)
+  else:
+    strlist.append('  cdr_deserialize_%s(cdr, &ros_message->%s);' % ('__'.join(member.type.namespaced_name()), member.name))
+
+  strlist.append('}')
+  return strlist
+
 }@
 
 ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC_@(package_name)
@@ -324,142 +542,13 @@ bool cdr_deserialize_@('__'.join([package_name] + list(interface_path.parents[0]
   @('__'.join(message.structure.namespaced_type.namespaced_name())) * ros_message)
 {
 @[for member in message.structure.members]@
-  // Field name: @(member.name)
-  {
-@{
-type_ = member.type
-if isinstance(type_, AbstractNestedType):
-    type_ = type_.value_type
-}@
-@[  if isinstance(member.type, AbstractNestedType)]@
-@[    if isinstance(member.type, Array)]@
-    size_t size = @(member.type.size);
-    auto array_ptr = ros_message->@(member.name);
+@[  for line in generate_member_for_cdr_deserialize(member)]@
+@[    if line]@
+  @(line)
 @[    else]@
-@{
-if isinstance(member.type.value_type, AbstractString):
-    array_init = 'rosidl_runtime_c__String__Sequence__init'
-    array_fini = 'rosidl_runtime_c__String__Sequence__fini'
-elif isinstance(member.type.value_type, AbstractWString):
-    array_init = 'rosidl_runtime_c__U16String__Sequence__init'
-    array_fini = 'rosidl_runtime_c__U16String__Sequence__fini'
-elif isinstance(member.type.value_type, BasicType):
-    type_ = member.type.value_type.typename
-    type_ = type_.replace(' ', '_')
-    array_init = 'rosidl_runtime_c__{type_}__Sequence__init'.format(**locals())
-    array_fini = 'rosidl_runtime_c__{type_}__Sequence__fini'.format(**locals())
-else:
-    array_init = '__'.join(type_.namespaced_name()) + '__Sequence__init'
-    array_fini = '__'.join(type_.namespaced_name()) + '__Sequence__fini'
-}@
-    uint32_t cdrSize;
-    cdr >> cdrSize;
-    size_t size = static_cast<size_t>(cdrSize);
 
-    // Check there are at least 'size' remaining bytes in the CDR stream before resizing
-    auto old_state = cdr.get_state();
-    bool correct_size = cdr.jump(size);
-    cdr.set_state(old_state);
-    if (!correct_size) {
-      fprintf(stderr, "sequence size exceeds remaining buffer\n");
-      return false;
-    }
-
-    if (ros_message->@(member.name).data) {
-      @(array_fini)(&ros_message->@(member.name));
-    }
-    if (!@(array_init)(&ros_message->@(member.name), size)) {
-      fprintf(stderr, "failed to create array for field '@(member.name)'");
-      return false;
-    }
-    auto array_ptr = ros_message->@(member.name).data;
 @[    end if]@
-@[    if isinstance(member.type.value_type, AbstractString)]@
-    for (size_t i = 0; i < size; ++i) {
-      std::string tmp;
-      cdr >> tmp;
-      auto & ros_i = array_ptr[i];
-      if (!ros_i.data) {
-        rosidl_runtime_c__String__init(&ros_i);
-      }
-      bool succeeded = rosidl_runtime_c__String__assign(
-        &ros_i,
-        tmp.c_str());
-      if (!succeeded) {
-        fprintf(stderr, "failed to assign string into field '@(member.name)'\n");
-        return false;
-      }
-    }
-@[    elif isinstance(member.type.value_type, AbstractWString)]@
-    std::wstring wstr;
-    for (size_t i = 0; i < size; ++i) {
-      auto & ros_i = array_ptr[i];
-      if (!ros_i.data) {
-        rosidl_runtime_c__U16String__init(&ros_i);
-      }
-      bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_i);
-      if (!succeeded) {
-        fprintf(stderr, "failed to create wstring from u16string\n");
-        rosidl_runtime_c__U16String__fini(&ros_i);
-        return false;
-      }
-    }
-@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'boolean']@
-    for (size_t i = 0; i < size; ++i) {
-      uint8_t tmp;
-      cdr >> tmp;
-      array_ptr[i] = tmp ? true : false;
-    }
-@[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'wchar']@
-    for (size_t i = 0; i < size; ++i) {
-      wchar_t tmp;
-      cdr >> tmp;
-      array_ptr[i] = static_cast<char16_t>(tmp);
-    }
-@[    elif isinstance(member.type.value_type, BasicType)]@
-    cdr.deserialize_array(array_ptr, size);
-@[    else]@
-    for (size_t i = 0; i < size; ++i) {
-      cdr_deserialize_@('__'.join(member.type.value_type.namespaced_name()))(cdr, &array_ptr[i]);
-    }
-@[    end if]@
-@[   elif isinstance(member.type, AbstractString)]@
-    std::string tmp;
-    cdr >> tmp;
-    if (!ros_message->@(member.name).data) {
-      rosidl_runtime_c__String__init(&ros_message->@(member.name));
-    }
-    bool succeeded = rosidl_runtime_c__String__assign(
-      &ros_message->@(member.name),
-      tmp.c_str());
-    if (!succeeded) {
-      fprintf(stderr, "failed to assign string into field '@(member.name)'\n");
-      return false;
-    }
-@[   elif isinstance(member.type, AbstractWString)]@
-    if (!ros_message->@(member.name).data) {
-      rosidl_runtime_c__U16String__init(&ros_message->@(member.name));
-    }
-    bool succeeded = rosidl_typesupport_fastrtps_c::cdr_deserialize(cdr, ros_message->@(member.name));
-    if (!succeeded) {
-      fprintf(stderr, "failed to create wstring from u16string\n");
-      rosidl_runtime_c__U16String__fini(&ros_message->@(member.name));
-      return false;
-    }
-@[ elif isinstance(member.type, BasicType) and member.type.typename == 'boolean']@
-    uint8_t tmp;
-    cdr >> tmp;
-    ros_message->@(member.name) = tmp ? true : false;
-@[ elif isinstance(member.type, BasicType) and member.type.typename == 'wchar']@
-    wchar_t tmp;
-    cdr >> tmp;
-    ros_message->@(member.name) = static_cast<char16_t>(tmp);
-@[  elif isinstance(member.type, BasicType)]@
-    cdr >> ros_message->@(member.name);
-@[  else]@
-    cdr_deserialize_@('__'.join(member.type.namespaced_name()))(cdr, &ros_message->@(member.name));
-@[  end if]@
-  }
+@[  end for]@
 
 @[end for]@
   return true;
@@ -483,8 +572,33 @@ def generate_member_for_get_serialized_size(member, suffix):
   from rosidl_parser.definition import BasicType
   from rosidl_parser.definition import BoundedSequence
   from rosidl_parser.definition import NamespacedType
+  from rosidl_parser.definition import UnboundedSequence
   strlist = []
   strlist.append('// Field name: %s' % (member.name))
+
+  # For uint8[] UnboundedSequence (Buffer<uint8_t>), handle is_rosidl_buffer
+  # where ros_message->field.size may be 0 but the actual Buffer has data.
+  if (
+    suffix == '' and
+    isinstance(member.type, UnboundedSequence) and
+    isinstance(member.type.value_type, BasicType) and
+    member.type.value_type.typename == 'uint8'
+  ):
+    strlist.append('{')
+    strlist.append('  size_t array_size;')
+    strlist.append('  if (ros_message->%s.is_rosidl_buffer) {' % member.name)
+    strlist.append('    auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(ros_message->%s.data);' % member.name)
+    strlist.append('    array_size = (buffer != nullptr) ? buffer->size() : 0;')
+    strlist.append('  } else {')
+    strlist.append('    array_size = ros_message->%s.size;' % member.name)
+    strlist.append('  }')
+    strlist.append('  current_alignment += padding +')
+    strlist.append('    eprosima::fastcdr::Cdr::alignment(current_alignment, padding);')
+    strlist.append('  current_alignment += array_size * sizeof(uint8_t) +')
+    strlist.append('    eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint8_t));')
+    strlist.append('}')
+    return strlist
+
   if isinstance(member.type, AbstractNestedType):
     strlist.append('{')
     if isinstance(member.type, Array):
@@ -885,6 +999,116 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(ch
 }
 
 @
+@[if has_buffer_fields]@
+// Endpoint-aware serialization for C messages with Buffer fields.
+// Uses the same per-field serialization as the regular path, but for uint8[] fields
+// checks the is_rosidl_buffer flag to detect rosidl::Buffer<uint8_t>*.
+static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpoint(
+  const void * untyped_ros_message,
+  eprosima::fastcdr::Cdr & cdr,
+  const rmw_topic_endpoint_info_t & endpoint_info)
+{
+  if (!untyped_ros_message) {
+    fprintf(stderr, "ros message handle is null\n");
+    return false;
+  }
+  const @('__'.join(message.structure.namespaced_type.namespaced_name())) * ros_message =
+    static_cast<const @('__'.join(message.structure.namespaced_type.namespaced_name())) *>(untyped_ros_message);
+  (void)endpoint_info;
+@[  for member in message.structure.members]@
+@[    if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
+  // Field name: @(member.name) (buffer-aware)
+  {
+    if (ros_message->@(member.name).is_rosidl_buffer) {
+      auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(
+        ros_message->@(member.name).data);
+      rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(
+        cdr, *buffer, endpoint_info);
+    } else {
+      // Normal sequence: serialize as legacy uint8[] wire format
+      // (uint32 size + raw bytes) for strict compatibility.
+      size_t size = ros_message->@(member.name).size;
+      cdr << static_cast<uint32_t>(size);
+      if (size > 0) {
+        cdr.serialize_array(ros_message->@(member.name).data, size);
+      }
+    }
+  }
+@[    else]@
+  // Field name: @(member.name)
+@[    for line in generate_member_for_cdr_serialize(member, '')]@
+  @(line)
+@[    end for]@
+@[    end if]@
+
+@[  end for]@
+  return true;
+}
+
+// Endpoint-aware deserialization for C messages with Buffer fields.
+// For vendor-backed buffer data, creates a heap-allocated rosidl::Buffer<uint8_t>
+// and sets is_rosidl_buffer on the C sequence struct.
+static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_endpoint(
+  eprosima::fastcdr::Cdr & cdr,
+  void * untyped_ros_message,
+  const rmw_topic_endpoint_info_t & endpoint_info)
+{
+  if (!untyped_ros_message) {
+    fprintf(stderr, "ros message handle is null\n");
+    return false;
+  }
+  @('__'.join(message.structure.namespaced_type.namespaced_name())) * ros_message =
+    static_cast<@('__'.join(message.structure.namespaced_type.namespaced_name())) *>(untyped_ros_message);
+  (void)endpoint_info;
+@[  for member in message.structure.members]@
+@[    if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
+  // Field name: @(member.name) (buffer-aware)
+  {
+    // Deserialize into a temporary Buffer, then decide: is_rosidl_buffer or copy
+    auto * buffer = new rosidl::Buffer<uint8_t>();
+    try {
+      rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
+        cdr, *buffer, endpoint_info);
+    } catch (const std::exception & e) {
+      delete buffer;
+      fprintf(stderr, "Failed to deserialize buffer field '@(member.name)': %s\n", e.what());
+      return false;
+    }
+
+    if (buffer->get_backend_type() != "cpu") {
+      ros_message->@(member.name).data = reinterpret_cast<uint8_t *>(buffer);
+      ros_message->@(member.name).size = buffer->size();
+      ros_message->@(member.name).capacity = 0;
+      ros_message->@(member.name).is_rosidl_buffer = true;
+    } else {
+      // CPU backend: copy into normal sequence (backward compatible)
+      size_t buf_size = buffer->size();
+      if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), buf_size)) {
+        delete buffer;
+        fprintf(stderr, "Failed to init uint8 sequence for '@(member.name)'\n");
+        return false;
+      }
+      if (buf_size > 0) {
+        memcpy(ros_message->@(member.name).data, buffer->data(), buf_size);
+      }
+      delete buffer;
+    }
+  }
+@[    else]@
+  // Field name: @(member.name)
+@[    for line in generate_member_for_cdr_deserialize(member)]@
+@[      if line]@
+  @(line)
+@[      else]@
+
+@[      end if]@
+@[    end for]@
+@[    end if]@
+
+@[  end for]@
+  return true;
+}
+@[end if]@
 @# // Collect the callback functions and provide a function to get the type support struct.
 
 static message_type_support_callbacks_t __callbacks_@(message.structure.namespaced_type.name) = {
@@ -895,8 +1119,16 @@ static message_type_support_callbacks_t __callbacks_@(message.structure.namespac
   _@(message.structure.namespaced_type.name)__get_serialized_size,
   _@(message.structure.namespaced_type.name)__max_serialized_size,
 @[  if message.structure.has_any_member_with_annotation('key') ]@
-  &__key_callbacks_@(message.structure.namespaced_type.name)
+  &__key_callbacks_@(message.structure.namespaced_type.name),
 @[  else]@
+  nullptr,
+@[  end if]@
+  @('true' if has_buffer_fields else 'false'),
+@[  if has_buffer_fields]@
+  _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpoint,
+  _@(message.structure.namespaced_type.name)__cdr_deserialize_with_endpoint
+@[  else]@
+  nullptr,
   nullptr
 @[  end if]@
 };
