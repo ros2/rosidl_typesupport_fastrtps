@@ -128,7 +128,7 @@ configure_file(
 set(_target_suffix "__rosidl_typesupport_fastrtps_cpp")
 
 # Create a library that builds the generated files
-add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix} ${rosidl_typesupport_fastrtps_cpp_LIBRARY_TYPE}
   ${_generated_files})
 
 # Change output library name if asked to
