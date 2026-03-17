@@ -117,7 +117,7 @@ configure_file(
 
 set(_target_suffix "__rosidl_typesupport_fastrtps_c")
 
-add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+add_library(${rosidl_generate_interfaces_TARGET}${_target_suffix} ${rosidl_typesupport_fastrtps_c_LIBRARY_TYPE}
   ${_generated_files})
 if(rosidl_generate_interfaces_LIBRARY_NAME)
   set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
