@@ -122,6 +122,11 @@ def generate_member_for_cdr_serialize(member, suffix):
   from rosidl_parser.definition import NamespacedType
   strlist = []
   strlist.append('// Member: %s' % (member.name))
+
+  if member.has_annotation('deprecated'):
+    strlist.append('// *INDENT-OFF*')
+    strlist.append('DISABLE_DEPRECATED_PUSH')
+
   if isinstance(member.type, AbstractNestedType):
     strlist.append('{')
     if isinstance(member.type, Array):
@@ -181,6 +186,11 @@ def generate_member_for_cdr_serialize(member, suffix):
     strlist.append('%s::typesupport_fastrtps_cpp::cdr_serialize%s(' % (('::'.join(member.type.namespaces)), suffix))
     strlist.append('  ros_message.%s,' % (member.name))
     strlist.append('  cdr);')
+
+  if member.has_annotation('deprecated'):
+    strlist.append('DISABLE_DEPRECATED_POP')
+    strlist.append('// *INDENT-ON*')
+
   return strlist
 }@
 
@@ -207,6 +217,10 @@ cdr_deserialize(
 {
 @[for member in message.structure.members]@
   // Member: @(member.name)
+@[  if member.has_annotation('deprecated')]@
+  // *INDENT-OFF*
+  DISABLE_DEPRECATED_PUSH
+@[  end if]
 @[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
@@ -302,7 +316,10 @@ cdr_deserialize(
   @('::'.join(member.type.namespaces))::typesupport_fastrtps_cpp::cdr_deserialize(
     cdr, ros_message.@(member.name));
 @[  end if]@
-
+@[  if member.has_annotation('deprecated')]@
+  DISABLE_DEPRECATED_POP
+  // *INDENT-ON*
+@[  end if]
 @[end for]@
   return true;
 }  // NOLINT(readability/fn_size)
@@ -326,6 +343,9 @@ def generate_member_for_get_serialized_size(member, suffix):
   from rosidl_parser.definition import NamespacedType
   strlist = []
   strlist.append('// Member: %s' % (member.name))
+
+  if member.has_annotation('deprecated'):
+    strlist.append('DISABLE_DEPRECATED_PUSH')
 
   if isinstance(member.type, AbstractNestedType):
     strlist.append('{')
@@ -376,6 +396,9 @@ def generate_member_for_get_serialized_size(member, suffix):
       strlist.append('  %s::typesupport_fastrtps_cpp::get_serialized_size%s(' % (('::'.join(member.type.namespaces)), suffix))
       strlist.append('  ros_message.%s, current_alignment);' % (member.name))
 
+  if member.has_annotation('deprecated'):
+    strlist.append('DISABLE_DEPRECATED_POP')
+
   return strlist;
 }@
 
@@ -421,7 +444,6 @@ def generate_member_for_max_serialized_size(member, suffix):
   strlist = []
   strlist.append('// Member: %s' % (member.name))
   strlist.append('{')
-
   if isinstance(member.type, AbstractNestedType):
     if isinstance(member.type, Array):
       strlist.append('  size_t array_size = %d;' % (member.type.size))

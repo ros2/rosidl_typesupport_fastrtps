@@ -220,6 +220,10 @@ def generate_member_for_cdr_serialize(member, suffix):
   from rosidl_parser.definition import NamespacedType
   strlist = []
   strlist.append('// Field name: %s' % (member.name))
+
+  if (member.has_annotation('deprecated')):
+    strlist.append('DISABLE_DEPRECATED_PUSH')
+
   strlist.append('{')
 
   type_ = member.type
@@ -301,6 +305,9 @@ def generate_member_for_cdr_serialize(member, suffix):
     strlist.append('    &ros_message->%s, cdr);' % (member.name))
   strlist.append('}')
 
+  if (member.has_annotation('deprecated')):
+    strlist.append('DISABLE_DEPRECATED_POP')
+
   return strlist
 }@
 
@@ -325,6 +332,9 @@ bool cdr_deserialize_@('__'.join([package_name] + list(interface_path.parents[0]
 {
 @[for member in message.structure.members]@
   // Field name: @(member.name)
+@[  if member.has_annotation('deprecated')]@
+  DISABLE_DEPRECATED_PUSH
+@[end if]@
   {
 @{
 type_ = member.type
@@ -460,6 +470,9 @@ else:
     cdr_deserialize_@('__'.join(member.type.namespaced_name()))(cdr, &ros_message->@(member.name));
 @[  end if]@
   }
+@[  if member.has_annotation('deprecated')]@
+  DISABLE_DEPRECATED_POP
+@[end if]@
 
 @[end for]@
   return true;
@@ -485,6 +498,10 @@ def generate_member_for_get_serialized_size(member, suffix):
   from rosidl_parser.definition import NamespacedType
   strlist = []
   strlist.append('// Field name: %s' % (member.name))
+
+  if (member.has_annotation('deprecated')):
+    strlist.append('DISABLE_DEPRECATED_PUSH')
+
   if isinstance(member.type, AbstractNestedType):
     strlist.append('{')
     if isinstance(member.type, Array):
@@ -530,6 +547,10 @@ def generate_member_for_get_serialized_size(member, suffix):
     else:
       strlist.append('current_alignment += get_serialized_size%s_%s(' % (suffix, ('__'.join(member.type.namespaced_name()))))
       strlist.append('  &(ros_message->%s), current_alignment);' % (member.name))
+
+  if (member.has_annotation('deprecated')):
+    strlist.append('DISABLE_DEPRECATED_POP')
+  
   return strlist
 }@
 
