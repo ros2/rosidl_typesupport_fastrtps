@@ -1080,6 +1080,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
       ros_message->@(member.name).size = buffer->size();
       ros_message->@(member.name).capacity = 0;
       ros_message->@(member.name).is_rosidl_buffer = true;
+      ros_message->@(member.name).owns_rosidl_buffer = true;
     } else {
       // CPU backend: copy into normal sequence (backward compatible)
       size_t buf_size = buffer->size();
@@ -1107,7 +1108,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
 
 @[  end for]@
   return true;
-}
+}  // NOLINT(readability/fn_size)
 @[end if]@
 @# // Collect the callback functions and provide a function to get the type support struct.
 
