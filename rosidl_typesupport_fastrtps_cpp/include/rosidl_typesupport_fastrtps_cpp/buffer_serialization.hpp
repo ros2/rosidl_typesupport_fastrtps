@@ -242,13 +242,11 @@ inline bool deserialize_buffer_with_endpoint(
 
   // Create buffer implementation with endpoint awareness
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Creating buffer from descriptor");
-  auto impl_shared = ops_it->second.from_descriptor_with_endpoint(descriptor.get(), endpoint_info);
+  auto impl_erased = ops_it->second.from_descriptor_with_endpoint(descriptor.get(), endpoint_info);
 
-  auto typed_impl_shared =
-    std::static_pointer_cast<rosidl::BufferImplBase<T>>(impl_shared);
-  std::unique_ptr<rosidl::BufferImplBase<T>> typed_impl_unique =
-    typed_impl_shared->clone();
-  buffer = rosidl::Buffer<T, Allocator>(std::move(typed_impl_unique));
+  std::unique_ptr<rosidl::BufferImplBase<T>> typed_impl(
+    static_cast<rosidl::BufferImplBase<T> *>(impl_erased.release()));
+  buffer = rosidl::Buffer<T, Allocator>(std::move(typed_impl));
   return true;
 }
 
