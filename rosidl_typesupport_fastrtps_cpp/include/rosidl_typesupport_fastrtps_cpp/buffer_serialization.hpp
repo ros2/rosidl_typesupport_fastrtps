@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "rosidl_buffer/buffer.hpp"
+#include "rosidl_buffer_backend/buffer_descriptor_ops.hpp"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support.h"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp"
 #include "rosidl_typesupport_fastrtps_cpp/visibility_control.h"
@@ -36,39 +37,35 @@
 namespace rosidl_typesupport_fastrtps_cpp
 {
 
-/// Global storage for buffer backend functionality
-/// Populated by RMW layer during initialization - no direct BufferBackendRegistry dependency here
-/// This keeps rosidl_typesupport_fastrtps_cpp free of pluginlib/registry dependencies
+/// Forward declaration — BufferDescriptorSerializers and BufferSerializationContext are
+/// intentionally mutually dependent:
+///
+///   BufferDescriptorSerializers  references  BufferSerializationContext  (by const-ref
+///                                             in its std::function signatures)
+///   BufferSerializationContext   contains     BufferDescriptorSerializers (by value)
+///
+/// This circularity exists because descriptor messages themselves may contain Buffer<T>
+/// fields (e.g. uint8[] data in a descriptor .msg).  When such a field is backed by a
+/// non-CPU backend, the generated cdr_serialize_with_endpoint for the descriptor message
+/// calls serialize_buffer_with_endpoint, which needs the full context to look up the
+/// inner backend's ops and serializers.
+struct BufferSerializationContext;
 
-/// Backend descriptor operations (technology-independent, provided by backend)
-struct BufferDescriptorOps
-{
-  // Create descriptor with endpoint awareness
-  std::function<std::shared_ptr<void>(const std::shared_ptr<void> &,
-    const rmw_topic_endpoint_info_t &)> create_descriptor_with_endpoint;
-  // Create buffer impl from descriptor with endpoint awareness
-  std::function<std::shared_ptr<void>(const std::shared_ptr<void> &,
-    const rmw_topic_endpoint_info_t &)> from_descriptor_with_endpoint;
-};
-
-/// FastCDR-specific descriptor serialization functions (technology-specific)
-struct DescriptorSerializers
+/// FastCDR-specific descriptor serialization functions (technology-specific).
+struct BufferDescriptorSerializers
 {
   std::function<void(eprosima::fastcdr::Cdr &, const std::shared_ptr<void> &,
-    const rmw_topic_endpoint_info_t &)> serialize;
+    const rmw_topic_endpoint_info_t &, const BufferSerializationContext &)> serialize;
   std::function<std::shared_ptr<void>(eprosima::fastcdr::Cdr &,
-    const rmw_topic_endpoint_info_t &)> deserialize;
+    const rmw_topic_endpoint_info_t &, const BufferSerializationContext &)> deserialize;
 };
 
-/// Get global map of backend descriptor operations
-/// RMW layer populates this during backend initialization
-ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC
-std::unordered_map<std::string, BufferDescriptorOps> & get_backend_descriptor_ops();
-
-/// Get global map of FastCDR descriptor serializers
-/// RMW layer populates this by calling backend registration functions
-ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC
-std::unordered_map<std::string, DescriptorSerializers> & get_descriptor_serializers();
+/// RMW-owned descriptor context passed through endpoint-aware callbacks.
+struct BufferSerializationContext
+{
+  std::unordered_map<std::string, rosidl::BufferDescriptorOps> descriptor_ops;
+  std::unordered_map<std::string, BufferDescriptorSerializers> descriptor_serializers;
+};
 
 /// Marker for descriptor-backed Buffer payloads.
 /// CPU/legacy vector path: first uint32 is the sequence length (any value != marker).
@@ -132,7 +129,8 @@ template<typename T, typename Allocator>
 inline void serialize_buffer_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   const rosidl::Buffer<T, Allocator> & buffer,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const BufferSerializationContext & serialization_context)
 {
   const std::string backend_type = buffer.get_backend_type();
 
@@ -151,18 +149,18 @@ inline void serialize_buffer_with_endpoint(
     throw std::runtime_error("Buffer implementation is null");
   }
 
-  auto & backend_ops = get_backend_descriptor_ops();
-  auto ops_it = backend_ops.find(backend_type);
-  if (ops_it == backend_ops.end()) {
-    throw std::runtime_error(
-      "No backend registered for type: " + backend_type);
-  }
-
-  auto & serializers = get_descriptor_serializers();
-  auto ser_it = serializers.find(backend_type);
-  if (ser_it == serializers.end()) {
-    throw std::runtime_error(
-      "FastCDR serializers not registered for backend: " + backend_type);
+  auto ops_it = serialization_context.descriptor_ops.find(backend_type);
+  auto ser_it = serialization_context.descriptor_serializers.find(backend_type);
+  if (ops_it == serialization_context.descriptor_ops.end() ||
+    ser_it == serialization_context.descriptor_serializers.end())
+  {
+    RCUTILS_LOG_WARN_NAMED(
+      "serialize_buffer_with_endpoint",
+      "Backend '%s' not available (shutdown?), falling back to CPU wire format",
+      backend_type.c_str());
+    std::vector<T> vec = buffer.to_vector();
+    cdr << vec;
+    return;
   }
 
   auto * non_const_impl = const_cast<rosidl::BufferImplBase<T> *>(impl);
@@ -186,28 +184,25 @@ inline void serialize_buffer_with_endpoint(
   RCUTILS_LOG_INFO_NAMED("serialize_buffer_with_endpoint",
     ("Serializing descriptor for backend: " + backend_type).c_str());
 
-  ser_it->second.serialize(cdr, descriptor, endpoint_info);
+  ser_it->second.serialize(cdr, descriptor, endpoint_info, serialization_context);
 }
 
 /// Deserialize Buffer<T> with endpoint awareness.
+/// Returns true on success, false if deserialization could not be completed
+/// (e.g. backend unavailable after shutdown).
 template<typename T, typename Allocator>
-inline void deserialize_buffer_with_endpoint(
+inline bool deserialize_buffer_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   rosidl::Buffer<T, Allocator> & buffer,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const BufferSerializationContext & serialization_context)
 {
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Starting buffer deserialization");
 
   // Peek first uint32 to disambiguate legacy vector bytes vs descriptor payload.
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
-  try {
-    cdr >> first_word;
-  } catch (const std::exception & e) {
-    RCUTILS_LOG_ERROR_NAMED("deserialize_buffer_with_endpoint",
-      ("EXCEPTION peeking first word: " + std::string(e.what())).c_str());
-    throw;
-  }
+  cdr >> first_word;
   cdr.set_state(original_state);
 
   // Legacy/vector path: first word is a sequence length (any value != marker).
@@ -215,18 +210,13 @@ inline void deserialize_buffer_with_endpoint(
     RCUTILS_LOG_INFO_NAMED(
       "deserialize_buffer_with_endpoint", "Legacy vector path: deserializing std::vector");
     std::vector<T> vec;
-    try {
-      cdr >> vec;
-    } catch (const std::exception & e) {
-      throw std::runtime_error(
-        "EXCEPTION deserializing std::vector: " + std::string(e.what()));
-    }
+    cdr >> vec;
 
     buffer.resize(vec.size());
     for (size_t i = 0; i < vec.size(); ++i) {
       buffer[i] = vec[i];
     }
-    return;
+    return true;
   }
 
   // Descriptor path: consume the marker.
@@ -237,25 +227,21 @@ inline void deserialize_buffer_with_endpoint(
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint",
     (backend_type + " backend: deserializing descriptor").c_str());
 
-  // Get backend descriptor operations
-  auto & backend_ops = get_backend_descriptor_ops();
-  auto ops_it = backend_ops.find(backend_type);
-  if (ops_it == backend_ops.end()) {
-    throw std::runtime_error(
-      "No backend registered for type: " + backend_type);
-  }
-
-  // Get FastCDR serializers
-  auto & serializers = get_descriptor_serializers();
-  auto ser_it = serializers.find(backend_type);
-  if (ser_it == serializers.end()) {
-    throw std::runtime_error(
-      "FastCDR serializers not registered for backend: " + backend_type);
+  auto ops_it = serialization_context.descriptor_ops.find(backend_type);
+  auto ser_it = serialization_context.descriptor_serializers.find(backend_type);
+  if (ops_it == serialization_context.descriptor_ops.end() ||
+    ser_it == serialization_context.descriptor_serializers.end())
+  {
+    RCUTILS_LOG_ERROR_NAMED(
+      "deserialize_buffer_with_endpoint",
+      "Backend '%s' not available (shutdown?), cannot deserialize descriptor payload",
+      backend_type.c_str());
+    return false;
   }
 
   // Deserialize descriptor
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Deserializing descriptor");
-  auto descriptor = ser_it->second.deserialize(cdr, endpoint_info);
+  auto descriptor = ser_it->second.deserialize(cdr, endpoint_info, serialization_context);
 
   // Create buffer implementation with endpoint awareness
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Creating buffer from descriptor");
@@ -266,6 +252,7 @@ inline void deserialize_buffer_with_endpoint(
   std::unique_ptr<rosidl::BufferImplBase<T>> typed_impl_unique =
     typed_impl_shared->clone();
   buffer = rosidl::Buffer<T, Allocator>(std::move(typed_impl_unique));
+  return true;
 }
 
 }  // namespace rosidl_typesupport_fastrtps_cpp

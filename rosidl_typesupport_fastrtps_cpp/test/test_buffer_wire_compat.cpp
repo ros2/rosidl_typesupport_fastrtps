@@ -16,7 +16,6 @@
 
 #include <array>
 #include <functional>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -55,11 +54,12 @@ TEST(BufferWireCompat, CpuBufferSerializationMatchesLegacyVectorBytes)
   }
 
   const auto endpoint_info = rmw_get_zero_initialized_topic_endpoint_info();
+  rosidl_typesupport_fastrtps_cpp::BufferSerializationContext serialization_context;
 
   const auto buffer_bytes = serialize_to_bytes(
     [&](eprosima::fastcdr::Cdr & cdr) {
       rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(
-        cdr, buffer, endpoint_info);
+        cdr, buffer, endpoint_info, serialization_context);
     });
 
   const auto vector_bytes = serialize_to_bytes(
@@ -83,8 +83,10 @@ TEST(BufferWireCompat, DeserializeLegacyVectorBytesIntoCpuBuffer)
   eprosima::fastcdr::Cdr cdr(fast_buffer);
   rosidl::Buffer<uint8_t> output;
   const auto endpoint_info = rmw_get_zero_initialized_topic_endpoint_info();
+  rosidl_typesupport_fastrtps_cpp::BufferSerializationContext serialization_context;
 
-  rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(cdr, output, endpoint_info);
+  rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
+    cdr, output, endpoint_info, serialization_context);
 
   EXPECT_EQ(output.get_backend_type(), "cpu");
   EXPECT_EQ(output.to_vector(), payload);
@@ -103,12 +105,10 @@ TEST(BufferWireCompat, DescriptorMarkerIsNotInterpretedAsLegacyVector)
   eprosima::fastcdr::Cdr cdr(fast_buffer);
   rosidl::Buffer<uint8_t> output;
   const auto endpoint_info = rmw_get_zero_initialized_topic_endpoint_info();
+  rosidl_typesupport_fastrtps_cpp::BufferSerializationContext serialization_context;
 
-  try {
-    rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(cdr, output, endpoint_info);
-    FAIL() << "Expected descriptor path deserialization to fail for unregistered backend";
-  } catch (const std::runtime_error & e) {
-    const std::string what = e.what();
-    EXPECT_NE(what.find("No backend registered for type: demo"), std::string::npos);
-  }
+  bool result = rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
+    cdr, output, endpoint_info, serialization_context);
+  EXPECT_FALSE(result) <<
+    "Expected descriptor path deserialization to fail for unregistered backend";
 }

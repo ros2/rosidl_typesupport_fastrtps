@@ -145,7 +145,9 @@ def generate_member_for_cdr_serialize(member, suffix, endpoint_param=''):
         # Endpoint-aware serialization with backend descriptors
         strlist.append('{')
         strlist.append('  rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(')
-        strlist.append('    cdr, ros_message.%s, %s);' % (member.name, endpoint_param))
+        strlist.append(
+          '    cdr, ros_message.%s, %s, serialization_context);' %
+          (member.name, endpoint_param))
         strlist.append('}')
         return strlist
       else:
@@ -349,8 +351,10 @@ ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_serialize_with_endpoint(
   const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
   eprosima::fastcdr::Cdr & cdr,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
+  try {
   // Serialize all fields, using endpoint-aware serialization for Buffer fields
 @[for member in message.structure.members]@
 @[  for line in generate_member_for_cdr_serialize(member, '_with_endpoint', 'endpoint_info')]@
@@ -358,6 +362,12 @@ cdr_serialize_with_endpoint(
 @[  end for]@
 
 @[end for]@
+  } catch (const std::exception & e) {
+    RCUTILS_LOG_ERROR_NAMED(
+      "@(package_name).typesupport_fastrtps_cpp",
+      "cdr_serialize_with_endpoint failed: %s", e.what());
+    return false;
+  }
   return true;
 }
 
@@ -367,20 +377,21 @@ ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_deserialize_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   // Deserialize all fields, using endpoint-aware deserialization for Buffer fields (UnboundedSequence)
 @[for member in message.structure.members]@
   // Member: @(member.name)
 @[  if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
   {
-    try {
-      // Buffer field (uint8[] UnboundedSequence -> Buffer<T>): use endpoint-aware deserialization
-      rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
-        cdr, ros_message.@(member.name), endpoint_info);
-    } catch (const std::exception & e) {
-      std::cerr << "[cdr_deserialize_with_endpoint] EXCEPTION deserializing '@(member.name)': " << e.what() << "\n";
-      throw;
+    if (!rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
+        cdr, ros_message.@(member.name), endpoint_info, serialization_context))
+    {
+      RCUTILS_LOG_ERROR_NAMED(
+        "@(package_name).typesupport_fastrtps_cpp",
+        "cdr_deserialize_with_endpoint: failed to deserialize '@(member.name)'");
+      return false;
     }
   }
 @[  elif isinstance(member.type, AbstractNestedType)]@
@@ -909,24 +920,26 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(ch
 static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpoint(
   const void * untyped_ros_message,
   eprosima::fastcdr::Cdr & cdr,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   auto typed_message =
     static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
     untyped_ros_message);
-  return cdr_serialize_with_endpoint(*typed_message, cdr, endpoint_info);
+  return cdr_serialize_with_endpoint(*typed_message, cdr, endpoint_info, serialization_context);
 }
 
 // Endpoint-aware deserialization wrapper
 static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   void * untyped_ros_message,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   auto typed_message =
     static_cast<@('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
     untyped_ros_message);
-  return cdr_deserialize_with_endpoint(cdr, *typed_message, endpoint_info);
+  return cdr_deserialize_with_endpoint(cdr, *typed_message, endpoint_info, serialization_context);
 }
 @[end if]@
 

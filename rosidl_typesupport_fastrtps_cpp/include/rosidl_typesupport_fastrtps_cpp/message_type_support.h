@@ -24,6 +24,11 @@
 #include "rmw/topic_endpoint_info.h"
 #include "rosidl_runtime_c/message_type_support_struct.h"
 
+namespace rosidl_typesupport_fastrtps_cpp
+{
+  struct BufferSerializationContext;
+}  // namespace rosidl_typesupport_fastrtps_cpp
+
 /// Feature define to allow API version detection
 #define ROSIDL_TYPESUPPORT_FASTRTPS_HAS_PLAIN_TYPES
 
@@ -127,12 +132,14 @@ typedef struct message_type_support_callbacks_t
    * \param[in] untyped_ros_message Type erased pointer to message instance.
    * \param [in,out] cdr Fast CDR serializer.
    * \param [in] endpoint_info Endpoint info for the remote peer.
+   * \param [in] serialization_context RMW-owned descriptor context.
    * \return true if serialization succeeded, false otherwise.
    */
   bool (* cdr_serialize_with_endpoint)(
     const void * untyped_ros_message,
     eprosima::fastcdr::Cdr & cdr,
-    const rmw_topic_endpoint_info_t & endpoint_info);
+    const rmw_topic_endpoint_info_t & endpoint_info,
+    const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context);
 
   /// Callback function for endpoint-aware message deserialization
   /// Only called if has_buffer_fields is true.
@@ -140,12 +147,14 @@ typedef struct message_type_support_callbacks_t
    * \param [in] cdr Serialized FastCDR data object.
    * \param[out] untyped_ros_message Type erased pointer to message instance.
    * \param [in] endpoint_info Endpoint info for the remote peer.
+   * \param [in] serialization_context RMW-owned descriptor context.
    * \return true if deserialization succeeded, false otherwise.
    */
   bool (* cdr_deserialize_with_endpoint)(
     eprosima::fastcdr::Cdr & cdr,
     void * untyped_ros_message,
-    const rmw_topic_endpoint_info_t & endpoint_info);
+    const rmw_topic_endpoint_info_t & endpoint_info,
+    const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context);
 } message_type_support_callbacks_t;
 
 #endif  // ROSIDL_TYPESUPPORT_FASTRTPS_CPP__MESSAGE_TYPE_SUPPORT_H_

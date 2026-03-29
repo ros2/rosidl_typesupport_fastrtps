@@ -1006,7 +1006,8 @@ static size_t _@(message.structure.namespaced_type.name)__max_serialized_size(ch
 static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpoint(
   const void * untyped_ros_message,
   eprosima::fastcdr::Cdr & cdr,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   if (!untyped_ros_message) {
     fprintf(stderr, "ros message handle is null\n");
@@ -1023,7 +1024,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpo
       auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(
         ros_message->@(member.name).data);
       rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(
-        cdr, *buffer, endpoint_info);
+        cdr, *buffer, endpoint_info, serialization_context);
     } else {
       // Normal sequence: serialize as legacy uint8[] wire format
       // (uint32 size + raw bytes) for strict compatibility.
@@ -1051,7 +1052,8 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpo
 static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   void * untyped_ros_message,
-  const rmw_topic_endpoint_info_t & endpoint_info)
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   if (!untyped_ros_message) {
     fprintf(stderr, "ros message handle is null\n");
@@ -1068,7 +1070,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
     auto * buffer = new rosidl::Buffer<uint8_t>();
     try {
       rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
-        cdr, *buffer, endpoint_info);
+        cdr, *buffer, endpoint_info, serialization_context);
     } catch (const std::exception & e) {
       delete buffer;
       fprintf(stderr, "Failed to deserialize buffer field '@(member.name)': %s\n", e.what());
