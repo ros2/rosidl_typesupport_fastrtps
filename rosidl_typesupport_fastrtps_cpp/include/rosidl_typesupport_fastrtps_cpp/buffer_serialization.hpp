@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "rosidl_buffer/buffer.hpp"
+#include "rosidl_buffer_backend/buffer_backend.hpp"
 #include "rosidl_buffer_backend/buffer_descriptor_ops.hpp"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support.h"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp"
@@ -111,11 +112,7 @@ inline size_t get_buffer_serialized_size(
       eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
       backend_type.size() + 1;  // +1 for null terminator
 
-    // Vendor backends: account for descriptor payload
-    // Conservative estimate: buffer data size + overhead for metadata fields
-    size_t buffer_data_size = buffer.size() * sizeof(T);
-    size_t metadata_overhead = 256;
-    current_alignment += buffer_data_size + metadata_overhead;
+    current_alignment += rosidl::kMaxBufferDescriptorSize;
   }
 
   return current_alignment - initial_alignment;
