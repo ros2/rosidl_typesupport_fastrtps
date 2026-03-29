@@ -163,10 +163,7 @@ inline void serialize_buffer_with_endpoint(
     return;
   }
 
-  auto * non_const_impl = const_cast<rosidl::BufferImplBase<T> *>(impl);
-  std::shared_ptr<void> impl_shared(static_cast<void *>(non_const_impl), [](void *){});
-
-  auto descriptor = ops_it->second.create_descriptor_with_endpoint(impl_shared, endpoint_info);
+  auto descriptor = ops_it->second.create_descriptor_with_endpoint(impl, endpoint_info);
 
   // nullptr means the backend cannot handle this endpoint — fall back to CPU wire format.
   if (!descriptor) {
@@ -245,7 +242,7 @@ inline bool deserialize_buffer_with_endpoint(
 
   // Create buffer implementation with endpoint awareness
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Creating buffer from descriptor");
-  auto impl_shared = ops_it->second.from_descriptor_with_endpoint(descriptor, endpoint_info);
+  auto impl_shared = ops_it->second.from_descriptor_with_endpoint(descriptor.get(), endpoint_info);
 
   auto typed_impl_shared =
     std::static_pointer_cast<rosidl::BufferImplBase<T>>(impl_shared);
