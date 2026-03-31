@@ -136,7 +136,7 @@ inline void serialize_buffer_with_endpoint(
 
   if (backend_type == "cpu") {
     RCUTILS_LOG_INFO_NAMED("serialize_buffer_with_endpoint", "Serializing buffer as std::vector");
-    std::vector<T> vec = buffer.to_vector();
+    const std::vector<T, Allocator> & vec = buffer;
     cdr << vec;
     return;
   }
@@ -155,7 +155,7 @@ inline void serialize_buffer_with_endpoint(
       "serialize_buffer_with_endpoint",
       "Backend '%s' not available (shutdown?), falling back to CPU wire format",
       backend_type.c_str());
-    std::vector<T> vec = buffer.to_vector();
+    std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
     return;
   }
@@ -166,7 +166,7 @@ inline void serialize_buffer_with_endpoint(
   if (!descriptor) {
     RCUTILS_LOG_INFO_NAMED(
       "serialize_buffer_with_endpoint", "Backend returned null descriptor, falling back to CPU");
-    std::vector<T> vec = buffer.to_vector();
+    std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
     return;
   }
@@ -200,16 +200,12 @@ inline bool deserialize_buffer_with_endpoint(
   cdr.set_state(original_state);
 
   // Legacy/vector path: first word is a sequence length (any value != marker).
+  // Buffer defaults to CPU, so deserialize directly into its underlying storage.
   if (first_word != kBufferDescriptorMarker) {
     RCUTILS_LOG_INFO_NAMED(
       "deserialize_buffer_with_endpoint", "Legacy vector path: deserializing std::vector");
-    std::vector<T> vec;
-    cdr >> vec;
-
-    buffer.resize(vec.size());
-    for (size_t i = 0; i < vec.size(); ++i) {
-      buffer[i] = vec[i];
-    }
+    std::vector<T, Allocator> & storage = buffer;
+    cdr >> storage;
     return true;
   }
 
@@ -269,20 +265,21 @@ inline void deserialize(Cdr & cdr, rosidl::Buffer<T, Allocator> & buffer)
 }
 
 /// Serialize Buffer<T>.
-/// CPU backend: serializes directly as std::vector<T>
-/// Other backends: force-convert to CPU backend and serialize as std::vector<T>
+/// CPU backend: serializes directly via zero-copy reference to underlying storage.
+/// Other backends: force-convert to CPU backend and serialize as std::vector<T>.
 template<typename T, typename Allocator>
 inline Cdr & operator<<(Cdr & cdr, const rosidl::Buffer<T, Allocator> & buffer)
 {
   const std::string backend_type = buffer.get_backend_type();
-  if (backend_type != "cpu") {
+  if (backend_type == "cpu") {
+    const std::vector<T, Allocator> & vec = buffer;
+    cdr << vec;
+  } else {
     RCUTILS_LOG_INFO_NAMED("Serialize Buffer<T>",
       ("Force-converting to CPU buffer for serialization (backend: " + backend_type + ")").c_str());
+    std::vector<T, Allocator> vec = buffer.to_vector();
+    cdr << vec;
   }
-
-  // Serialize as std::vector<T> for legacy wire compatibility.
-  const std::vector<T> & vec = buffer.to_vector();
-  cdr << vec;
   return cdr;
 }
 
@@ -302,14 +299,9 @@ inline Cdr & operator>>(Cdr & cdr, rosidl::Buffer<T, Allocator> & buffer)
             "Deserializing Buffer<T> with operator>> only supports legacy CPU vector bytes");
   }
 
-  std::vector<T> vec;
-  cdr >> vec;
-
-  // Copy into buffer (which defaults to CPU backend)
-  buffer.resize(vec.size());
-  for (size_t i = 0; i < vec.size(); ++i) {
-    buffer[i] = vec[i];
-  }
+  // Buffer defaults to CPU backend — deserialize directly into its underlying storage.
+  std::vector<T, Allocator> & storage = buffer;
+  cdr >> storage;
   return cdr;
 }
 

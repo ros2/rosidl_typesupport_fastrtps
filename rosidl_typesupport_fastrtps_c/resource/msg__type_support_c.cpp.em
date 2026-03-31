@@ -254,8 +254,15 @@ def generate_member_for_cdr_serialize(member, suffix):
     strlist.append('      fprintf(stderr, "null rosidl_buffer pointer for field \'%s\'\\n");' % (member.name))
     strlist.append('      return false;')
     strlist.append('    }')
-    strlist.append('    const std::vector<uint8_t> vec = buffer->to_vector();')
-    strlist.append('    cdr << vec;')
+    strlist.append('    if (buffer->get_backend_type() == "cpu") {')
+    strlist.append('      cdr << static_cast<uint32_t>(buffer->size());')
+    strlist.append('      if (buffer->size() > 0) {')
+    strlist.append('        cdr.serialize_array(buffer->data(), buffer->size());')
+    strlist.append('      }')
+    strlist.append('    } else {')
+    strlist.append('      const std::vector<uint8_t> vec = buffer->to_vector();')
+    strlist.append('      cdr << vec;')
+    strlist.append('    }')
     strlist.append('  } else {')
     strlist.append('    size_t size = ros_message->%s.size;' % (member.name))
     strlist.append('    auto array_ptr = ros_message->%s.data;' % (member.name))
@@ -377,19 +384,17 @@ def generate_member_for_cdr_deserialize(member):
     strlist.append('    ros_message->%s.capacity = 0;' % member.name)
     strlist.append('    ros_message->%s.is_rosidl_buffer = false;' % member.name)
     strlist.append('  }')
-    strlist.append('  std::vector<uint8_t> vec;')
-    strlist.append('  cdr >> vec;')
-    strlist.append('  size_t size = vec.size();')
+    strlist.append('  uint32_t seq_size = 0u;')
+    strlist.append('  cdr >> seq_size;')
     strlist.append('  if (ros_message->%s.data) {' % member.name)
     strlist.append('    rosidl_runtime_c__uint8__Sequence__fini(&ros_message->%s);' % member.name)
     strlist.append('  }')
-    strlist.append('  if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->%s, size)) {' % member.name)
+    strlist.append('  if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->%s, seq_size)) {' % member.name)
     strlist.append('    fprintf(stderr, "failed to create array for field \'%s\'");' % member.name)
     strlist.append('    return false;')
     strlist.append('  }')
-    strlist.append('  auto array_ptr = ros_message->%s.data;' % member.name)
-    strlist.append('  for (size_t i = 0; i < size; ++i) {')
-    strlist.append('    array_ptr[i] = vec[i];')
+    strlist.append('  if (seq_size > 0) {')
+    strlist.append('    cdr.deserialize_array(ros_message->%s.data, seq_size);' % member.name)
     strlist.append('  }')
     strlist.append('  ros_message->%s.is_rosidl_buffer = false;' % member.name)
   elif isinstance(member.type, AbstractNestedType):
@@ -1066,35 +1071,58 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
 @[    if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
   // Field name: @(member.name) (buffer-aware)
   {
-    // Deserialize into a temporary Buffer, then decide: is_rosidl_buffer or copy
-    auto * buffer = new rosidl::Buffer<uint8_t>();
-    try {
-      rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
-        cdr, *buffer, endpoint_info, serialization_context);
-    } catch (const std::exception & e) {
-      delete buffer;
-      fprintf(stderr, "Failed to deserialize buffer field '@(member.name)': %s\n", e.what());
-      return false;
-    }
+    // Peek first uint32 to determine legacy vector vs descriptor payload.
+    auto original_state = cdr.get_state();
+    uint32_t first_word = 0u;
+    cdr >> first_word;
+    cdr.set_state(original_state);
 
-    if (buffer->get_backend_type() != "cpu") {
-      ros_message->@(member.name).data = reinterpret_cast<uint8_t *>(buffer);
-      ros_message->@(member.name).size = buffer->size();
-      ros_message->@(member.name).capacity = 0;
-      ros_message->@(member.name).is_rosidl_buffer = true;
-      ros_message->@(member.name).owns_rosidl_buffer = true;
-    } else {
-      // CPU backend: copy into normal sequence (backward compatible)
-      size_t buf_size = buffer->size();
-      if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), buf_size)) {
-        delete buffer;
+    if (first_word != rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker) {
+      // Legacy/CPU path: deserialize directly into C sequence (no intermediate buffer).
+      uint32_t seq_size = 0u;
+      cdr >> seq_size;
+      if (ros_message->@(member.name).data) {
+        rosidl_runtime_c__uint8__Sequence__fini(&ros_message->@(member.name));
+      }
+      if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), seq_size)) {
         fprintf(stderr, "Failed to init uint8 sequence for '@(member.name)'\n");
         return false;
       }
-      if (buf_size > 0) {
-        memcpy(ros_message->@(member.name).data, buffer->data(), buf_size);
+      if (seq_size > 0) {
+        cdr.deserialize_array(ros_message->@(member.name).data, seq_size);
       }
-      delete buffer;
+      ros_message->@(member.name).is_rosidl_buffer = false;
+    } else {
+      // Descriptor path: need intermediate Buffer for non-CPU backends.
+      auto * buffer = new rosidl::Buffer<uint8_t>();
+      try {
+        rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
+          cdr, *buffer, endpoint_info, serialization_context);
+      } catch (const std::exception & e) {
+        delete buffer;
+        fprintf(stderr, "Failed to deserialize buffer field '@(member.name)': %s\n", e.what());
+        return false;
+      }
+
+      if (buffer->get_backend_type() != "cpu") {
+        ros_message->@(member.name).data = reinterpret_cast<uint8_t *>(buffer);
+        ros_message->@(member.name).size = buffer->size();
+        ros_message->@(member.name).capacity = 0;
+        ros_message->@(member.name).is_rosidl_buffer = true;
+        ros_message->@(member.name).owns_rosidl_buffer = true;
+      } else {
+        // Descriptor resolved to CPU: move data into normal C sequence.
+        size_t buf_size = buffer->size();
+        if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), buf_size)) {
+          delete buffer;
+          fprintf(stderr, "Failed to init uint8 sequence for '@(member.name)'\n");
+          return false;
+        }
+        if (buf_size > 0) {
+          memcpy(ros_message->@(member.name).data, buffer->data(), buf_size);
+        }
+        delete buffer;
+      }
     }
   }
 @[    else]@

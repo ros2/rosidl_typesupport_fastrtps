@@ -151,10 +151,15 @@ def generate_member_for_cdr_serialize(member, suffix, endpoint_param=''):
         strlist.append('}')
         return strlist
       else:
-        # Regular CDR: use to_vector() which works for all backends (CPU, demo, etc.)
+        # Regular CDR: zero-copy for CPU, to_vector() fallback for non-CPU backends.
         strlist.append('{')
-        strlist.append('  std::vector<%s> vec = ros_message.%s.to_vector();' % (msg_type_only_to_cpp(member.type.value_type), member.name))
-        strlist.append('  cdr << vec;')
+        strlist.append('  if (ros_message.%s.get_backend_type() == "cpu") {' % member.name)
+        strlist.append('    const std::vector<%s> & vec = ros_message.%s;' % (msg_type_only_to_cpp(member.type.value_type), member.name))
+        strlist.append('    cdr << vec;')
+        strlist.append('  } else {')
+        strlist.append('    std::vector<%s> vec = ros_message.%s.to_vector();' % (msg_type_only_to_cpp(member.type.value_type), member.name))
+        strlist.append('    cdr << vec;')
+        strlist.append('  }')
         strlist.append('}')
         return strlist
   
