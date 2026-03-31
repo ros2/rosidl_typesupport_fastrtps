@@ -16,6 +16,7 @@
 #define ROSIDL_TYPESUPPORT_FASTRTPS_CPP__BUFFER_SERIALIZATION_HPP_
 
 #include <cstdint>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -28,6 +29,8 @@
 #include "rosidl_buffer/buffer.hpp"
 #include "rosidl_buffer_backend/buffer_backend.hpp"
 #include "rosidl_buffer_backend/buffer_descriptor_ops.hpp"
+#include "rosidl_runtime_c/primitives_sequence.h"
+#include "rosidl_runtime_c/primitives_sequence_functions.h"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support.h"
 #include "rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp"
 #include "rosidl_typesupport_fastrtps_cpp/visibility_control.h"
@@ -240,6 +243,81 @@ inline bool deserialize_buffer_with_endpoint(
   std::unique_ptr<rosidl::BufferImplBase<T>> typed_impl(
     static_cast<rosidl::BufferImplBase<T> *>(impl_erased.release()));
   buffer = rosidl::Buffer<T, Allocator>(std::move(typed_impl));
+  return true;
+}
+
+/// Serialize a C uint8 sequence that may hold either a plain data array or
+/// a rosidl::Buffer<uint8_t>* (indicated by the is_rosidl_buffer flag).
+/// Plain sequences are serialized as legacy uint8[] wire format (uint32 size + raw bytes).
+/// Buffer-backed sequences delegate to serialize_buffer_with_endpoint().
+inline void serialize_buffer_or_c_sequence_with_endpoint(
+  eprosima::fastcdr::Cdr & cdr,
+  const rosidl_runtime_c__uint8__Sequence & seq,
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const BufferSerializationContext & serialization_context)
+{
+  if (seq.is_rosidl_buffer) {
+    auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(seq.data);
+    serialize_buffer_with_endpoint(cdr, *buffer, endpoint_info, serialization_context);
+  } else {
+    cdr << static_cast<uint32_t>(seq.size);
+    if (seq.size > 0) {
+      cdr.serialize_array(seq.data, seq.size);
+    }
+  }
+}
+
+/// Deserialize into a C uint8 sequence, handling both legacy wire format and
+/// descriptor-backed Buffer payloads.
+/// Legacy path: deserializes directly into the C sequence (no intermediate Buffer).
+/// Descriptor path: creates a temporary rosidl::Buffer<uint8_t> via
+/// deserialize_buffer_with_endpoint(), then either stashes the Buffer* in the
+/// sequence (non-CPU backend) or copies the data out to a plain C sequence (CPU).
+inline bool deserialize_buffer_or_c_sequence_with_endpoint(
+  eprosima::fastcdr::Cdr & cdr,
+  rosidl_runtime_c__uint8__Sequence & seq,
+  const rmw_topic_endpoint_info_t & endpoint_info,
+  const BufferSerializationContext & serialization_context)
+{
+  auto original_state = cdr.get_state();
+  uint32_t first_word = 0u;
+  cdr >> first_word;
+  cdr.set_state(original_state);
+
+  if (first_word != kBufferDescriptorMarker) {
+    uint32_t seq_size = 0u;
+    cdr >> seq_size;
+    if (seq.data) {
+      rosidl_runtime_c__uint8__Sequence__fini(&seq);
+    }
+    if (!rosidl_runtime_c__uint8__Sequence__init(&seq, seq_size)) {
+      RCUTILS_LOG_ERROR_NAMED(
+        "deserialize_buffer_or_c_sequence_with_endpoint",
+        "Failed to init uint8 sequence (size %u)", seq_size);
+      return false;
+    }
+    if (seq_size > 0) {
+      cdr.deserialize_array(seq.data, seq_size);
+    }
+    seq.is_rosidl_buffer = false;
+    return true;
+  }
+
+  auto * buffer = new rosidl::Buffer<uint8_t>();
+  if (!deserialize_buffer_with_endpoint(cdr, *buffer, endpoint_info, serialization_context)) {
+    delete buffer;
+    return false;
+  }
+
+  if (seq.data) {
+    rosidl_runtime_c__uint8__Sequence__fini(&seq);
+  }
+  seq.data = reinterpret_cast<uint8_t *>(buffer);
+  seq.size = buffer->size();
+  seq.capacity = 0;
+  seq.is_rosidl_buffer = true;
+  seq.owns_rosidl_buffer = true;
+
   return true;
 }
 

@@ -1025,20 +1025,8 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpo
 @[    if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
   // Field name: @(member.name) (buffer-aware)
   {
-    if (ros_message->@(member.name).is_rosidl_buffer) {
-      auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(
-        ros_message->@(member.name).data);
-      rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(
-        cdr, *buffer, endpoint_info, serialization_context);
-    } else {
-      // Normal sequence: serialize as legacy uint8[] wire format
-      // (uint32 size + raw bytes) for strict compatibility.
-      size_t size = ros_message->@(member.name).size;
-      cdr << static_cast<uint32_t>(size);
-      if (size > 0) {
-        cdr.serialize_array(ros_message->@(member.name).data, size);
-      }
-    }
+    rosidl_typesupport_fastrtps_cpp::serialize_buffer_or_c_sequence_with_endpoint(
+      cdr, ros_message->@(member.name), endpoint_info, serialization_context);
   }
 @[    else]@
   // Field name: @(member.name)
@@ -1071,58 +1059,11 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
 @[    if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
   // Field name: @(member.name) (buffer-aware)
   {
-    // Peek first uint32 to determine legacy vector vs descriptor payload.
-    auto original_state = cdr.get_state();
-    uint32_t first_word = 0u;
-    cdr >> first_word;
-    cdr.set_state(original_state);
-
-    if (first_word != rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker) {
-      // Legacy/CPU path: deserialize directly into C sequence (no intermediate buffer).
-      uint32_t seq_size = 0u;
-      cdr >> seq_size;
-      if (ros_message->@(member.name).data) {
-        rosidl_runtime_c__uint8__Sequence__fini(&ros_message->@(member.name));
-      }
-      if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), seq_size)) {
-        fprintf(stderr, "Failed to init uint8 sequence for '@(member.name)'\n");
-        return false;
-      }
-      if (seq_size > 0) {
-        cdr.deserialize_array(ros_message->@(member.name).data, seq_size);
-      }
-      ros_message->@(member.name).is_rosidl_buffer = false;
-    } else {
-      // Descriptor path: need intermediate Buffer for non-CPU backends.
-      auto * buffer = new rosidl::Buffer<uint8_t>();
-      try {
-        rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
-          cdr, *buffer, endpoint_info, serialization_context);
-      } catch (const std::exception & e) {
-        delete buffer;
-        fprintf(stderr, "Failed to deserialize buffer field '@(member.name)': %s\n", e.what());
-        return false;
-      }
-
-      if (buffer->get_backend_type() != "cpu") {
-        ros_message->@(member.name).data = reinterpret_cast<uint8_t *>(buffer);
-        ros_message->@(member.name).size = buffer->size();
-        ros_message->@(member.name).capacity = 0;
-        ros_message->@(member.name).is_rosidl_buffer = true;
-        ros_message->@(member.name).owns_rosidl_buffer = true;
-      } else {
-        // Descriptor resolved to CPU: move data into normal C sequence.
-        size_t buf_size = buffer->size();
-        if (!rosidl_runtime_c__uint8__Sequence__init(&ros_message->@(member.name), buf_size)) {
-          delete buffer;
-          fprintf(stderr, "Failed to init uint8 sequence for '@(member.name)'\n");
-          return false;
-        }
-        if (buf_size > 0) {
-          memcpy(ros_message->@(member.name).data, buffer->data(), buf_size);
-        }
-        delete buffer;
-      }
+    if (!rosidl_typesupport_fastrtps_cpp::deserialize_buffer_or_c_sequence_with_endpoint(
+        cdr, ros_message->@(member.name), endpoint_info, serialization_context))
+    {
+      fprintf(stderr, "Failed to deserialize buffer field '@(member.name)'\n");
+      return false;
     }
   }
 @[    else]@
