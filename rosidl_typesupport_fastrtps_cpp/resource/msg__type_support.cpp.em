@@ -360,12 +360,11 @@ cdr_serialize_with_endpoint(
   const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   try {
-  // Serialize all fields, using endpoint-aware serialization for Buffer fields
+    // Serialize all fields, using endpoint-aware serialization for Buffer fields
 @[for member in message.structure.members]@
 @[  for line in generate_member_for_cdr_serialize(member, '_with_endpoint', 'endpoint_info')]@
-  @(line)
+    @(line)
 @[  end for]@
-
 @[end for]@
   } catch (const std::exception & e) {
     RCUTILS_LOG_ERROR_NAMED(
