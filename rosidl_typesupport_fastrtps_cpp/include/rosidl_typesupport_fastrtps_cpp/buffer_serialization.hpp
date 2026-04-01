@@ -15,6 +15,7 @@
 #ifndef ROSIDL_TYPESUPPORT_FASTRTPS_CPP__BUFFER_SERIALIZATION_HPP_
 #define ROSIDL_TYPESUPPORT_FASTRTPS_CPP__BUFFER_SERIALIZATION_HPP_
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <functional>
@@ -88,34 +89,34 @@ inline size_t get_buffer_serialized_size(
 
   const std::string backend_type = buffer.get_backend_type();
 
-  if (backend_type == "cpu") {
-    // CPU path is wire-compatible with std::vector<T>:
-    // uint32 length + element bytes.
+  // CPU-based wire estimate — always computed because non-CPU backends
+  // may fall back to this format at serialization time.
+  size_t cpu_alignment = current_alignment;
+  {
     size_t array_size = buffer.size();
-
-    // Align to 4-byte boundary for the length field
-    current_alignment += eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
-    // Add 4 bytes for the array length
-    current_alignment += padding;
-
-    // Add array elements
+    cpu_alignment += eprosima::fastcdr::Cdr::alignment(cpu_alignment, padding);
+    cpu_alignment += padding;
     if (array_size > 0) {
       size_t item_size = sizeof(T);
-      // Elements might need alignment
-      current_alignment += eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
-      current_alignment += array_size * item_size;
+      cpu_alignment += eprosima::fastcdr::Cdr::alignment(cpu_alignment, item_size);
+      cpu_alignment += array_size * item_size;
     }
+  }
+
+  if (backend_type == "cpu") {
+    current_alignment = cpu_alignment;
   } else {
-    // Descriptor marker prefix.
-    current_alignment += eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
-    current_alignment += padding;
+    // Descriptor estimate: marker + backend_type string + descriptor payload.
+    size_t descriptor_alignment = current_alignment;
+    descriptor_alignment += eprosima::fastcdr::Cdr::alignment(descriptor_alignment, padding);
+    descriptor_alignment += padding;
+    descriptor_alignment += padding +
+      eprosima::fastcdr::Cdr::alignment(descriptor_alignment, padding) +
+      backend_type.size() + 1;
+    descriptor_alignment += rosidl::kMaxBufferDescriptorSize;
 
-    // backend_type string
-    current_alignment += padding +
-      eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
-      backend_type.size() + 1;  // +1 for null terminator
-
-    current_alignment += rosidl::kMaxBufferDescriptorSize;
+    // Take the max: serialization may use the descriptor path or fall back to CPU.
+    current_alignment = std::max(descriptor_alignment, cpu_alignment);
   }
 
   return current_alignment - initial_alignment;
