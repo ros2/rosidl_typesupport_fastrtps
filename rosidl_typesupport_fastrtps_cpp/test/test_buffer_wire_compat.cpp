@@ -96,7 +96,8 @@ TEST(BufferWireCompat, DescriptorMarkerIsNotInterpretedAsLegacyVector)
 {
   auto bytes = serialize_to_bytes(
     [&](eprosima::fastcdr::Cdr & cdr) {
-      cdr << static_cast<uint32_t>(rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker);
+      cdr << static_cast<uint32_t>(rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker1);
+      cdr << static_cast<uint32_t>(rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker2);
       cdr << std::string("demo");
     });
 

@@ -72,11 +72,12 @@ struct BufferSerializationContext
   std::unordered_map<std::string, BufferDescriptorSerializers> descriptor_serializers;
 };
 
-/// Marker for descriptor-backed Buffer payloads.
-/// CPU/legacy vector path: first uint32 is the sequence length (any value != marker).
-/// Descriptor path: first uint32 == kBufferDescriptorMarker, followed by backend_type
-/// string and the serialized descriptor.
-inline constexpr uint32_t kBufferDescriptorMarker = 0xFFFFFFFFu;
+/// Two-word magic marker for descriptor-backed Buffer payloads.
+/// CPU vector path: first uint32 is the sequence length (doesn't match marker pair).
+/// Descriptor path: first two uint32s == kBufferDescriptorMarker1 + kBufferDescriptorMarker2,
+/// followed by backend_type string and the serialized descriptor.
+inline constexpr uint32_t kBufferDescriptorMarker1 = 0xFFFFFFFFu;
+inline constexpr uint32_t kBufferDescriptorMarker2 = 0x524F5332u;  // "ROS2" in ASCII
 
 /// Get serialized size of Buffer<T> - for use by generated type support code
 template<typename T, typename Allocator>
@@ -106,10 +107,11 @@ inline size_t get_buffer_serialized_size(
   if (backend_type == "cpu") {
     current_alignment = cpu_alignment;
   } else {
-    // Descriptor estimate: marker + backend_type string + descriptor payload.
+    // Descriptor estimate: marker pair + backend_type string + descriptor payload.
     size_t descriptor_alignment = current_alignment;
     descriptor_alignment += eprosima::fastcdr::Cdr::alignment(descriptor_alignment, padding);
-    descriptor_alignment += padding;
+    descriptor_alignment += padding;  // kBufferDescriptorMarker1
+    descriptor_alignment += padding;  // kBufferDescriptorMarker2
     descriptor_alignment += padding +
       eprosima::fastcdr::Cdr::alignment(descriptor_alignment, padding) +
       backend_type.size() + 1;
@@ -175,8 +177,9 @@ inline void serialize_buffer_with_endpoint(
     return;
   }
 
-  // Descriptor-backed payload marker in first uint32.
-  cdr << static_cast<uint32_t>(kBufferDescriptorMarker);
+  // Two-word magic marker for descriptor-backed payload.
+  cdr << static_cast<uint32_t>(kBufferDescriptorMarker1);
+  cdr << static_cast<uint32_t>(kBufferDescriptorMarker2);
   cdr << backend_type;
 
   RCUTILS_LOG_INFO_NAMED("serialize_buffer_with_endpoint",
@@ -197,15 +200,17 @@ inline bool deserialize_buffer_with_endpoint(
 {
   RCUTILS_LOG_INFO_NAMED("deserialize_buffer_with_endpoint", "Starting buffer deserialization");
 
-  // Peek first uint32 to disambiguate legacy vector bytes vs descriptor payload.
+  // Peek first two uint32s to disambiguate legacy vector bytes vs descriptor payload.
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
+  uint32_t second_word = 0u;
   cdr >> first_word;
+  cdr >> second_word;
   cdr.set_state(original_state);
 
-  // Legacy/vector path: first word is a sequence length (any value != marker).
+  // Legacy/vector path: first two words don't match the marker pair.
   // Buffer defaults to CPU, so deserialize directly into its underlying storage.
-  if (first_word != kBufferDescriptorMarker) {
+  if (first_word != kBufferDescriptorMarker1 || second_word != kBufferDescriptorMarker2) {
     RCUTILS_LOG_INFO_NAMED(
       "deserialize_buffer_with_endpoint", "Legacy vector path: deserializing std::vector");
     std::vector<T, Allocator> & storage = buffer;
@@ -213,8 +218,9 @@ inline bool deserialize_buffer_with_endpoint(
     return true;
   }
 
-  // Descriptor path: consume the marker.
+  // Descriptor path: consume the marker pair.
   cdr >> first_word;
+  cdr >> second_word;
 
   std::string backend_type;
   cdr >> backend_type;
@@ -282,10 +288,12 @@ inline bool deserialize_buffer_or_c_sequence_with_endpoint(
 {
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
+  uint32_t second_word = 0u;
   cdr >> first_word;
+  cdr >> second_word;
   cdr.set_state(original_state);
 
-  if (first_word != kBufferDescriptorMarker) {
+  if (first_word != kBufferDescriptorMarker1 || second_word != kBufferDescriptorMarker2) {
     uint32_t seq_size = 0u;
     cdr >> seq_size;
     if (seq.data) {
@@ -371,9 +379,13 @@ inline Cdr & operator>>(Cdr & cdr, rosidl::Buffer<T, Allocator> & buffer)
   // Only supports legacy vector-compatible CPU path.
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
+  uint32_t second_word = 0u;
   cdr >> first_word;
+  cdr >> second_word;
   cdr.set_state(original_state);
-  if (first_word == rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker) {
+  if (first_word == rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker1 &&
+    second_word == rosidl_typesupport_fastrtps_cpp::kBufferDescriptorMarker2)
+  {
     throw std::runtime_error(
             "Deserializing Buffer<T> with operator>> only supports legacy CPU vector bytes");
   }
