@@ -312,17 +312,16 @@ inline bool deserialize_buffer_or_c_sequence_with_endpoint(
     return true;
   }
 
-  auto * buffer = new rosidl::Buffer<uint8_t>();
+  auto buffer = std::make_unique<rosidl::Buffer<uint8_t>>();
   if (!deserialize_buffer_with_endpoint(cdr, *buffer, endpoint_info, serialization_context)) {
-    delete buffer;
     return false;
   }
 
   if (seq.data) {
     rosidl_runtime_c__uint8__Sequence__fini(&seq);
   }
-  seq.data = reinterpret_cast<uint8_t *>(buffer);
   seq.size = buffer->size();
+  seq.data = reinterpret_cast<uint8_t *>(buffer.release());
   seq.capacity = 0;
   seq.is_rosidl_buffer = true;
   seq.owns_rosidl_buffer = true;
