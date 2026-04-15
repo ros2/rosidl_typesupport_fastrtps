@@ -26,6 +26,9 @@
   <buildtool_export_depend>rosidl_generator_c</buildtool_export_depend>
   <buildtool_export_depend>rosidl_generator_cpp</buildtool_export_depend>
 
+  <!-- Needed by this package to export the dependency for downstream targets -->
+  <build_depend>rosidl_runtime_cpp</build_depend>
+
   <!-- Needed by downstream targets to use this package's headers or the headers it generates, but header only so not needed to link against -->
   <build_export_depend>rosidl_runtime_cpp</build_export_depend>
   <build_export_depend>rosidl_typesupport_interface</build_export_depend>
