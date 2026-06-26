@@ -38,6 +38,7 @@
   <depend>rmw</depend>
   <depend>rosidl_buffer_backend</depend>
   <depend>rosidl_runtime_c</depend>
+  <depend>tracetools</depend>
 
   <!-- Needed for the python library it installs, which is also used to generate interfaces -->
   <exec_depend>ament_index_python</exec_depend>

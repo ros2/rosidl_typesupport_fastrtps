@@ -57,6 +57,7 @@ else:
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 include_base = '/'.join(include_parts)
+flowtrace_message_type = '::'.join(message.structure.namespaced_type.namespaced_name())
 
 
 header_files = [
@@ -265,7 +266,7 @@ using _@(message.structure.namespaced_type.name)__ros_msg_type = @('__'.join(mes
 #   member: the member to serialize
 #   suffix: the suffix name of the method. Will be used in case of recursion
 
-def generate_member_for_cdr_serialize(member, suffix):
+def generate_member_for_cdr_serialize(member, suffix, flowtrace_message_type=flowtrace_message_type):
   from rosidl_generator_cpp import msg_type_only_to_cpp
   from rosidl_generator_cpp import msg_type_to_cpp
   from rosidl_parser.definition import AbstractGenericString
@@ -292,8 +293,11 @@ def generate_member_for_cdr_serialize(member, suffix):
     isinstance(member.type.value_type, BasicType) and
     member.type.value_type.typename == 'uint8'
   ):
+    message_type = flowtrace_message_type
     strlist.append('  rosidl_typesupport_fastrtps_cpp::serialize_buffer_or_c_sequence_with_endpoint(')
-    strlist.append('    cdr, ros_message->%s, endpoint_info, serialization_context);' % (member.name))
+    strlist.append(
+      '    cdr, ros_message->%s, endpoint_info, serialization_context, "%s", "%s");' %
+      (member.name, message_type, member.name))
     strlist.append('}')
     return strlist
 
@@ -410,7 +414,7 @@ def generate_member_for_cdr_serialize(member, suffix):
 
 # Generates deserialization code for a single member as a list of strings.
 # Used by both the regular and _with_endpoint deserializers.
-def generate_member_for_cdr_deserialize(member, suffix=''):
+def generate_member_for_cdr_deserialize(member, suffix='', flowtrace_message_type=flowtrace_message_type):
   from rosidl_parser.definition import AbstractGenericString
   from rosidl_parser.definition import AbstractNestedType
   from rosidl_parser.definition import AbstractSequence
@@ -435,8 +439,11 @@ def generate_member_for_cdr_deserialize(member, suffix=''):
     isinstance(member.type.value_type, BasicType) and
     member.type.value_type.typename == 'uint8'
   ):
+    message_type = flowtrace_message_type
     strlist.append('  if (!rosidl_typesupport_fastrtps_cpp::deserialize_buffer_or_c_sequence_with_endpoint(')
-    strlist.append('      cdr, ros_message->%s, endpoint_info, serialization_context))' % (member.name))
+    strlist.append(
+      '      cdr, ros_message->%s, endpoint_info, serialization_context, "%s", "%s"))' %
+      (member.name, message_type, member.name))
     strlist.append('  {')
     strlist.append('    fprintf(stderr, "Failed to deserialize buffer field \'%s\'\\n");' % (member.name))
     strlist.append('    return false;')

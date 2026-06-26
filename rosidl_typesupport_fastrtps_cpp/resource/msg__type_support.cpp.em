@@ -18,6 +18,7 @@ from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 include_base = '/'.join(include_parts)
+flowtrace_message_type = '::'.join(message.structure.namespaced_type.namespaced_name())
 
 header_files = [
     'cstddef',
@@ -141,7 +142,7 @@ namespace typesupport_fastrtps_cpp
 #   suffix: the suffix name of the method. Will be used in case of recursion
 #   endpoint_param: parameter name for endpoint info (e.g., 'endpoint_info' or '')
 
-def generate_member_for_cdr_serialize(member, suffix, endpoint_param=''):
+def generate_member_for_cdr_serialize(member, suffix, endpoint_param='', flowtrace_message_type=flowtrace_message_type):
   from rosidl_generator_cpp import msg_type_only_to_cpp
   from rosidl_generator_cpp import msg_type_to_cpp
   from rosidl_parser.definition import AbstractGenericString
@@ -162,10 +163,11 @@ def generate_member_for_cdr_serialize(member, suffix, endpoint_param=''):
       if suffix == '_with_endpoint':
         # Endpoint-aware serialization with backend descriptors
         strlist.append('{')
+        message_type = flowtrace_message_type
         strlist.append('  rosidl_typesupport_fastrtps_cpp::serialize_buffer_with_endpoint(')
         strlist.append(
-          '    cdr, ros_message.%s, %s, serialization_context);' %
-          (member.name, endpoint_param))
+          '    cdr, ros_message.%s, %s, serialization_context, "%s", "%s");' %
+          (member.name, endpoint_param, message_type, member.name))
         strlist.append('}')
         return strlist
       else:
@@ -248,7 +250,7 @@ def generate_member_for_cdr_serialize(member, suffix, endpoint_param=''):
 bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_serialize(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  const @(flowtrace_message_type) & ros_message,
   eprosima::fastcdr::Cdr & cdr)
 {
 @[for member in message.structure.members]@
@@ -264,7 +266,7 @@ bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_deserialize(
   eprosima::fastcdr::Cdr & cdr,
-  @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message)
+  @(flowtrace_message_type) & ros_message)
 {
 @[for member in message.structure.members]@
   // Member: @(member.name)
@@ -373,7 +375,7 @@ cdr_deserialize(
 bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_serialize_with_endpoint(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  const @(flowtrace_message_type) & ros_message,
   eprosima::fastcdr::Cdr & cdr,
   const rmw_topic_endpoint_info_t & endpoint_info,
   const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
@@ -402,7 +404,7 @@ bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_deserialize_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
-  @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  @(flowtrace_message_type) & ros_message,
   const rmw_topic_endpoint_info_t & endpoint_info,
   const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
@@ -414,7 +416,8 @@ cdr_deserialize_with_endpoint(
 @[  if isinstance(member.type, UnboundedSequence) and isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint8']@
   {
     if (!rosidl_typesupport_fastrtps_cpp::deserialize_buffer_with_endpoint(
-        cdr, ros_message.@(member.name), endpoint_info, serialization_context))
+        cdr, ros_message.@(member.name), endpoint_info, serialization_context,
+        "@(flowtrace_message_type)", "@(member.name)"))
     {
       RCUTILS_LOG_ERROR_NAMED(
         "@(package_name).typesupport_fastrtps_cpp",
@@ -615,7 +618,7 @@ def generate_member_for_get_serialized_size(member, suffix):
 size_t
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 get_serialized_size(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  const @(flowtrace_message_type) & ros_message,
   size_t current_alignment)
 {
   size_t initial_alignment = current_alignment;
@@ -762,7 +765,7 @@ last_member_name_ = member.name
     // All members are plain, and type is not empty.
     // We still need to check that the in-memory alignment
     // is the same as the CDR mandated alignment.
-    using DataType = @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
+    using DataType = @(flowtrace_message_type);
     is_plain =
       (
       offsetof(DataType, @(last_member_name_)) +
@@ -777,7 +780,7 @@ last_member_name_ = member.name
 bool
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 cdr_serialize_key(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  const @(flowtrace_message_type) & ros_message,
   eprosima::fastcdr::Cdr & cdr)
 {
 @[for member in message.structure.members]@
@@ -795,7 +798,7 @@ cdr_serialize_key(
 size_t
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_@(package_name)
 get_serialized_size_key(
-  const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) & ros_message,
+  const @(flowtrace_message_type) & ros_message,
   size_t current_alignment)
 {
   size_t initial_alignment = current_alignment;
@@ -857,7 +860,7 @@ last_member_name_ = member.name
     // All members are plain, and type is not empty.
     // We still need to check that the in-memory alignment
     // is the same as the CDR mandated alignment.
-    using DataType = @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]));
+    using DataType = @(flowtrace_message_type);
     is_plain =
       (
       offsetof(DataType, @(last_member_name_)) +
@@ -875,7 +878,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize_key(
   eprosima::fastcdr::Cdr & cdr)
 {
   auto typed_message =
-    static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<const @(flowtrace_message_type) *>(
     untyped_ros_message);
 
   return cdr_serialize_key(*typed_message, cdr);
@@ -887,7 +890,7 @@ _@(message.structure.namespaced_type.name)__get_serialized_size_key(
   const void * untyped_ros_message)
 {
   auto typed_message =
-    static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<const @(flowtrace_message_type) *>(
     untyped_ros_message);
 
   return get_serialized_size_key(*typed_message, 0);
@@ -920,7 +923,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize(
   eprosima::fastcdr::Cdr & cdr)
 {
   auto typed_message =
-    static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<const @(flowtrace_message_type) *>(
     untyped_ros_message);
   return cdr_serialize(*typed_message, cdr);
 }
@@ -930,7 +933,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize(
   void * untyped_ros_message)
 {
   auto typed_message =
-    static_cast<@('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<@(flowtrace_message_type) *>(
     untyped_ros_message);
   return cdr_deserialize(cdr, *typed_message);
 }
@@ -939,7 +942,7 @@ static uint32_t _@(message.structure.namespaced_type.name)__get_serialized_size(
   const void * untyped_ros_message)
 {
   auto typed_message =
-    static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<const @(flowtrace_message_type) *>(
     untyped_ros_message);
   return static_cast<uint32_t>(get_serialized_size(*typed_message, 0));
 }
@@ -966,7 +969,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_serialize_with_endpo
   const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   auto typed_message =
-    static_cast<const @('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<const @(flowtrace_message_type) *>(
     untyped_ros_message);
   return cdr_serialize_with_endpoint(*typed_message, cdr, endpoint_info, serialization_context);
 }
@@ -979,7 +982,7 @@ static bool _@(message.structure.namespaced_type.name)__cdr_deserialize_with_end
   const rosidl_typesupport_fastrtps_cpp::BufferSerializationContext & serialization_context)
 {
   auto typed_message =
-    static_cast<@('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name])) *>(
+    static_cast<@(flowtrace_message_type) *>(
     untyped_ros_message);
   return cdr_deserialize_with_endpoint(cdr, *typed_message, endpoint_info, serialization_context);
 }
@@ -1029,7 +1032,7 @@ namespace rosidl_typesupport_fastrtps_cpp
 template<>
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_EXPORT_@(package_name)
 const rosidl_message_type_support_t *
-get_message_type_support_handle<@('::'.join([package_name] + list(interface_path.parents[0].parts) + [message.structure.namespaced_type.name]))>()
+get_message_type_support_handle<@(flowtrace_message_type)>()
 {
   return &@('::'.join([package_name] + list(interface_path.parents[0].parts)))::typesupport_fastrtps_cpp::_@(message.structure.namespaced_type.name)__handle;
 }

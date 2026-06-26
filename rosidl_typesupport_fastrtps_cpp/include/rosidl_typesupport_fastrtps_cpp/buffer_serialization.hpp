@@ -38,6 +38,7 @@
 #include "fastcdr/Cdr.h"
 #include "rmw/topic_endpoint_info.h"
 #include "rcutils/logging_macros.h"
+#include "tracetools/tracetools.h"
 
 namespace rosidl_typesupport_fastrtps_cpp
 {
@@ -78,6 +79,11 @@ struct BufferSerializationContext
 /// followed by backend_type string and the serialized descriptor.
 inline constexpr uint32_t kBufferDescriptorMarker1 = 0xFFFFFFFFu;
 inline constexpr uint32_t kBufferDescriptorMarker2 = 0x524F5332u;  // "ROS2" in ASCII
+
+inline const char * safe_trace_string(const char * value)
+{
+  return value ? value : "";
+}
 
 /// Get serialized size of Buffer<T> - for use by generated type support code
 template<typename T, typename Allocator>
@@ -133,9 +139,13 @@ inline void serialize_buffer_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   const rosidl::Buffer<T, Allocator> & buffer,
   const rmw_topic_endpoint_info_t & endpoint_info,
-  const BufferSerializationContext & serialization_context)
+  const BufferSerializationContext & serialization_context,
+  const char * message_type = "",
+  const char * field_path = "")
 {
   const std::string backend_type = buffer.get_backend_type();
+  const char * trace_message_type = safe_trace_string(message_type);
+  const char * trace_field_path = safe_trace_string(field_path);
 
   RCUTILS_LOG_DEBUG_NAMED("serialize_buffer_with_endpoint",
     ("Serializing buffer (backend: " + backend_type + ")").c_str());
@@ -143,11 +153,44 @@ inline void serialize_buffer_with_endpoint(
   if (backend_type == "cpu") {
     const std::vector<T, Allocator> & vec = buffer;
     cdr << vec;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "cpu",
+      "cpu_vector",
+      buffer.size() * sizeof(T),
+      true,
+      "ok");
     return;
   }
 
   const auto * impl = buffer.get_impl();
   if (!impl) {
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_backend_op,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "get_impl",
+      "descriptor",
+      static_cast<size_t>(0),
+      false,
+      "null_impl");
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      backend_type.c_str(),
+      "descriptor",
+      static_cast<size_t>(0),
+      false,
+      "null_impl");
     throw std::runtime_error("Buffer implementation is null");
   }
 
@@ -160,28 +203,109 @@ inline void serialize_buffer_with_endpoint(
       "serialize_buffer_with_endpoint",
       "Backend '%s' not available, falling back to CPU wire format",
       backend_type.c_str());
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_backend_op,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "lookup_backend",
+      "cpu_vector",
+      static_cast<size_t>(0),
+      false,
+      "backend_unavailable");
     std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "cpu",
+      "cpu_vector",
+      vec.size() * sizeof(T),
+      true,
+      "backend_unavailable_cpu_fallback");
     return;
   }
 
   auto descriptor = ops_it->second.create_descriptor_with_endpoint(impl, endpoint_info);
 
-  // nullptr means the backend cannot handle this endpoint — fall back to CPU wire format.
+  // nullptr means the backend cannot handle this endpoint: fall back to CPU wire format.
   if (!descriptor) {
     RCUTILS_LOG_DEBUG_NAMED(
       "serialize_buffer_with_endpoint", "Backend returned null descriptor, falling back to CPU");
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_backend_op,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "create_descriptor",
+      "cpu_vector",
+      static_cast<size_t>(0),
+      false,
+      "null_descriptor");
     std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "cpu",
+      "cpu_vector",
+      vec.size() * sizeof(T),
+      true,
+      "descriptor_unavailable_cpu_fallback");
     return;
   }
+
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_backend_op,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    "create_descriptor",
+    "descriptor",
+    static_cast<size_t>(0),
+    true,
+    "ok");
 
   // Two-word magic marker for descriptor-backed payload.
   cdr << static_cast<uint32_t>(kBufferDescriptorMarker1);
   cdr << static_cast<uint32_t>(kBufferDescriptorMarker2);
   cdr << backend_type;
 
+  size_t descriptor_start = static_cast<size_t>(cdr.get_serialized_data_length());
   ser_it->second.serialize(cdr, descriptor, endpoint_info, serialization_context);
+  size_t descriptor_size =
+    static_cast<size_t>(cdr.get_serialized_data_length()) - descriptor_start;
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_backend_op,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    "serialize_descriptor",
+    "descriptor",
+    descriptor_size,
+    true,
+    "ok");
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_serialize,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    backend_type.c_str(),
+    "descriptor",
+    descriptor_size,
+    true,
+    "ok");
 }
 
 /// Deserialize Buffer<T> with endpoint awareness.
@@ -192,12 +316,16 @@ inline bool deserialize_buffer_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   rosidl::Buffer<T, Allocator> & buffer,
   const rmw_topic_endpoint_info_t & endpoint_info,
-  const BufferSerializationContext & serialization_context)
+  const BufferSerializationContext & serialization_context,
+  const char * message_type = "",
+  const char * field_path = "")
 {
+  const char * trace_message_type = safe_trace_string(message_type);
+  const char * trace_field_path = safe_trace_string(field_path);
+
   // Peek to disambiguate CPU vector bytes vs descriptor payload.
-  // Only read the second word when the first matches — an empty vector (uint32 length = 0)
-  // may leave fewer than 8 bytes in the CDR buffer, so reading two words unconditionally
-  // would overread and throw.
+  // Only read the second word when the first matches because an empty vector may
+  // leave fewer than 8 bytes in the CDR buffer.
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
   cdr >> first_word;
@@ -212,6 +340,17 @@ inline bool deserialize_buffer_with_endpoint(
     cdr.set_state(original_state);
     std::vector<T, Allocator> & storage = buffer;
     cdr >> storage;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_deserialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      "cpu",
+      buffer.get_backend_type().c_str(),
+      "cpu_vector",
+      storage.size() * sizeof(T),
+      true,
+      "ok");
     return true;
   }
 
@@ -229,18 +368,91 @@ inline bool deserialize_buffer_with_endpoint(
       "deserialize_buffer_with_endpoint",
       "Backend '%s' not available (shutdown?), cannot deserialize descriptor payload",
       backend_type.c_str());
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_backend_op,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      "lookup_backend",
+      "descriptor",
+      static_cast<size_t>(0),
+      false,
+      "backend_unavailable");
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_deserialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      backend_type.c_str(),
+      "descriptor",
+      static_cast<size_t>(0),
+      false,
+      "backend_unavailable");
     return false;
   }
 
-  // Deserialize descriptor
+  // Deserialize descriptor.
+  size_t descriptor_start = static_cast<size_t>(cdr.get_serialized_data_length());
   auto descriptor = ser_it->second.deserialize(cdr, endpoint_info, serialization_context);
+  size_t descriptor_size =
+    static_cast<size_t>(cdr.get_serialized_data_length()) - descriptor_start;
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_backend_op,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    "deserialize_descriptor",
+    "descriptor",
+    descriptor_size,
+    true,
+    "ok");
 
-  // Create buffer implementation with endpoint awareness
+  // Create buffer implementation with endpoint awareness.
   auto impl_erased = ops_it->second.from_descriptor_with_endpoint(descriptor.get(), endpoint_info);
+  bool from_descriptor_ok = impl_erased != nullptr;
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_backend_op,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    "from_descriptor",
+    "descriptor",
+    descriptor_size,
+    from_descriptor_ok,
+    from_descriptor_ok ? "ok" : "null_impl");
+  if (!from_descriptor_ok) {
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_deserialize,
+      static_cast<const void *>(&buffer),
+      trace_message_type,
+      trace_field_path,
+      backend_type.c_str(),
+      backend_type.c_str(),
+      "descriptor",
+      descriptor_size,
+      false,
+      "null_impl");
+    return false;
+  }
 
   std::unique_ptr<rosidl::BufferImplBase<T>> typed_impl(
     static_cast<rosidl::BufferImplBase<T> *>(impl_erased.release()));
   buffer = rosidl::Buffer<T, Allocator>(std::move(typed_impl));
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_deserialize,
+    static_cast<const void *>(&buffer),
+    trace_message_type,
+    trace_field_path,
+    backend_type.c_str(),
+    buffer.get_backend_type().c_str(),
+    "descriptor",
+    descriptor_size,
+    true,
+    "ok");
   return true;
 }
 
@@ -252,16 +464,32 @@ inline void serialize_buffer_or_c_sequence_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   const rosidl_runtime_c__uint8__Sequence & seq,
   const rmw_topic_endpoint_info_t & endpoint_info,
-  const BufferSerializationContext & serialization_context)
+  const BufferSerializationContext & serialization_context,
+  const char * message_type = "",
+  const char * field_path = "")
 {
+  const char * trace_message_type = safe_trace_string(message_type);
+  const char * trace_field_path = safe_trace_string(field_path);
   if (seq.is_rosidl_buffer) {
     auto * buffer = reinterpret_cast<const rosidl::Buffer<uint8_t> *>(seq.data);
-    serialize_buffer_with_endpoint(cdr, *buffer, endpoint_info, serialization_context);
+    serialize_buffer_with_endpoint(
+      cdr, *buffer, endpoint_info, serialization_context, trace_message_type, trace_field_path);
   } else {
     cdr << static_cast<uint32_t>(seq.size);
     if (seq.size > 0) {
       cdr.serialize_array(seq.data, seq.size);
     }
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      nullptr,
+      trace_message_type,
+      trace_field_path,
+      "c_sequence",
+      "cpu",
+      "legacy_sequence",
+      seq.size,
+      true,
+      "plain_sequence");
   }
 }
 
@@ -275,8 +503,12 @@ inline bool deserialize_buffer_or_c_sequence_with_endpoint(
   eprosima::fastcdr::Cdr & cdr,
   rosidl_runtime_c__uint8__Sequence & seq,
   const rmw_topic_endpoint_info_t & endpoint_info,
-  const BufferSerializationContext & serialization_context)
+  const BufferSerializationContext & serialization_context,
+  const char * message_type = "",
+  const char * field_path = "")
 {
+  const char * trace_message_type = safe_trace_string(message_type);
+  const char * trace_field_path = safe_trace_string(field_path);
   auto original_state = cdr.get_state();
   uint32_t first_word = 0u;
   cdr >> first_word;
@@ -304,11 +536,23 @@ inline bool deserialize_buffer_or_c_sequence_with_endpoint(
       cdr.deserialize_array(seq.data, seq_size);
     }
     seq.is_rosidl_buffer = false;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_deserialize,
+      nullptr,
+      trace_message_type,
+      trace_field_path,
+      "cpu",
+      "c_sequence",
+      "legacy_sequence",
+      seq.size,
+      true,
+      "plain_sequence");
     return true;
   }
 
   auto buffer = std::make_unique<rosidl::Buffer<uint8_t>>();
-  if (!deserialize_buffer_with_endpoint(cdr, *buffer, endpoint_info, serialization_context)) {
+  if (!deserialize_buffer_with_endpoint(
+      cdr, *buffer, endpoint_info, serialization_context, trace_message_type, trace_field_path)) {
     return false;
   }
 
@@ -355,11 +599,33 @@ inline Cdr & operator<<(Cdr & cdr, const rosidl::Buffer<T, Allocator> & buffer)
   if (backend_type == "cpu") {
     const std::vector<T, Allocator> & vec = buffer;
     cdr << vec;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      "",
+      "",
+      backend_type.c_str(),
+      "cpu",
+      "legacy_cpu_vector",
+      buffer.size() * sizeof(T),
+      true,
+      "ok");
   } else {
     RCUTILS_LOG_DEBUG_NAMED("Serialize Buffer<T>",
       ("Force-converting to CPU buffer for serialization (backend: " + backend_type + ")").c_str());
     std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
+    TRACETOOLS_TRACEPOINT(
+      rosidl_buffer_serialize,
+      static_cast<const void *>(&buffer),
+      "",
+      "",
+      backend_type.c_str(),
+      "cpu",
+      "legacy_cpu_vector",
+      vec.size() * sizeof(T),
+      true,
+      "legacy_cpu_fallback");
   }
   return cdr;
 }
@@ -389,6 +655,17 @@ inline Cdr & operator>>(Cdr & cdr, rosidl::Buffer<T, Allocator> & buffer)
   // Buffer defaults to CPU backend — deserialize directly into its underlying storage.
   std::vector<T, Allocator> & storage = buffer;
   cdr >> storage;
+  TRACETOOLS_TRACEPOINT(
+    rosidl_buffer_deserialize,
+    static_cast<const void *>(&buffer),
+    "",
+    "",
+    "cpu",
+    buffer.get_backend_type().c_str(),
+    "legacy_cpu_vector",
+    storage.size() * sizeof(T),
+    true,
+    "ok");
   return cdr;
 }
 

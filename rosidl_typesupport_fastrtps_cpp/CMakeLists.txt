@@ -31,11 +31,13 @@ find_package(rmw REQUIRED)
 find_package(rosidl_buffer_backend REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
+find_package(tracetools REQUIRED)
 
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_buffer_backend)
 ament_export_dependencies(rosidl_runtime_c)
 ament_export_dependencies(rosidl_runtime_cpp)
+ament_export_dependencies(tracetools)
 ament_export_dependencies(fastcdr)
 
 ament_python_install_package(${PROJECT_NAME})
@@ -52,7 +54,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   rosidl_buffer_backend::rosidl_buffer_backend
   rosidl_runtime_c::rosidl_runtime_c
   rosidl_runtime_cpp::rosidl_runtime_cpp
-  rmw::rmw)
+  rmw::rmw
+  tracetools::tracetools)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
