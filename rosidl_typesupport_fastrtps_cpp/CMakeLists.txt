@@ -10,12 +10,6 @@ else()
     CACHE BOOL "If Connext Static should be disabled.")
 endif()
 
-# Default to C++20
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -52,7 +46,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   rosidl_buffer_backend::rosidl_buffer_backend
   rosidl_runtime_c::rosidl_runtime_c
   rosidl_runtime_cpp::rosidl_runtime_cpp
-  rmw::rmw)
+  rmw::rmw
+  # Note we link public on purpose, as we want to export
+  # the used C++ version as minimum to all consuming packages
+  ament_cmake_ros_core::ament_ros_defaults)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
