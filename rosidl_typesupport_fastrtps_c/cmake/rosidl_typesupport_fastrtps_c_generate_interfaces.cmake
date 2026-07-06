@@ -34,6 +34,7 @@ foreach(_abs_idl_file ${rosidl_generate_interfaces_ABS_IDL_FILES})
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
   list(APPEND _generated_files
     "${_output_path}/${_parent_folder}/detail/${_header_name}__rosidl_typesupport_fastrtps_c.h"
+    "${_output_path}/${_parent_folder}/detail/${_header_name}__rosidl_typesupport_fastrtps_c_impl.hpp"
     "${_output_path}/${_parent_folder}/detail/${_header_name}__type_support_c.cpp")
 endforeach()
 
@@ -52,10 +53,13 @@ set(target_dependencies
   "${rosidl_typesupport_fastrtps_c_BIN}"
   ${rosidl_typesupport_fastrtps_c_GENERATOR_FILES}
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/idl__rosidl_typesupport_fastrtps_c.h.em"
+  "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/idl__type_support_c_impl.hpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/idl__type_support_c.cpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/msg__rosidl_typesupport_fastrtps_c.h.em"
+  "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/msg__type_support_c_impl.hpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/msg__type_support_c.cpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/srv__rosidl_typesupport_fastrtps_c.h.em"
+  "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/srv__type_support_c_impl.hpp.em"
   "${rosidl_typesupport_fastrtps_c_TEMPLATE_DIR}/srv__type_support_c.cpp.em"
   ${rosidl_generate_interfaces_ABS_IDL_FILES}
   ${_dependency_files})
