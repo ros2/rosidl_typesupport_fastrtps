@@ -425,7 +425,7 @@ def generate_member_for_cdr_deserialize(member, suffix=''):
       strlist.append('    if (!ros_i.data) {')
       strlist.append('      rosidl_runtime_c__String__init(&ros_i);')
       strlist.append('    }')
-      strlist.append('    bool succeeded = rosidl_runtime_c__String__assign(&ros_i, tmp.c_str());')
+      strlist.append('    bool succeeded = rosidl_runtime_c__String__assignn(&ros_i, tmp.c_str(), tmp.size());')
       strlist.append('    if (!succeeded) {')
       strlist.append('      fprintf(stderr, "failed to assign string into field \'%s\'\\n");' % member.name)
       strlist.append('      return false;')
