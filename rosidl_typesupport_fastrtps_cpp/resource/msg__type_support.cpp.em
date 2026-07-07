@@ -39,7 +39,6 @@ header_files = [
 @[    end if]@
 @[end for]@
 
-
 @[  for ns in message.structure.namespaced_type.namespaces]@
 
 namespace @(ns)

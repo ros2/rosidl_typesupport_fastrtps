@@ -51,6 +51,7 @@ header_files = [
     'cstddef',
     'limits',
     'string',
+    'vector',
     'rosidl_typesupport_fastrtps_c/serialization_helpers.hpp',
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     include_base + '__struct.h',

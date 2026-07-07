@@ -44,6 +44,7 @@ header_files = [
     'limits',
     'stdexcept',
     'string',
+    'vector',
     'rcutils/logging_macros.h',
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/serialization_helpers.hpp',

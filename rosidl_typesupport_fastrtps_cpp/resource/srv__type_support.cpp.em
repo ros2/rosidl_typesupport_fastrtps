@@ -18,21 +18,19 @@ TEMPLATE(
     'msg__type_support.cpp.em',
     package_name=package_name, interface_path=interface_path, message=service.request_message,
     include_directives=include_directives)
-}@
-
+}
 @{
 TEMPLATE(
     'msg__type_support.cpp.em',
     package_name=package_name, interface_path=interface_path, message=service.response_message,
     include_directives=include_directives)
-}@
-
+}
 @{
 TEMPLATE(
     'msg__type_support.cpp.em',
     package_name=package_name, interface_path=interface_path, message=service.event_message,
     include_directives=include_directives)
-}@
+}
 
 @{
 header_files = [
@@ -52,6 +50,7 @@ header_files = [
 @[    end if]@
 #include "@(header_file)"
 @[end for]@
+
 @[  for ns in service.namespaced_type.namespaces]@
 
 namespace @(ns)
