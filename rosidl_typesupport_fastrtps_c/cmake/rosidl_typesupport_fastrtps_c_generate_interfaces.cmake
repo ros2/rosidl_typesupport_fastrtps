@@ -206,6 +206,7 @@ if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
   find_package(ament_cmake_cppcheck REQUIRED)
   ament_cppcheck(
     TESTNAME "cppcheck_rosidl_typesupport_fastrtps_c"
+    LANGUAGE c++
     ${_generated_files})
 
   find_package(ament_cmake_cpplint REQUIRED)
