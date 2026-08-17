@@ -31,7 +31,7 @@ header_files = [
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp',
     'rosidl_typesupport_fastrtps_cpp/serialization_helpers.hpp',
-    include_base + '__rosidl_typesupport_fastrtps_c.h',
+    include_base + '__rosidl_typesupport_fastrtps_c.hpp',
     'fastcdr/Cdr.h',
 ]
 

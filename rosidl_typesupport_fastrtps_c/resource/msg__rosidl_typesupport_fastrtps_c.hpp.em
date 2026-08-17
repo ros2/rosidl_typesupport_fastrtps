@@ -1,4 +1,4 @@
-@# Included from rosidl_typesupport_fastrtps_c/resource/idl__rosidl_typesupport_fastrtps_c.h.em
+@# Included from rosidl_typesupport_fastrtps_c/resource/idl__rosidl_typesupport_fastrtps_c.hpp.em
 @{
 
 from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
