@@ -17,8 +17,8 @@ from rosidl_pycommon import generate_files
 
 def generate_typesupport_fastrtps_c(generator_arguments_file):
     mapping = {
-        'idl__rosidl_typesupport_fastrtps_c.h.em':
-        'detail/%s__rosidl_typesupport_fastrtps_c.h',
+        'idl__rosidl_typesupport_fastrtps_c.hpp.em':
+        'detail/%s__rosidl_typesupport_fastrtps_c.hpp',
         'idl__type_support_c_impl.hpp.em':
         'detail/%s__rosidl_typesupport_fastrtps_c_impl.hpp',
         'idl__type_support_c.cpp.em': 'detail/%s__type_support_c.cpp',

@@ -56,7 +56,7 @@ header_files = [
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     include_base + '__struct.h',
     include_base + '__functions.h',
-    include_base + '__rosidl_typesupport_fastrtps_c.h',
+    include_base + '__rosidl_typesupport_fastrtps_c.hpp',
     'fastcdr/Cdr.h',
 ]
 if has_direct_buffer_fields:

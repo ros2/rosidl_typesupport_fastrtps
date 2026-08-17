@@ -17,7 +17,7 @@ include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 include_base = '/'.join(include_parts)
 }@
-#include "@(include_base)__rosidl_typesupport_fastrtps_c.h"
+#include "@(include_base)__rosidl_typesupport_fastrtps_c.hpp"
 
 @{
 include_directives = set()

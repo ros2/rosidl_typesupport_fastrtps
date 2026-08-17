@@ -1,9 +1,9 @@
-// generated from rosidl_typesupport_fastrtps_c/resource/idl__rosidl_typesupport_fastrtps_c.h.em
+// generated from rosidl_typesupport_fastrtps_c/resource/idl__rosidl_typesupport_fastrtps_c.hpp.em
 // with input from @(package_name):@(interface_path)
 // generated code does not contain a copyright notice
 @
 @#######################################################################
-@# EmPy template for generating <idl>__rosidl_typesupport_fastrtps_c.h files
+@# EmPy template for generating <idl>__rosidl_typesupport_fastrtps_c.hpp files
 @#
 @# Context:
 @#  - package_name (string)
@@ -16,7 +16,7 @@ from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts) + [
     'detail', convert_camel_case_to_lower_case_underscore(interface_path.stem)]
 header_guard_variable = '__'.join([x.upper() for x in include_parts]) + \
-    '__ROSIDL_TYPESUPPORT_FASTRTPS_C_H_'
+    '__ROSIDL_TYPESUPPORT_FASTRTPS_C_HPP_'
 }@
 #ifndef @(header_guard_variable)
 #define @(header_guard_variable)
@@ -34,7 +34,7 @@ from rosidl_parser.definition import Message
 
 @{
 TEMPLATE(
-    'msg__rosidl_typesupport_fastrtps_c.h.em',
+    'msg__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, message=message,
     include_directives=include_directives)
 }@
@@ -50,7 +50,7 @@ from rosidl_parser.definition import Service
 
 @{
 TEMPLATE(
-    'srv__rosidl_typesupport_fastrtps_c.h.em',
+    'srv__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, service=service,
     include_directives=include_directives)
 }@
@@ -66,42 +66,42 @@ from rosidl_parser.definition import Action
 
 @{
 TEMPLATE(
-    'msg__rosidl_typesupport_fastrtps_c.h.em',
+    'msg__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, message=action.goal,
     include_directives=include_directives)
 }@
 
 @{
 TEMPLATE(
-    'msg__rosidl_typesupport_fastrtps_c.h.em',
+    'msg__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, message=action.result,
     include_directives=include_directives)
 }@
 
 @{
 TEMPLATE(
-    'msg__rosidl_typesupport_fastrtps_c.h.em',
+    'msg__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, message=action.feedback,
     include_directives=include_directives)
 }@
 
 @{
 TEMPLATE(
-    'srv__rosidl_typesupport_fastrtps_c.h.em',
+    'srv__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, service=action.send_goal_service,
     include_directives=include_directives)
 }@
 
 @{
 TEMPLATE(
-    'srv__rosidl_typesupport_fastrtps_c.h.em',
+    'srv__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, service=action.get_result_service,
     include_directives=include_directives)
 }@
 
 @{
 TEMPLATE(
-    'msg__rosidl_typesupport_fastrtps_c.h.em',
+    'msg__rosidl_typesupport_fastrtps_c.hpp.em',
     package_name=package_name, interface_path=interface_path, message=action.feedback_message,
     include_directives=include_directives)
 }@

@@ -16,7 +16,7 @@ header_files = [
     'rosidl_typesupport_fastrtps_cpp/identifier.hpp',
     'rosidl_typesupport_fastrtps_cpp/message_type_support.h',
     'rosidl_typesupport_fastrtps_cpp/message_type_support_decl.hpp',
-    include_base + '__rosidl_typesupport_fastrtps_c.h',
+    include_base + '__rosidl_typesupport_fastrtps_c.hpp',
     # Inline (de)serialization implementation for this message, and
     # transitively for any nested message types. Including it here (instead
     # of forward-declaring the nested functions) allows the compiler to
