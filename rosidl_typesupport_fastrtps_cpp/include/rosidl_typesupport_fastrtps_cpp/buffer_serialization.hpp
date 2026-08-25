@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -137,8 +136,9 @@ inline void serialize_buffer_with_endpoint(
 {
   const std::string backend_type = buffer.get_backend_type();
 
-  RCUTILS_LOG_DEBUG_NAMED("serialize_buffer_with_endpoint",
-    ("Serializing buffer (backend: " + backend_type + ")").c_str());
+  // Hot path (called once per published message): log only once per process.
+  RCUTILS_LOG_DEBUG_ONCE_NAMED(
+    "serialize_buffer_with_endpoint", "Serializing buffer (backend: %s)", backend_type.c_str());
 
   if (backend_type == "cpu") {
     const std::vector<T, Allocator> & vec = buffer;
@@ -156,7 +156,7 @@ inline void serialize_buffer_with_endpoint(
   if (ops_it == serialization_context.descriptor_ops.end() ||
     ser_it == serialization_context.descriptor_serializers.end())
   {
-    RCUTILS_LOG_WARN_NAMED(
+    RCUTILS_LOG_WARN_ONCE_NAMED(
       "serialize_buffer_with_endpoint",
       "Backend '%s' not available, falling back to CPU wire format",
       backend_type.c_str());
@@ -169,7 +169,7 @@ inline void serialize_buffer_with_endpoint(
 
   // nullptr means the backend cannot handle this endpoint — fall back to CPU wire format.
   if (!descriptor) {
-    RCUTILS_LOG_DEBUG_NAMED(
+    RCUTILS_LOG_DEBUG_ONCE_NAMED(
       "serialize_buffer_with_endpoint", "Backend returned null descriptor, falling back to CPU");
     std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
@@ -217,8 +217,9 @@ inline bool deserialize_buffer_with_endpoint(
 
   std::string backend_type;
   cdr >> backend_type;
-  RCUTILS_LOG_DEBUG_NAMED("deserialize_buffer_with_endpoint",
-    (backend_type + " backend: deserializing descriptor").c_str());
+  RCUTILS_LOG_DEBUG_ONCE_NAMED(
+    "deserialize_buffer_with_endpoint", "%s backend: deserializing descriptor",
+    backend_type.c_str());
 
   auto ops_it = serialization_context.descriptor_ops.find(backend_type);
   auto ser_it = serialization_context.descriptor_serializers.find(backend_type);
@@ -356,8 +357,8 @@ inline Cdr & operator<<(Cdr & cdr, const rosidl::Buffer<T, Allocator> & buffer)
     const std::vector<T, Allocator> & vec = buffer;
     cdr << vec;
   } else {
-    RCUTILS_LOG_DEBUG_NAMED("Serialize Buffer<T>",
-      ("Force-converting to CPU buffer for serialization (backend: " + backend_type + ")").c_str());
+    RCUTILS_LOG_DEBUG_ONCE_NAMED("Serialize Buffer<T>",
+      "Force-converting to CPU buffer for serialization (backend: %s)", backend_type.c_str());
     std::vector<T, Allocator> vec = buffer.to_vector();
     cdr << vec;
   }
