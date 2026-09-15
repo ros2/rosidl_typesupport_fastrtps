@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.9.7 (2026-09-15)
+------------------
 * Enforce c++ language for cppcheck_rosidl_typesupport_fastrtps_c (`#162 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/162>`_)
 * Contributors: William Woodall
 

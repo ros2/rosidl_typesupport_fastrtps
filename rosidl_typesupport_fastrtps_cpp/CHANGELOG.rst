@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.9.7 (2026-09-15)
+------------------
 * print rcl::buffer debug message only once cz it is a hot path. (`#164 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/164>`_) (`#165 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/165>`_)
 * Contributors: mergify[bot]
 
