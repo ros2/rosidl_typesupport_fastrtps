@@ -28,6 +28,7 @@
   <!-- Needed by downstream targets to use this package's headers or the headers it generates, but header only so not needed to link against -->
   <build_export_depend>rosidl_runtime_cpp</build_export_depend>
   <build_export_depend>rosidl_typesupport_interface</build_export_depend>
+  <build_export_depend>rosidl_cmake</build_export_depend>
 
   <!-- Needed for headers in this package, or the headers it generates, and also needs to be linked in downstream packages -->
   <depend>fastcdr</depend>
