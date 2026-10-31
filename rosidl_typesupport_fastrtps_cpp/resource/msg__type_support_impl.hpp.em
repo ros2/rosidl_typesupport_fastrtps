@@ -262,9 +262,12 @@ cdr_deserialize(
 @[      else]@
     for (size_t i = 0; i < @(member.type.size); i++) {
 @[        if isinstance(member.type.value_type, NamespacedType)]@
-      @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
-        cdr,
-        ros_message.@(member.name)[i]);
+      if (!@('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
+          cdr,
+          ros_message.@(member.name)[i]))
+      {
+        return false;
+      }
 @[        else]@
       bool succeeded = rosidl_typesupport_fastrtps_cpp::cdr_deserialize(cdr, ros_message.@(member.name)[i]);
       if (!succeeded) {
@@ -315,8 +318,11 @@ cdr_deserialize(
 @[            elif not isinstance(member.type.value_type, NamespacedType)]@
       cdr >> ros_message.@(member.name)[i];
 @[            else]@
-      @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
-        cdr, ros_message.@(member.name)[i]);
+      if (!@('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
+          cdr, ros_message.@(member.name)[i]))
+      {
+        return false;
+      }
 @[            end if]@
     }
 @[          end if]@
@@ -346,8 +352,11 @@ cdr_deserialize(
 @[  elif not isinstance(member.type, NamespacedType)]@
   cdr >> ros_message.@(member.name);
 @[  else]@
-  @('::'.join(member.type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
-    cdr, ros_message.@(member.name));
+  if (!@('::'.join(member.type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize(
+      cdr, ros_message.@(member.name)))
+  {
+    return false;
+  }
 @[  end if]@
 
 @[end for]@
@@ -416,11 +425,14 @@ cdr_deserialize_with_endpoint(
 @[      else]@
     for (size_t i = 0; i < @(member.type.size); i++) {
 @[        if isinstance(member.type.value_type, NamespacedType)]@
-      @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
-        cdr,
-        ros_message.@(member.name)[i],
-        endpoint_info,
-        serialization_context);
+      if (!@('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
+          cdr,
+          ros_message.@(member.name)[i],
+          endpoint_info,
+          serialization_context))
+      {
+        return false;
+      }
 @[        else]@
       bool succeeded = rosidl_typesupport_fastrtps_cpp::cdr_deserialize(cdr, ros_message.@(member.name)[i]);
       if (!succeeded) {
@@ -476,11 +488,14 @@ cdr_deserialize_with_endpoint(
 @[          elif not isinstance(member.type.value_type, NamespacedType)]@
       cdr >> ros_message.@(member.name)[i];
 @[          else]@
-      @('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
-        cdr,
-        ros_message.@(member.name)[i],
-        endpoint_info,
-        serialization_context);
+      if (!@('::'.join(member.type.value_type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
+          cdr,
+          ros_message.@(member.name)[i],
+          endpoint_info,
+          serialization_context))
+      {
+        return false;
+      }
 @[          end if]@
     }
 @[        end if]@
@@ -506,11 +521,14 @@ cdr_deserialize_with_endpoint(
 @[  elif not isinstance(member.type, NamespacedType)]@
   cdr >> ros_message.@(member.name);
 @[  else]@
-  @('::'.join(member.type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
-    cdr,
-    ros_message.@(member.name),
-    endpoint_info,
-    serialization_context);
+  if (!@('::'.join(member.type.namespaces))::typesupport_fastrtps_cpp::detail::cdr_deserialize_with_endpoint(
+      cdr,
+      ros_message.@(member.name),
+      endpoint_info,
+      serialization_context))
+  {
+    return false;
+  }
 @[  end if]@
 
 @[end for]@
