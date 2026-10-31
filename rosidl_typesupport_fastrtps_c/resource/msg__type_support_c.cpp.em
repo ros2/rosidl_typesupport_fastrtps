@@ -530,7 +530,9 @@ def generate_member_for_cdr_deserialize(member, suffix=''):
       strlist.append('  cdr.deserialize_array(array_ptr, size);')
     else:
       strlist.append('  for (size_t i = 0; i < size; ++i) {')
-      strlist.append('    cdr_deserialize%s_%s(cdr, &array_ptr[i]%s);' % (suffix, '__'.join(member.type.value_type.namespaced_name()), nested_extra_args))
+      strlist.append('    if (!cdr_deserialize%s_%s(cdr, &array_ptr[i]%s)) {' % (suffix, '__'.join(member.type.value_type.namespaced_name()), nested_extra_args))
+      strlist.append('      return false;')
+      strlist.append('    }')
       strlist.append('  }')
 
   elif isinstance(member.type, AbstractString):
@@ -567,7 +569,9 @@ def generate_member_for_cdr_deserialize(member, suffix=''):
   elif isinstance(member.type, BasicType):
     strlist.append('  cdr >> ros_message->%s;' % member.name)
   else:
-    strlist.append('  cdr_deserialize%s_%s(cdr, &ros_message->%s%s);' % (suffix, '__'.join(member.type.namespaced_name()), member.name, nested_extra_args))
+    strlist.append('  if (!cdr_deserialize%s_%s(cdr, &ros_message->%s%s)) {' % (suffix, '__'.join(member.type.namespaced_name()), member.name, nested_extra_args))
+    strlist.append('    return false;')
+    strlist.append('  }')
 
   strlist.append('}')
   return strlist
