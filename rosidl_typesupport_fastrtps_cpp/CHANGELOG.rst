@@ -2,6 +2,19 @@
 Changelog for package rosidl_typesupport_fastrtps_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.10.2 (2026-11-03)
+-------------------
+* Remove custom ament_cppcheck usage. (`#173 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/173>`_)
+* Use rosidl_find_package_idl() to find .idl file paths (`#169 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/169>`_)
+* Remove ament_export_include_directories and ament_export_libraries calls (`#170 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/170>`_)
+* Use the SPDX identifier Apache-2.0 in package.xml license tags (`#167 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/167>`_)
+* print rcl::buffer debug message only once cz it is a hot path. (`#164 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/164>`_)
+* Skip redundant find_package(Python3) in generator extensions (`#163 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/163>`_)
+* Rename generated rosidl_typesupport_fastrtps_c headers to *.hpp (`#160 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/160>`_)
+* feat: Inline serialization from different msgs (`#150 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/150>`_)
+* use C++ 20 in default. (`#156 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/156>`_)
+* Contributors: Chris Lalancette, Janosch Machowinski, Mathias Lüdtke, Michael Carroll, Nathan Wiebe Neufeldt, Tomoya Fujita
+
 3.10.1 (2026-05-13)
 -------------------
 * Clean up logs in buffer serialization functions (`#153 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/153>`_)
