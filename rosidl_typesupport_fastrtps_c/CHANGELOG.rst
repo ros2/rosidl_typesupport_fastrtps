@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_fastrtps_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.8.3 (2026-11-03)
+------------------
+* use variable to control shared/static build type (`#138 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/138>`_) (`#146 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/146>`_)
+* Contributors: mergify[bot]
+
 3.8.2 (2025-11-21)
 ------------------
 * Switch ament_index_python and rosidl_cli to exec_depend. (`#137 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/137>`_) (`#139 <https://github.com/ros2/rosidl_typesupport_fastrtps/issues/139>`_)
