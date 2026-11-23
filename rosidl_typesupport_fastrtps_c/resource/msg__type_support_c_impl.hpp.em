@@ -158,7 +158,7 @@ extern "C"
 {
 #endif
 
-using _@(message.structure.namespaced_type.name)__ros_msg_type = @('__'.join(message.structure.namespaced_type.namespaced_name()));
+using _@('__'.join(message.structure.namespaced_type.namespaced_name()))__ros_msg_type = @('__'.join(message.structure.namespaced_type.namespaced_name()));
 
 @{
 
@@ -645,7 +645,7 @@ size_t impl_get_serialized_size_@('__'.join([package_name] + list(interface_path
   const void * untyped_ros_message,
   size_t current_alignment)
 {
-  const _@(message.structure.namespaced_type.name)__ros_msg_type * ros_message = static_cast<const _@(message.structure.namespaced_type.name)__ros_msg_type *>(untyped_ros_message);
+  const _@('__'.join(message.structure.namespaced_type.namespaced_name()))__ros_msg_type * ros_message = static_cast<const _@('__'.join(message.structure.namespaced_type.namespaced_name()))__ros_msg_type *>(untyped_ros_message);
   (void)ros_message;
   size_t initial_alignment = current_alignment;
 
@@ -826,7 +826,7 @@ size_t impl_get_serialized_size_key_@('__'.join([package_name] + list(interface_
   const void * untyped_ros_message,
   size_t current_alignment)
 {
-  const _@(message.structure.namespaced_type.name)__ros_msg_type * ros_message = static_cast<const _@(message.structure.namespaced_type.name)__ros_msg_type *>(untyped_ros_message);
+  const _@('__'.join(message.structure.namespaced_type.namespaced_name()))__ros_msg_type * ros_message = static_cast<const _@('__'.join(message.structure.namespaced_type.namespaced_name()))__ros_msg_type *>(untyped_ros_message);
   (void)ros_message;
 
   size_t initial_alignment = current_alignment;
